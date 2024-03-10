@@ -70,7 +70,7 @@ interface UserDao {
 
     //getUserId in signIn
     @Query("select user_id from user where email LIKE :email")
-    fun getUserId(email: String) : Int
+    fun getUserId(email: String) : Long
 
     @Query("select password from user where email LIKE :email")
     fun getUserPassword(email : String) : String
@@ -79,6 +79,6 @@ interface UserDao {
     fun isEmailExist(email: String) : Boolean
 
     @Query("select EXISTS(select email from USER where email LIKE :email and password LIKE :password)")
-    fun isPasswordMatch(email: String,password: String)
+    fun isPasswordMatch(email: String,password: String) : Boolean
 
 }

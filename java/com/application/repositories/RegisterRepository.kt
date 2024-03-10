@@ -1,9 +1,9 @@
 package com.application.repositories
 
-import com.application.model.AuthenticationResult
+import com.application.model.RegisterResult
 
 interface RegisterRepository{
-    suspend fun registerUser(name:String,email:String,phoneNumber:String,password:String)  : AuthenticationResult
+    suspend fun registerUser(name:String,email:String,phoneNumber:String,password:String)  : RegisterResult
 
 
 

@@ -1,11 +1,12 @@
 package com.application.repositories
 
 import com.application.entity.User
+import com.application.model.AuthenticationResult
 
 interface SignInRepository {
+    suspend fun getUserId(email : String, password : String) : Long
 
-    suspend fun getUsers() : List<User>
+    suspend fun isEmailExist(email : String) : Boolean
 
-    suspend fun getPassword(email : String) : String
-    suspend fun getUserId(email : String, password : String) : Int
+    suspend fun isPasswordMatch(email: String,password: String) : Boolean
 }

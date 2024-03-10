@@ -9,7 +9,7 @@ import com.application.repositories.RegisterRepository
 import com.application.repositories.impl.RegisterRepositoryImpl
 import kotlinx.coroutines.launch
 
-class SignupViewModel(private val repository: RegisterRepository) : ViewModel() {
+class SignupViewModel(val repository: RegisterRepository) : ViewModel() {
 
     fun signup(name : String , email : String ,phoneNumber : String,password : String){
         viewModelScope.launch {

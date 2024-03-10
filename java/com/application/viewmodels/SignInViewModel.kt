@@ -1,23 +1,24 @@
 package com.application.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.application.model.AuthenticationResult
 import com.application.repositories.SignInRepository
 import com.application.repositories.impl.SignInRepositoryImpl
-import kotlinx.coroutines.launch
 
 class SignInViewModel(private var repository : SignInRepository) : ViewModel() {
 
 
 
-    suspend fun  signIn(email : String , password : String): Int{
-        Log.i("TAG",repository.getUsers().toString())
-        Log.i("TAG",repository.getUsers()[2].id.toString())
-        Log.i("TAG password",repository.getPassword("c"))
-           return repository.getUserId(email, password)
+    suspend fun  signIn(email : String , password : String): AuthenticationResult{
+        if(!repository.isEmailExist(email)){
+            return AuthenticationResult.USER_NOT_FOUND
+        }
+        if(!repository.isPasswordMatch(email,password)){
+            return AuthenticationResult.PASSWORD_INVALID
+        }
+           return AuthenticationResult.LOGIN_SUCCESS
     }
 
     companion object{
