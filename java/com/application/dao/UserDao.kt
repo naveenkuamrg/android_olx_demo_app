@@ -21,7 +21,7 @@ interface UserDao {
 
 
     @Query("select * from user")
-    suspend fun getProfile() : User
+    suspend fun getProfile() : List<User>
 
 
     @Insert
@@ -65,5 +65,20 @@ interface UserDao {
 
     @Query("select * from notification where id  Like :id")
     fun getNotificationWithProduct(id : Long) : NotificationWithProductDetails
+
+
+
+    //getUserId in signIn
+    @Query("select user_id from user where email LIKE :email")
+    fun getUserId(email: String) : Int
+
+    @Query("select password from user where email LIKE :email")
+    fun getUserPassword(email : String) : String
+
+    @Query("select EXISTS(select email from USER where email LIKE :email)")
+    fun isEmailExist(email: String) : Boolean
+
+    @Query("select EXISTS(select email from USER where email LIKE :email and password LIKE :password)")
+    fun isPasswordMatch(email: String,password: String)
 
 }
