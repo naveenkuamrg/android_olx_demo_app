@@ -1,26 +1,35 @@
 package com.application.viewmodels
 
-import android.util.Log
+import android.database.sqlite.SQLiteConstraintException
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.application.helper.Validator
-import com.application.model.RegisterResult
-import com.application.repositories.RegisterRepository
-import com.application.repositories.impl.RegisterRepositoryImpl
+import com.application.repositories.AuthenticationRepository
+import com.application.repositories.impl.AuthenticationRepositoryImpl
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class SignupViewModel(val repository: RegisterRepository) : ViewModel() {
+class SignupViewModel(val repository: AuthenticationRepository) : ViewModel() {
+    private var _userId = MutableLiveData<Long>()
+    val userId : LiveData<Long> = _userId
 
-    suspend fun signup(name : String , email : String ,phoneNumber : String,password : String) : RegisterResult{
-
-            if(!repository.isEmailExist(email)) {
-                return RegisterResult.ALREADY_REGISTERED
+    private  var _errorMessage  = MutableLiveData<String>()
+    val errorMessage : LiveData<String> = _errorMessage
+    fun signup(name : String ,
+                       email : String ,
+                       phoneNumber : String,
+                       password : String) {
+         viewModelScope.launch(Dispatchers.IO) {
+            try {
+               _userId.postValue( repository.setUserProfile(name, email, phoneNumber, password))
+            }catch (e : SQLiteConstraintException){
+                _errorMessage.postValue("This email already register")
             }
 
-            repository.setUserProfile(name,email,phoneNumber,password)
-        return RegisterResult.REGISTERED_SUCCESS
+         }
 
     }
     companion object{
@@ -30,7 +39,7 @@ class SignupViewModel(val repository: RegisterRepository) : ViewModel() {
 
                 val application = extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]
 
-                val repository = RegisterRepositoryImpl(application!!.applicationContext)
+                val repository = AuthenticationRepositoryImpl(application!!.applicationContext)
 
                 return SignupViewModel(repository) as T
             }

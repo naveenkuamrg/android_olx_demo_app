@@ -10,6 +10,7 @@ import com.application.entity.Notification
 import com.application.entity.ProductDetails
 import com.application.entity.User
 import com.application.entity.WishList
+import com.application.fragments.HomeFragment
 import com.application.fragments.LoginFragment
 import com.application.model.AvailabilityStatus
 import com.application.model.NotificationType
@@ -22,13 +23,21 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        val sharedPreferences = getSharedPreferences("mySharePref", MODE_PRIVATE)
 
         if(savedInstanceState == null){
-            val fragmentTransaction = supportFragmentManager.beginTransaction()
-            fragmentTransaction.add(R.id.main_view_container,LoginFragment())
-            fragmentTransaction.commit()
+
+            if(sharedPreferences.getString("userId","") == "") {
+                val fragmentTransaction = supportFragmentManager.beginTransaction()
+                fragmentTransaction.add(R.id.main_view_container, LoginFragment())
+                fragmentTransaction.commit()
+            }else{
+                val fragmentTransaction = supportFragmentManager.beginTransaction()
+                fragmentTransaction.add(R.id.main_view_container,HomeFragment())
+                fragmentTransaction.commit()
+            }
         }
-        setContentView(R.layout.activity_main)
 
 
     }

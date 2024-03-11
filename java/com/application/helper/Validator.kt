@@ -1,5 +1,6 @@
 package com.application.helper
 
+import android.util.Log
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -15,7 +16,7 @@ object Validator {
     }
 
     fun doesNotContainSpecialChars(text: String): Boolean {
-        val regex = Regex("^[a-zA-Z0-9\\s]+$")
+        val regex = Regex("^[a-zA-Z\\s]+$")
         return regex.matches(text)
     }
 

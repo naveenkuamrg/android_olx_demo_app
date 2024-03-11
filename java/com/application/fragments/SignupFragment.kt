@@ -4,13 +4,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.ContactsContract.CommonDataKinds.Email
 import android.provider.ContactsContract.CommonDataKinds.Phone
+import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import com.application.R
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.application.databinding.FragmentSignupBinding
 import com.application.helper.Validator
@@ -26,38 +29,30 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentSignupBinding.bind(view)
-
+        addObserver()
+        binding.reenterPassword.addTextChangedListener { text ->
+            if(text.toString() != binding.passwordEdittext.text.toString()){
+                binding.reenterPasswordLayout.error = "password dose not match"
+            }else{
+                binding.reenterPasswordLayout.error = null
+            }
+        }
 
         binding.registerButton.setOnClickListener {
 
-            val email = binding.email.text.toString().trim()
+            val email = binding.emailEdittext.text.toString().trim()
             val userName = binding.name.text.toString().trim()
-            val phoneNumber = binding.name.text.toString().trim()
-            val password = binding.name.text.toString()
+            val phoneNumber = binding.phoneNumber.text.toString().trim()
+            val password = binding.passwordEdittext.text.toString()
             val confirmPassword = binding.reenterPassword.text.toString()
 
-            binding.reenterPassword.addTextChangedListener{text ->
-                if(text.toString() != password){
 
-                }else{
-
-                }
-            }
 
             if(!isValid(userName,email, phoneNumber, password, confirmPassword)){
                 return@setOnClickListener
             }
-            lifecycleScope.launch(Dispatchers.Default) {
-                when(viewModel.signup(email,userName,phoneNumber,password)){
-                    RegisterResult.REGISTERED_SUCCESS ->{
-                        val transaction = parentFragmentManager.beginTransaction()
-                        transaction.replace(R.id.main_view_container,HomeFragment())
-                        transaction.commit()
-                    }
-                    RegisterResult.ALREADY_REGISTERED ->{
-                    }
-                }
-            }
+
+            viewModel.signup(userName,email, phoneNumber, password)
 
         }
 
@@ -86,8 +81,15 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
         }else{
             binding.passwordLayout.error = null
         }
-        if(password != confirmPassword){
+        if(password != confirmPassword || confirmPassword == ""){
             isValid = false
+            binding.reenterPasswordLayout.error = "not match"
+            if(password == ""){
+                binding.reenterPasswordLayout.error = "can't be empty"
+            }
+
+        }else{
+            binding.reenterPasswordLayout.error = null
         }
 
         if(!Validator.doesNotContainSpecialChars(name)){
@@ -100,7 +102,23 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
         }else{
             binding.nameEditTextLayout.error = null
         }
-
         return isValid
     }
+
+    fun addObserver(){
+        viewModel.errorMessage.observe(viewLifecycleOwner
+        ) { value -> binding.emailEditTextLayout.error = value }
+        viewModel.userId.observe(viewLifecycleOwner){value ->
+            parentFragmentManager.popBackStack()
+            val sharedPreferences=requireContext().getSharedPreferences("mySharePref",
+                AppCompatActivity.MODE_PRIVATE
+            ).edit()
+            sharedPreferences.putString("userId",value.toString())
+            sharedPreferences.apply()
+            val homeTransaction = parentFragmentManager.beginTransaction()
+            homeTransaction.replace(R.id.main_view_container, HomeFragment())
+            homeTransaction.commit()
+        }
+    }
+
 }

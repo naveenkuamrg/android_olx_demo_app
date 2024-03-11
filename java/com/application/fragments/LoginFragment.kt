@@ -1,74 +1,80 @@
 package com.application.fragments
 
+import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelStore
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Observer
 import com.application.R
 import com.application.databinding.FragmentLoginBinding
-import com.application.model.AuthenticationResult
+import com.application.exceptions.AuthenticationSignInExceptions
+import com.application.helper.Validator
 import com.application.viewmodels.SignInViewModel
-import com.application.viewmodels.SignupViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
 
-    private lateinit var  binding : FragmentLoginBinding
-
-    private  val viewModel : SignInViewModel by activityViewModels { SignInViewModel.FACTORY}
-
+    private lateinit var binding: FragmentLoginBinding
+    private val viewModel: SignInViewModel by activityViewModels { SignInViewModel.FACTORY }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding = FragmentLoginBinding.bind(view)
-
-
-         binding.signup.setOnClickListener {
+        addObserve()
+        binding.signup.setOnClickListener {
             val fragmentTransaction = parentFragmentManager.beginTransaction()
-            fragmentTransaction.replace(R.id.main_view_container,SignupFragment())
+            fragmentTransaction.replace(R.id.main_view_container, SignupFragment())
             fragmentTransaction.addToBackStack("addSignupPage")
             fragmentTransaction.commit()
         }
 
+        binding.signin.setOnClickListener {
+            val email = binding.emailEdittext.text.toString().trim()
+            val password = binding.passwordEdittext.text.toString()
+            if (!Validator.isEmailValid(email) || email == "") {
+                if(email == ""){
+                    binding.emailEdittextLayout.error = "Email not should be empty"
+                }else{
+                    binding.emailEdittextLayout.error = "Email is not valid"
+                }
+                return@setOnClickListener
+            } else {
+                binding.emailEdittextLayout.error = null
+            }
 
-         binding.signin.setOnClickListener{
-             lifecycleScope.launch(Dispatchers.IO){
-                 val result = viewModel.signIn(binding.email.text.toString().trim(),
-                     binding.password.text.toString())
-                 Log.i("TAG",result.toString())
-                 when(result){
-                     AuthenticationResult.USER_NOT_FOUND -> {
-                         withContext(Dispatchers.Main){
-                             binding.errorMessage.text = "User is not found"
-                             binding.errorMessage.visibility = View.VISIBLE
-                         }
-
-                     }
-                     AuthenticationResult.PASSWORD_INVALID ->{
-                         withContext(Dispatchers.Main){
-                             binding.errorMessage.text = "password invalid"
-                             binding.errorMessage.visibility = View.VISIBLE
-                         }
-
-                     }
-                     AuthenticationResult.LOGIN_SUCCESS ->{
-                         withContext(Dispatchers.Main){
-                             val homeTransaction = parentFragmentManager.beginTransaction()
-                             homeTransaction.replace(R.id.main_view_container,HomeFragment())
-                             homeTransaction.commit()
-                         }
-                     }
-
-                 }
-             }
+            viewModel.signIn(email,password)
         }
     }
 
 
+    fun addObserve(){
+        viewModel.userId.observe(viewLifecycleOwner,object : Observer<Long>{
+            override fun onChanged(value: Long) {
+                if(value.toInt() != -1) {
+                    val sharedPreferences=requireContext().getSharedPreferences("mySharePref",
+                        AppCompatActivity.MODE_PRIVATE
+                    ).edit()
+                    sharedPreferences.putString("userId",value.toString())
+                    sharedPreferences.apply()
+                    val homeTransaction = parentFragmentManager.beginTransaction()
+                    homeTransaction.replace(R.id.main_view_container, HomeFragment())
+                    homeTransaction.commit()
+                }
+            }
+        })
+
+        viewModel.exceptions.observe(viewLifecycleOwner,object : Observer<AuthenticationSignInExceptions>{
+            override fun onChanged(value: AuthenticationSignInExceptions) {
+               when(value){
+                   is AuthenticationSignInExceptions.UserNotFoundAuthenticationException -> {
+                       binding.emailEdittextLayout.error = value.message
+                   }
+                   is AuthenticationSignInExceptions.PasswordInvalidAuthenticationException ->{
+                       binding.passwordEdittextLayout.error = value.message
+                   }
+               }
+            }
+
+        })
+    }
 }

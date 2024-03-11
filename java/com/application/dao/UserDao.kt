@@ -66,6 +66,8 @@ interface UserDao {
     @Query("select * from notification where id  Like :id")
     fun getNotificationWithProduct(id : Long) : NotificationWithProductDetails
 
+    @Query("select email from user where email LIKE :email")
+    fun getEmail(email: String) : String
 
 
     //getUserId in signIn
@@ -75,10 +77,12 @@ interface UserDao {
     @Query("select password from user where email LIKE :email")
     fun getUserPassword(email : String) : String
 
-    @Query("select EXISTS(select email from USER where email LIKE :email)")
+    @Query("select EXISTS(select email from user where email LIKE :email)")
     fun isEmailExist(email: String) : Boolean
 
-    @Query("select EXISTS(select email from USER where email LIKE :email and password LIKE :password)")
+    @Query("select EXISTS(select email from user where email LIKE :email and password LIKE :password)")
     fun isPasswordMatch(email: String,password: String) : Boolean
 
+    @Query("select * from user where email LIKE :email")
+    fun getUser(email: String) : User?
 }
