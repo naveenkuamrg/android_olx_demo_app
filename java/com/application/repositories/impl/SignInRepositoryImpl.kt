@@ -8,7 +8,7 @@ import com.application.model.AuthenticationResult
 import com.application.repositories.SignInRepository
 
 class SignInRepositoryImpl(context : Context) : SignInRepository {
-    val userDao = AppDatabase.getInstance(context).userDao
+    private val userDao = AppDatabase.getInstance(context).userDao
 
 
     override suspend fun getUserId(email: String, password: String): Long {

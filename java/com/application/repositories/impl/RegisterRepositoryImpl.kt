@@ -11,8 +11,18 @@ import com.application.repositories.RegisterRepository
 class RegisterRepositoryImpl(context : Context) : RegisterRepository {
 
     private val userDao : UserDao = AppDatabase.getInstance(context).userDao
-    override suspend fun registerUser(name:String,email : String,phoneNumber:String, password: String): RegisterResult {
-        userDao.insertUser(ModelConverter.UserEntityFromUserDetails(name, phoneNumber, email, password))
-        return RegisterResult.REGISTERED_SUCCESS
+    override suspend fun setUserProfile(
+        name: String,
+        email: String,
+        phoneNumber: String,
+        password: String
+    ) {
+        userDao.insertUser(
+            ModelConverter.UserEntityFromUserDetails(name, phoneNumber, email, password)
+        )
+    }
+
+    override suspend fun isEmailExist(email: String): Boolean {
+        return userDao.isEmailExist(email)
     }
 }

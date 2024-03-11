@@ -5,17 +5,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.application.helper.Validator
+import com.application.model.RegisterResult
 import com.application.repositories.RegisterRepository
 import com.application.repositories.impl.RegisterRepositoryImpl
 import kotlinx.coroutines.launch
 
 class SignupViewModel(val repository: RegisterRepository) : ViewModel() {
 
-    fun signup(name : String , email : String ,phoneNumber : String,password : String){
-        viewModelScope.launch {
-            repository.registerUser(name,email,phoneNumber,password)
-            Log.i("TAG",Thread.currentThread().toString())
-        }
+    suspend fun signup(name : String , email : String ,phoneNumber : String,password : String) : RegisterResult{
+
+            if(!repository.isEmailExist(email)) {
+                return RegisterResult.ALREADY_REGISTERED
+            }
+
+            repository.setUserProfile(name,email,phoneNumber,password)
+        return RegisterResult.REGISTERED_SUCCESS
+
     }
     companion object{
         val FACTORY = object : ViewModelProvider.Factory{
