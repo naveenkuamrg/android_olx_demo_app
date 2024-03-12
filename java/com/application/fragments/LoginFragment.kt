@@ -2,10 +2,12 @@ package com.application.fragments
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.application.R
 import com.application.databinding.FragmentLoginBinding
@@ -53,17 +55,20 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 if(value.toInt() != -1) {
                     val sharedPreferences=requireContext().getSharedPreferences("mySharePref",
                         AppCompatActivity.MODE_PRIVATE
-                    ).edit()
-                    sharedPreferences.putString("userId",value.toString())
-                    sharedPreferences.apply()
-                    val homeTransaction = parentFragmentManager.beginTransaction()
-                    homeTransaction.replace(R.id.main_view_container, HomeFragment())
-                    homeTransaction.commit()
+                    )
+                    sharedPreferences.edit().apply {
+                        putString("userId", value.toString())
+                        apply()
+                    }
+                    val fragmentTransaction = parentFragmentManager.beginTransaction()
+                    fragmentTransaction.replace(R.id.main_view_container, MainFragment())
+                    fragmentTransaction.commit()
                 }
             }
         })
 
-        viewModel.exceptions.observe(viewLifecycleOwner,object : Observer<AuthenticationSignInExceptions>{
+        viewModel.exceptions.observe(
+            viewLifecycleOwner,object : Observer<AuthenticationSignInExceptions>{
             override fun onChanged(value: AuthenticationSignInExceptions) {
                when(value){
                    is AuthenticationSignInExceptions.UserNotFoundAuthenticationException -> {
@@ -76,5 +81,10 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             }
 
         })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.destroyUserId()
     }
 }

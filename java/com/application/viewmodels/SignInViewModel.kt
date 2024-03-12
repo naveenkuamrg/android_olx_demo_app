@@ -35,6 +35,10 @@ class SignInViewModel(private var repository : AuthenticationRepository) : ViewM
 
     }
 
+
+    fun destroyUserId(){
+        _userId.value = -1
+    }
     companion object{
         val FACTORY = object : ViewModelProvider.Factory{
 
