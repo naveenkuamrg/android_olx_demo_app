@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.application.R
 import com.application.databinding.FragmentLoginBinding
@@ -15,7 +15,7 @@ import com.application.viewmodels.SignInViewModel
 class LoginFragment : Fragment(R.layout.fragment_login) {
 
     private lateinit var binding: FragmentLoginBinding
-    private val viewModel: SignInViewModel by activityViewModels { SignInViewModel.FACTORY }
+    private val viewModel: SignInViewModel by viewModels { SignInViewModel.FACTORY }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentLoginBinding.bind(view)
@@ -49,7 +49,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     fun addObserve(){
         viewModel.userId.observe(viewLifecycleOwner,object : Observer<Long>{
             override fun onChanged(value: Long) {
-                if(value.toInt() != -1) {
                     val sharedPreferences=requireContext().getSharedPreferences("mySharePref",
                         AppCompatActivity.MODE_PRIVATE
                     )
@@ -60,7 +59,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                     val fragmentTransaction = parentFragmentManager.beginTransaction()
                     fragmentTransaction.replace(R.id.main_view_container, MainFragment())
                     fragmentTransaction.commit()
-                }
             }
         })
 
@@ -80,8 +78,5 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         })
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.clearUserId()
-    }
+
 }

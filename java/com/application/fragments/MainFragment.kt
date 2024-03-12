@@ -10,13 +10,21 @@ import com.application.databinding.FragmentMainBinding
 
 class MainFragment : Fragment(R.layout.fragment_main) {
     lateinit var binding: FragmentMainBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if(savedInstanceState == null) {
+            addHomeFragment()
+        }
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentMainBinding.bind(view)
         setOnItemSelectListener()
         val onBackPressedCallback = object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if(childFragmentManager.backStackEntryCount > 0) {
+
+                if(childFragmentManager.backStackEntryCount > 1) {
                     childFragmentManager.popBackStack()
                 }else{
                     requireActivity().finish()
@@ -33,10 +41,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             when(it.itemId){
                 R.id.home ->{
                     childFragmentManager.popBackStack("home",FragmentManager.POP_BACK_STACK_INCLUSIVE)
-                    val transaction = parentFragmentManager.beginTransaction()
-                    transaction.replace(R.id.bottom_navigation_fragment_view_container,HomeFragment())
-                    transaction.addToBackStack("home")
-                    transaction.commit()
+                    addHomeFragment()
                 }
                 R.id.profile->{
                     childFragmentManager.popBackStack("profile",FragmentManager.POP_BACK_STACK_INCLUSIVE)
@@ -52,6 +57,11 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         }
     }
 
-
+    fun addHomeFragment(){
+        val transaction = childFragmentManager.beginTransaction()
+        transaction.replace(R.id.bottom_navigation_fragment_view_container,HomeFragment())
+        transaction.addToBackStack("home")
+        transaction.commit()
+    }
 
 }

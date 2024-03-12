@@ -18,7 +18,7 @@ class AuthenticationRepositoryImpl(context : Context) : AuthenticationRepository
         password: String
     ) : Long {
         userDao.insertUser(
-            ModelConverter.UserEntityFromUserDetails(name, phoneNumber, email, password)
+            ModelConverter.userEntityFromUserDetails(name, phoneNumber, email, password)
         )
         return  userDao.getUserId(email)
     }

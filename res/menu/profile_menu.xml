@@ -4,5 +4,7 @@
         android:title="Edit"/>
     <item android:id="@+id/logout"
         android:title="Logout"/>
+    <item android:id="@+id/change_password"
+        android:title="Change Password"/>
 
 </menu>

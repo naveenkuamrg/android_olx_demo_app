@@ -85,4 +85,16 @@ interface UserDao {
 
     @Query("select * from user where email LIKE :email")
     fun getUser(email: String) : User?
+
+
+    //UserDao
+    @Query("select * from user where user_id LIKE :userId")
+    fun getUser(userId : Long): User
+
+    @Query("UPDATE user SET name = :name where user_id LIKE :id ")
+    fun updateUserName(name: String,id: Long): Int
+    @Query("UPDATE user SET email = :email where user_id LIKE :id ")
+    fun updateUserEmail(email: String,id: Long): Int
+    @Query("UPDATE user SET phoneNumber = :phoneNumber where user_id LIKE :id ")
+    fun updateUserPhone(phoneNumber: String,id: Long): Int
 }
