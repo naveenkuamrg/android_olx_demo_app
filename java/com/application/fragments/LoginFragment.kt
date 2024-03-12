@@ -1,17 +1,14 @@
 package com.application.fragments
 
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.application.R
 import com.application.databinding.FragmentLoginBinding
-import com.application.exceptions.AuthenticationSignInExceptions
+import com.application.exceptions.AuthenticationSignInException
 import com.application.helper.Validator
 import com.application.viewmodels.SignInViewModel
 
@@ -68,13 +65,13 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         })
 
         viewModel.exceptions.observe(
-            viewLifecycleOwner,object : Observer<AuthenticationSignInExceptions>{
-            override fun onChanged(value: AuthenticationSignInExceptions) {
+            viewLifecycleOwner,object : Observer<AuthenticationSignInException>{
+            override fun onChanged(value: AuthenticationSignInException) {
                when(value){
-                   is AuthenticationSignInExceptions.UserNotFoundAuthenticationException -> {
+                   is AuthenticationSignInException.UserNotFoundAuthenticationException -> {
                        binding.emailEdittextLayout.error = value.message
                    }
-                   is AuthenticationSignInExceptions.PasswordInvalidAuthenticationException ->{
+                   is AuthenticationSignInException.PasswordInvalidAuthenticationException ->{
                        binding.passwordEdittextLayout.error = value.message
                    }
                }
@@ -85,6 +82,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
     override fun onDestroy() {
         super.onDestroy()
-        viewModel.destroyUserId()
+        viewModel.clearUserId()
     }
 }

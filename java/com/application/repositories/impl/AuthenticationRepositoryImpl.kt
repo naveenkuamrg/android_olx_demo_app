@@ -3,7 +3,7 @@ package com.application.repositories.impl
 import android.content.Context
 import com.application.AppDatabase
 import com.application.dao.UserDao
-import com.application.exceptions.AuthenticationSignInExceptions
+import com.application.exceptions.AuthenticationSignInException
 import com.application.helper.ModelConverter
 import com.application.repositories.AuthenticationRepository
 
@@ -24,10 +24,10 @@ class AuthenticationRepositoryImpl(context : Context) : AuthenticationRepository
     }
 
     override suspend fun getUserId(email: String, password: String): Long {
-       val user = userDao.getUser(email) ?: throw AuthenticationSignInExceptions.
+       val user = userDao.getUser(email) ?: throw AuthenticationSignInException.
             UserNotFoundAuthenticationException("Email Dose not exits")
         if(user.password != password){
-            throw  AuthenticationSignInExceptions.
+            throw  AuthenticationSignInException.
                 PasswordInvalidAuthenticationException("Invalid password",)
         }
         return  user.id
