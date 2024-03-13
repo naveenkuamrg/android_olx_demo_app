@@ -1,5 +1,6 @@
 package com.application.helper
 
+import android.graphics.Bitmap
 import android.net.Uri
 import com.application.entity.User
 import com.application.model.Profile
@@ -13,8 +14,8 @@ object ModelConverter {
             password
         )
     }
-    fun profileFromUserAndUri(user: User, uri : Uri):Profile{
-        return Profile(user.id,user.name,uri,user.phoneNumber,user.email)
+    fun profileFromUserAndUri(user: User):Profile{
+        return Profile(user.id,user.name,null,user.phoneNumber,user.email)
     }
 }
 

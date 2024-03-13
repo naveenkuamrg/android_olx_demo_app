@@ -1,11 +1,14 @@
 package com.application
 
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.app.ActivityCompat
 import com.application.entity.InterestedList
 import com.application.entity.Notification
 import com.application.entity.ProductDetails

@@ -1,14 +1,17 @@
 package com.application.fragments
 
+import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.application.R
 import com.application.databinding.FragmentEditProfileBinding
 import com.application.exceptions.InvalidUserDataException
+import com.application.helper.ImageConverter
 import com.application.helper.StringConverter
 import com.application.helper.Validator
 import com.application.viewmodels.EditProfileViewModel
@@ -16,14 +19,17 @@ import com.application.viewmodels.ProfilePageViewModel
 
 class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
 
+
+    //ActivityResultLauncher
     lateinit var binding: FragmentEditProfileBinding
 
-    val profilePageViewModel : ProfilePageViewModel by
-            activityViewModels { ProfilePageViewModel.FACTORY }
+    val profilePageViewModel: ProfilePageViewModel by
+    activityViewModels { ProfilePageViewModel.FACTORY }
 
-    val editProfileViewModel : EditProfileViewModel by viewModels { EditProfileViewModel.FACTORY }
+    val editProfileViewModel: EditProfileViewModel by viewModels { EditProfileViewModel.FACTORY }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -32,81 +38,131 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
         setUpNavigationForToolbar()
         setObserve()
         setOnClickListenerToUpdateButton()
+        setOnClickListenerToAddImageBtn()
+        setOnClickListenerToRemoveBtn()
 
     }
 
-    private fun setObserve(){
-        profilePageViewModel.profile.observe(viewLifecycleOwner){value ->
+    private fun setObserve() {
+        profilePageViewModel.profile.observe(viewLifecycleOwner) { value ->
             binding.emailEdittext.text = StringConverter.toEditable(value.email)
             binding.nameEdittext.text = StringConverter.toEditable(value.name)
             binding.phoneNumberEdittext.text = StringConverter.toEditable(value.phoneNumber)
-
+            if (value.profileImage != null) {
+                binding.userDp.setImageBitmap(value.profileImage)
+                binding.addImageButton.apply {
+                    text = "change image"
+                    val drawable: Drawable = resources.getDrawable(R.drawable.ic_edit, null)
+                    icon = drawable
+                }
+                binding.removeImageBtn.visibility = View.VISIBLE
+            }
         }
 
-        editProfileViewModel.isUploaded.observe(viewLifecycleOwner){value ->
-            Log.i("tag",value.toString())
-            if(value){
+        editProfileViewModel.isUploaded.observe(viewLifecycleOwner) { value ->
+            if (value) {
                 parentFragmentManager.popBackStack()
             }
         }
 
-        editProfileViewModel.exception.observe(viewLifecycleOwner){ value ->
+        editProfileViewModel.exception.observe(viewLifecycleOwner) { value ->
             val emailEditTextLayout = binding.emailEditTextLayout
             val phoneNumberEdittextLayout = binding.phoneNumberEdittextLayout
             emailEditTextLayout.error = null
             phoneNumberEdittextLayout.error = null
-            when(value){
+            when (value) {
                 is InvalidUserDataException.EmailAlreadyExists -> {
                     emailEditTextLayout.error = value.message
                 }
+
                 is InvalidUserDataException.PhoneNumberAlreadyRegistered -> {
                     phoneNumberEdittextLayout.error = value.message
                 }
             }
         }
     }
-    private fun setUpNavigationForToolbar(){
+
+    private fun setUpNavigationForToolbar() {
         val toolbar = binding.profileEditToolbar
         toolbar.setNavigationIcon(R.drawable.ic_back)
         toolbar.setNavigationOnClickListener {
             parentFragmentManager.popBackStack()
-            Log.i("Tag","call back")
         }
-
     }
 
-    private  fun setOnClickListenerToUpdateButton(){
+    private fun setOnClickListenerToUpdateButton() {
         binding.updateButton.setOnClickListener {
-            val name = binding.nameEdittext.text.toString()
-            val email = binding.emailEdittext.text.toString()
-            val phoneNumber = binding.phoneNumberEdittext.text.toString()
+            val name = binding.nameEdittext.text.toString().trim()
+            val email = binding.emailEdittext.text.toString().trim()
+            val phoneNumber = binding.phoneNumberEdittext.text.toString().trim()
             var isValid = true
-            if(!Validator.isEmailValid(email)){
+            if (!Validator.isEmailValid(email)) {
                 binding.emailEditTextLayout.error = "Email is not valid"
                 isValid = false
-            }else{
+            } else {
                 binding.emailEditTextLayout.error = null
             }
 
-            if(!Validator.isPhoneNumberValid(phoneNumber)){
+            if (!Validator.isPhoneNumberValid(phoneNumber)) {
                 binding.phoneNumberEdittext.error = "Phone number is not valid"
                 isValid = false
-            }else{
+            } else {
                 binding.phoneNumberEdittext.error = null
             }
 
-            if(!Validator.doesNotContainSpecialChars(name)){
+            if (!Validator.doesNotContainSpecialChars(name)) {
                 binding.nameEditTextLayout.error = "name dosnt have special chater"
                 isValid = false
-            }else{
+            } else {
                 binding.nameEditTextLayout.error = null
             }
 
-            if(!isValid){
+            if (!isValid) {
                 return@setOnClickListener
             }
 
-            editProfileViewModel.uploadProfile(name,email,phoneNumber,profilePageViewModel.profile.value!!)
+            editProfileViewModel.uploadProfile(
+                name, email, phoneNumber, profilePageViewModel.profile.value!!
+            )
+        }
+    }
+
+    private fun setOnClickListenerToAddImageBtn() {
+        val startActivityForResult =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                binding.userDp.setImageURI(it.data!!.data)
+                ImageConverter.uriToBitmap(requireContext(), it.data!!.data!!)
+                    ?.let { it1 ->
+                        editProfileViewModel.uploadProfileImage(
+                            it1,
+                            profilePageViewModel.profile.value!!.id
+                        )
+                    }
+                binding.removeImageBtn.visibility = View.VISIBLE
+                binding.addImageButton.apply {
+                    text = "Change Image"
+                    val drawable: Drawable = resources.getDrawable(R.drawable.ic_edit, null)
+                    icon = drawable
+                }
+            }
+        binding.addImageButton.setOnClickListener {
+            val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                type = "image/*"
+            }
+            startActivityForResult.launch(intent)
+        }
+    }
+
+    private fun setOnClickListenerToRemoveBtn() {
+        binding.removeImageBtn.setOnClickListener {
+            editProfileViewModel.deleteProfileImage(profilePageViewModel.profile.value!!.id)
+            binding.userDp.setImageResource(R.drawable.ic_profile)
+            binding.removeImageBtn.visibility = View.GONE
+            binding.addImageButton.apply {
+                text = "Add Image"
+                val drawable: Drawable = resources.getDrawable(R.drawable.ic_add, null)
+                icon = drawable
+            }
         }
     }
 }

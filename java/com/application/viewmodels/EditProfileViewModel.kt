@@ -1,6 +1,7 @@
 package com.application.viewmodels
 
 import android.database.sqlite.SQLiteConstraintException
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -16,51 +17,63 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class EditProfileViewModel(private  val userRepository : UserRepository) :ViewModel(){
+class EditProfileViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     private val _isUploaded = MutableLiveData<Boolean>()
-    val isUploaded : LiveData<Boolean> = _isUploaded
+    val isUploaded: LiveData<Boolean> = _isUploaded
 
     private val _exception = MutableLiveData<InvalidUserDataException>()
-    val exception : LiveData<InvalidUserDataException> = _exception
+    val exception: LiveData<InvalidUserDataException> = _exception
 
-    fun uploadProfile(name : String,email: String,phone: String,profile: Profile){
+    fun uploadProfile(name: String, email: String, phone: String, profile: Profile) {
         viewModelScope.launch(Dispatchers.IO) {
             val userId = profile.id
             var isUploaded = true
-            if(name != profile.name){
-                userRepository.updateUserName(name,userId)
+            if (name != profile.name) {
+                userRepository.updateUserName(name, userId)
             }
-            if(email != profile.email){
+            if (email != profile.email) {
                 try {
-                    userRepository.updateUserEmail(email,userId)
-                }catch(e: SQLiteConstraintException){
-                    Log.i("TAG",e.message.toString())
+                    userRepository.updateUserEmail(email, userId)
+                } catch (e: SQLiteConstraintException) {
+                    Log.i("TAG", e.message.toString())
                     withContext(Dispatchers.Main) {
                         _exception.value = InvalidUserDataException.EmailAlreadyExists()
                     }
                     isUploaded = false
                 }
             }
-            if(phone != profile.phoneNumber){
+            if (phone != profile.phoneNumber) {
                 try {
                     userRepository.updateUserPhone(phone, userId)
-                }catch (e: SQLiteConstraintException){
+                } catch (e: SQLiteConstraintException) {
                     withContext(Dispatchers.Main) {
                         _exception.value = InvalidUserDataException.PhoneNumberAlreadyRegistered()
                     }
                     isUploaded = false
                 }
             }
-            if(isUploaded) {
+            if (isUploaded) {
                 _isUploaded.postValue(true)
             }
         }
 
 
     }
+    fun uploadProfileImage(image: Bitmap, userId: Long) {
+        viewModelScope.launch {
+            userRepository.updateProfileImage(image, userId)
+        }
+    }
+
+    fun deleteProfileImage(userId: Long){
+        viewModelScope.launch {
+            userRepository.removeProfileImage(userId)
+        }
+    }
+
     companion object {
-        val FACTORY = object : ViewModelProvider.Factory{
+        val FACTORY = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
 

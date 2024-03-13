@@ -6,11 +6,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.application.R
 import com.application.databinding.FragmentLoginBinding
 import com.application.exceptions.AuthenticationSignInException
 import com.application.helper.Validator
 import com.application.viewmodels.SignInViewModel
+import kotlinx.coroutines.launch
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
 

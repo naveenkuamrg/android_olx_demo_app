@@ -1,12 +1,13 @@
 package com.application.model
 
+import android.graphics.Bitmap
 import android.net.Uri
 
 
 data class Profile(
     val id: Long,
     val name: String,
-    val profileImage : Uri,
+    var profileImage : Bitmap?,
     val phoneNumber: String,
     val email: String
 )

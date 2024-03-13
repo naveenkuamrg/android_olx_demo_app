@@ -80,8 +80,8 @@ interface UserDao {
     @Query("select EXISTS(select email from user where email LIKE :email)")
     fun isEmailExist(email: String) : Boolean
 
-    @Query("select EXISTS(select email from user where email LIKE :email and password LIKE :password)")
-    fun isPasswordMatch(email: String,password: String) : Boolean
+    @Query("select EXISTS(select email from user where user_id LIKE :userId and password LIKE :password)")
+    fun isPasswordMatch(userId: Long,password: String) : Boolean
 
     @Query("select * from user where email LIKE :email")
     fun getUser(email: String) : User?
@@ -97,4 +97,7 @@ interface UserDao {
     fun updateUserEmail(email: String,id: Long): Int
     @Query("UPDATE user SET phoneNumber = :phoneNumber where user_id LIKE :id ")
     fun updateUserPhone(phoneNumber: String,id: Long): Int
+
+    @Query("UPDATE user SET password = :newPassword where user_id Like :id and password LIKE :currentPassword")
+    fun updateUserPassword(id: Long,currentPassword: String,newPassword: String) : Int
 }

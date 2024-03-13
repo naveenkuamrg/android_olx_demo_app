@@ -13,17 +13,17 @@ import com.application.helper.Validator
 import com.application.viewmodels.SignupViewModel
 
 class SignupFragment : Fragment(R.layout.fragment_signup) {
-    private lateinit var binding : FragmentSignupBinding
+    private lateinit var binding: FragmentSignupBinding
 
-    private  val viewModel : SignupViewModel by viewModels {SignupViewModel.FACTORY}
+    private val viewModel: SignupViewModel by viewModels { SignupViewModel.FACTORY }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentSignupBinding.bind(view)
         addObserver()
         binding.reenterPassword.addTextChangedListener { text ->
-            if(text.toString() != binding.passwordEdittext.text.toString()){
+            if (text.toString() != binding.passwordEdittext.text.toString()) {
                 binding.reenterPasswordLayout.error = "password dose not match"
-            }else{
+            } else {
                 binding.reenterPasswordLayout.error = null
             }
         }
@@ -38,72 +38,76 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
 
 
 
-            if(!isValid(userName,email, phoneNumber, password, confirmPassword)){
+            if (!isValid(userName, email, phoneNumber, password, confirmPassword)) {
                 return@setOnClickListener
             }
 
-            viewModel.signup(userName,email, phoneNumber, password)
+            viewModel.signup(userName, email, phoneNumber, password)
 
         }
 
 
     }
 
-    fun isValid(name: String,email: String,phoneNumber: String,password: String,confirmPassword: String):Boolean{
+    fun isValid(
+        name: String, email: String, phoneNumber: String, password: String, confirmPassword: String
+    ): Boolean {
         var isValid = true
 
-        if(!Validator.isEmailValid(email)){
+        if (!Validator.isEmailValid(email)) {
             isValid = false
             binding.emailEditTextLayout.error = "Email is not valid"
-        }else{
+        } else {
             binding.emailEditTextLayout.error = null
         }
-        if(!Validator.isPhoneNumberValid(phoneNumber)) {
+        if (!Validator.isPhoneNumberValid(phoneNumber)) {
             isValid = false
             binding.phoneNumberLayout.error = "Phone is not Valid"
-        }else{
+        } else {
             binding.phoneNumberLayout.error = null
         }
         val passwordError = Validator.passwordValidator(password)
-        if( passwordError != null){
+        if (passwordError != null) {
             isValid = false
             binding.passwordLayout.error = passwordError
-        }else{
+        } else {
             binding.passwordLayout.error = null
         }
-        if(password != confirmPassword || confirmPassword == ""){
+        if (password != confirmPassword || confirmPassword == "") {
             isValid = false
             binding.reenterPasswordLayout.error = "not match"
-            if(password == ""){
+            if (password == "") {
                 binding.reenterPasswordLayout.error = "can't be empty"
             }
 
-        }else{
+        } else {
             binding.reenterPasswordLayout.error = null
         }
 
-        if(!Validator.doesNotContainSpecialChars(name)){
-            if(name == ""){
+        if (!Validator.doesNotContainSpecialChars(name)) {
+            if (name == "") {
                 binding.nameEditTextLayout.error = "Name not Should be empty"
-            }else{
+            } else {
                 binding.nameEditTextLayout.error = "Name dosen't allowed spical chareters"
             }
             isValid = false
-        }else{
+        } else {
             binding.nameEditTextLayout.error = null
         }
         return isValid
     }
 
-    fun addObserver(){
-        viewModel.errorMessage.observe(viewLifecycleOwner
+    fun addObserver() {
+        viewModel.errorMessage.observe(
+            viewLifecycleOwner
         ) { value -> binding.emailEditTextLayout.error = value }
-        viewModel.userId.observe(viewLifecycleOwner){value ->
+        viewModel.userId.observe(viewLifecycleOwner) { value ->
             parentFragmentManager.popBackStack()
-            val sharedPreferences=requireContext().getSharedPreferences("mySharePref",
+            val sharedPreferences = requireContext().getSharedPreferences(
+                "mySharePref",
                 AppCompatActivity.MODE_PRIVATE
             ).edit()
-            sharedPreferences.putString("userId",value.toString())
+            sharedPreferences.putString("userId", value.toString())
             sharedPreferences.apply()
             val homeTransaction = parentFragmentManager.beginTransaction()
             homeTransaction.replace(R.id.main_view_container, MainFragment())

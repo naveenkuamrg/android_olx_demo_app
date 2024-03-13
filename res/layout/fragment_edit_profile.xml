@@ -20,117 +20,157 @@
             app:title="Edit Profile"
             app:titleCentered="true" />
     </com.google.android.material.appbar.MaterialToolbar>
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginEnd="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/materialToolbar">
 
 
-    <!--        <androidx.cardview.widget.CardView-->
-    <!--            android:layout_marginTop="10dp"-->
-    <!--            android:layout_width="120dp"-->
-    <!--            android:layout_height="120dp"-->
-    <!--            android:layout_gravity="center"-->
-    <!--            app:cardCornerRadius="120dp">-->
-    <!--        <ImageView-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="match_parent"-->
-    <!--            android:src="@drawable/ic_profile"-->
-    <!--            android:id="@+id/user_dp"-->
-    <!--            android:scaleType="centerCrop"-->
-    <!--            />-->
-    <!--        </androidx.cardview.widget.CardView>-->
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_margin="30dp">
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_margin="10dp"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center_horizontal">
+                    <androidx.cardview.widget.CardView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="20dp"
+                        app:cardCornerRadius="120dp">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_profile"
+                        android:id="@+id/user_dp"
+                        android:scaleType="centerCrop"
+                        />
+                    </androidx.cardview.widget.CardView>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal">
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/add_image_button"
+                        style="?attr/materialIconButtonStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Add image"
+                        app:icon="@drawable/ic_add"
+                        tools:ignore="MissingConstraints"
+                        tools:layout_editor_absoluteX="124dp" />
+
+                    <Button
+                        android:id="@+id/remove_image_btn"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Remove"
+                        app:icon="@drawable/ic_delete"
+                        android:visibility="gone"
+                        app:layout_constraintTop_toBottomOf="@+id/profile_image_container"
+                        tools:ignore="MissingConstraints"
+                        tools:layout_editor_absoluteX="212dp" />
+                </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
+
                 <ImageView
                     android:layout_width="30dp"
                     android:layout_height="33dp"
-                    android:layout_marginEnd="10dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_profile"/>
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_profile" />
+
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/name_edit_text_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/name_edit_text_layout">
+                    android:layout_height="wrap_content">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/name_edittext"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:maxLines="1"
-                        android:inputType="text"
+                        android:hint="name"
                         android:imeOptions="actionNext"
-                        android:hint="name"/>
+                        android:inputType="text"
+                        android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp">
+
                 <ImageView
                     android:layout_width="30dp"
                     android:layout_height="33dp"
-                    android:layout_marginEnd="10dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_email"/>
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_email" />
+
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/email_edit_text_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/email_edit_text_layout">
+                    android:layout_height="wrap_content">
+
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/email_edittext"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/email_edittext"
-                        android:maxLines="1"
-                        android:inputType="text"
+                        android:hint="email"
                         android:imeOptions="actionNext"
-                        android:hint="email"/>
+                        android:inputType="text"
+                        android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="10dp">
+
                 <ImageView
                     android:layout_width="30dp"
                     android:layout_height="33dp"
-                    android:layout_marginEnd="10dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_phone"/>
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_phone" />
+
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/phone_number_edittext_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/phone_number_edittext_layout">
+                    android:layout_height="wrap_content">
+
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/phone_number_edittext"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/phone_number_edittext"
-                        android:maxLines="1"
-                        android:inputType="number"
+                        android:hint="phone"
                         android:imeOptions="actionNext"
-                        android:hint="phone"/>
+                        android:inputType="number"
+                        android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
+
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/update_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginEnd="10dp"
-                android:id="@+id/update_button"
-                android:text="update"/>
+                android:text="update" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
