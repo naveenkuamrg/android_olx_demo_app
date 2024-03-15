@@ -51,7 +51,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginBottom="15dp"
                     android:background="@drawable/radius"
                     android:clipToOutline="true"
                     android:orientation="vertical"
@@ -63,6 +63,7 @@
                         android:layout_height="120dp"
                         android:layout_gravity="center"
                         android:elevation="20dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginBottom="10dp"
                         android:outlineAmbientShadowColor="@color/cardview_light_background"
                         app:cardCornerRadius="120dp"

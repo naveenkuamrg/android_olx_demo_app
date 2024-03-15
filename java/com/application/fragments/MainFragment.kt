@@ -1,6 +1,7 @@
 package com.application.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
@@ -27,6 +28,7 @@ class MainFragment : Fragment(R.layout.fragment_main),ProfileFragmentCallBack {
 
                 if(childFragmentManager.backStackEntryCount > 1) {
                     childFragmentManager.popBackStack()
+                    Log.i("TAG",childFragmentManager.fragments[0].toString())
                 }else{
                     requireActivity().finish()
                 }
@@ -43,6 +45,9 @@ class MainFragment : Fragment(R.layout.fragment_main),ProfileFragmentCallBack {
                 R.id.home ->{
                     childFragmentManager.popBackStack("home",FragmentManager.POP_BACK_STACK_INCLUSIVE)
                     addHomeFragment()
+                }
+                R.id.sell_zone->{
+
                 }
                 R.id.profile->{
                     childFragmentManager.popBackStack("profile",FragmentManager.POP_BACK_STACK_INCLUSIVE)

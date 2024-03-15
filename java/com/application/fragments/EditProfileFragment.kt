@@ -3,6 +3,7 @@ package com.application.fragments
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
@@ -16,6 +17,7 @@ import com.application.helper.StringConverter
 import com.application.helper.Validator
 import com.application.viewmodels.EditProfileViewModel
 import com.application.viewmodels.ProfilePageViewModel
+import java.io.File
 
 class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
 
@@ -131,13 +133,28 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
         val startActivityForResult =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 binding.userDp.setImageURI(it.data!!.data)
-                ImageConverter.uriToBitmap(requireContext(), it.data!!.data!!)
-                    ?.let { it1 ->
+
+                ImageConverter.loadBitmapFromUri(requireContext(), it.data!!.data!!, 1000, 1000) { bitmap ->
+                    if (bitmap != null) {
+                        // Do something with the bitmap
+                        binding.userDp.setImageBitmap(bitmap)
                         editProfileViewModel.uploadProfileImage(
-                            it1,
+                            bitmap,
                             profilePageViewModel.profile.value!!.id
                         )
+                    } else {
+                        // Handle error
+                        Log.e("TAG", "Failed to load bitmap from URI")
                     }
+                }
+
+//                ImageConverter.uriToBitmap(requireContext(), it.data!!.data!!)
+//                    ?.let { it1 ->
+//                        editProfileViewModel.uploadProfileImage(
+//                            it1,
+//                            profilePageViewModel.profile.value!!.id
+//                        )
+//                    }
                 binding.removeImageBtn.visibility = View.VISIBLE
                 binding.addImageButton.apply {
                     text = "Change Image"
