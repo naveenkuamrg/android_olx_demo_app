@@ -1,11 +1,11 @@
 package com.application.model
 
 enum class ProductType {
-    CAR,
-    BIKE,
+    VEHICLES,
     MOBILES,
     ELECTRONICS_AND_APPLIANCES,
     FURNITURE,
     FASHION,
-    BOOKS_SPORTS_AND_HOBBIES,
+    BOOKS_SPORTS_AND_HOBBIES
 }
+

@@ -2,6 +2,7 @@ package com.application.fragments
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -42,7 +43,6 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
         setOnClickListenerToUpdateButton()
         setOnClickListenerToAddImageBtn()
         setOnClickListenerToRemoveBtn()
-
     }
 
     private fun setObserve() {
@@ -113,7 +113,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
             }
 
             if (!Validator.doesNotContainSpecialChars(name)) {
-                binding.nameEditTextLayout.error = "name dosnt have special chater"
+                binding.nameEditTextLayout.error = "name dosn't have special chater"
                 isValid = false
             } else {
                 binding.nameEditTextLayout.error = null
@@ -132,34 +132,34 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
     private fun setOnClickListenerToAddImageBtn() {
         val startActivityForResult =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                binding.userDp.setImageURI(it.data!!.data)
+                if (it.data != null) {
+                    binding.userDp.setImageURI(it.data!!.data)
 
-                ImageConverter.loadBitmapFromUri(requireContext(), it.data!!.data!!, 1000, 1000) { bitmap ->
-                    if (bitmap != null) {
-                        // Do something with the bitmap
-                        binding.userDp.setImageBitmap(bitmap)
-                        editProfileViewModel.uploadProfileImage(
-                            bitmap,
-                            profilePageViewModel.profile.value!!.id
-                        )
-                    } else {
-                        // Handle error
-                        Log.e("TAG", "Failed to load bitmap from URI")
+                    ImageConverter.loadBitmapFromUri(
+                        requireContext(),
+                        it.data!!.data!!,
+                        1000,
+                        1000
+                    ) { bitmap ->
+                        if (bitmap != null) {
+                            // Do something with the bitmap
+                            binding.userDp.setImageBitmap(bitmap)
+                            editProfileViewModel.uploadProfileImage(
+                                bitmap,
+                                profilePageViewModel.profile.value!!.id
+                            )
+                        } else {
+                            // Handle error
+                            Log.e("TAG", "Failed to load bitmap from URI")
+                        }
                     }
-                }
 
-//                ImageConverter.uriToBitmap(requireContext(), it.data!!.data!!)
-//                    ?.let { it1 ->
-//                        editProfileViewModel.uploadProfileImage(
-//                            it1,
-//                            profilePageViewModel.profile.value!!.id
-//                        )
-//                    }
-                binding.removeImageBtn.visibility = View.VISIBLE
-                binding.addImageButton.apply {
-                    text = "Change Image"
-                    val drawable: Drawable = resources.getDrawable(R.drawable.ic_edit, null)
-                    icon = drawable
+                    binding.removeImageBtn.visibility = View.VISIBLE
+                    binding.addImageButton.apply {
+                        text = "Change Image"
+                        val drawable: Drawable = resources.getDrawable(R.drawable.ic_edit, null)
+                        icon = drawable
+                    }
                 }
             }
         binding.addImageButton.setOnClickListener {
@@ -168,6 +168,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
             }
             startActivityForResult.launch(intent)
         }
+
     }
 
     private fun setOnClickListenerToRemoveBtn() {

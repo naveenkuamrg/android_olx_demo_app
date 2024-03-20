@@ -3,12 +3,12 @@ package com.application.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.application.R
 import com.application.callbacks.ProfileFragmentCallBack
-import com.application.dao.ImageDAOImpl
 import com.application.databinding.FragmentProfileBinding
 import com.application.viewmodels.ProfilePageViewModel
 
@@ -61,14 +61,22 @@ class ProfileFragment() : Fragment(R.layout.fragment_profile) {
             imageFilterView.setImageResource(R.drawable.ic_power_off)
             shapeableImageView.visibility = View.GONE
             navigator.setOnClickListener {
-                requireActivity().getSharedPreferences(
-                    "mySharePref",
-                    AppCompatActivity.MODE_PRIVATE
-                ).edit().apply {
-                    remove("userId")
-                    apply()
+                AlertDialog.Builder(requireContext()).apply {
+                    setMessage("Would you like to sign out")
+                    setPositiveButton("Yes"){ _, _ ->
+                        requireActivity().getSharedPreferences(
+                            "mySharePref",
+                            AppCompatActivity.MODE_PRIVATE
+                        ).edit().apply {
+                            remove("userId")
+                            apply()
+                        }
+                        callBack.showLoginFragment()
+                    }
+                   setNegativeButton("No"){_,_->}
+                    show()
                 }
-                callBack.showLoginFragment()
+
             }
         }
 
@@ -77,13 +85,10 @@ class ProfileFragment() : Fragment(R.layout.fragment_profile) {
 
     private fun addObserver() {
         viewModel.profile.observe(viewLifecycleOwner) { profile ->
-
-            Log.i("TAG",profile.profileImage.toString())
             binding.userName.text = profile.name
             binding.emailTextview.text = profile.email
             binding.phoneNumberTextview.text = profile.phoneNumber
             if(profile.profileImage != null){
-//                profile.profileImage = ImageDAOImpl.determineImageRotation(java.io.File(requireContext().filesDir, profile.id.toString()), profile.profileImage!!)
                 binding.userDp.setImageBitmap(profile.profileImage)
             }else{
                 binding.userDp.setImageResource(R.drawable.ic_profile)

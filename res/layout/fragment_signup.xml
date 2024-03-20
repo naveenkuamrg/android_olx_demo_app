@@ -60,6 +60,7 @@
             android:id="@+id/password_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
             app:endIconMode="password_toggle">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -77,6 +78,7 @@
             android:id="@+id/reenter_password_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
             app:endIconMode="password_toggle">
 
             <com.google.android.material.textfield.TextInputEditText

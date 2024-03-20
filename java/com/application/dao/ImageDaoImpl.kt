@@ -9,16 +9,34 @@ import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.util.Locale
 
 class ImageDAOImpl(
     private val context: Context
 ) : ImageDAO {
 
+    override suspend fun countImagesInFolder(folderPath: String): Int {
+        val folder = File(folderPath)
 
-    override suspend fun saveImage(bitmap: Bitmap, name: String): String {
-        val outputStream = context.openFileOutput(name, Context.MODE_PRIVATE)
-        Log.i("TAG o",outputStream.toString())
+        val imageExtensions = setOf( "jpeg") // Add more extensions if needed
+        val imageFiles = folder.listFiles { file -> file.isFile && imageExtensions.any { file.name.lowercase(
+            Locale.ROOT
+        ).endsWith(it) } }
+
+        return imageFiles?.size ?: 0
+    }
+
+
+
+    override suspend fun saveImage(bitmap: Bitmap,path: String,name: String): String {
+        val file = File(context.filesDir,path)
+        if(!file.exists()) {
+            file.mkdirs()
+        }
+        val outputStream = FileOutputStream(File(file,"${name}.jpeg"))
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream)
         withContext(Dispatchers.IO) {
             outputStream.flush()
@@ -29,28 +47,14 @@ class ImageDAOImpl(
         return name
     }
 
-    companion object {
-        fun determineImageRotation(imageFile: File, bitmap: Bitmap): Bitmap {
-            val exif = ExifInterface(imageFile.absolutePath)
-            val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, -1)
-            val matrix = Matrix()
-            when (orientation) {
-                ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
-                ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
-                ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
-            }
-            return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-        }
-    }
 
     override suspend fun getImage(name: String): Bitmap? {
         return try {
-            val inputStream = context.openFileInput(name)
+            val inputStream =  FileInputStream(File(context.filesDir,name))
             val bitmap = BitmapFactory.decodeStream(inputStream)
             withContext(Dispatchers.IO) {
                 inputStream.close()
             }
-            Log.i("GET",bitmap.toString())
             bitmap
         } catch (fileNotFoundException: FileNotFoundException) {
             null
@@ -58,7 +62,6 @@ class ImageDAOImpl(
     }
 
     override suspend fun deleteImage(name: String): Boolean {
-        context.deleteFile(name)
-        return true
+        return  File(context.filesDir,name).delete()
     }
 }

@@ -7,10 +7,12 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.application.R
+import com.application.callbacks.SellZoneFragmentCallBack
 import com.application.callbacks.ProfileFragmentCallBack
 import com.application.databinding.FragmentMainBinding
 
-class MainFragment : Fragment(R.layout.fragment_main),ProfileFragmentCallBack {
+class MainFragment : Fragment(R.layout.fragment_main),ProfileFragmentCallBack,
+    SellZoneFragmentCallBack {
     lateinit var binding: FragmentMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,10 +27,21 @@ class MainFragment : Fragment(R.layout.fragment_main),ProfileFragmentCallBack {
         setOnItemSelectListener()
         val onBackPressedCallback = object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-
+                val bottomNavigation = binding.navigationBar
                 if(childFragmentManager.backStackEntryCount > 1) {
-                    childFragmentManager.popBackStack()
-                    Log.i("TAG",childFragmentManager.fragments[0].toString())
+                    childFragmentManager.popBackStackImmediate()
+                    when(childFragmentManager.fragments[0]){
+                        is ProfileFragment -> {
+                            bottomNavigation.selectedItemId = R.id.profile
+                        }
+                        is SellZoneFragment ->{
+                            bottomNavigation.selectedItemId = R.id.sell_zone
+                        }
+                        is HomeFragment ->{
+                            bottomNavigation.selectedItemId = R.id.home
+                        }
+                    }
+                    Log.i("TAG",childFragmentManager.fragments.toString())
                 }else{
                     requireActivity().finish()
                 }
@@ -47,7 +60,12 @@ class MainFragment : Fragment(R.layout.fragment_main),ProfileFragmentCallBack {
                     addHomeFragment()
                 }
                 R.id.sell_zone->{
-
+                    childFragmentManager.popBackStack("sellZone",FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                    val transaction = childFragmentManager.beginTransaction().apply {
+                        replace(R.id.bottom_navigation_fragment_view_container,SellZoneFragment())
+                        addToBackStack("sellZone")
+                        commit()
+                    }
                 }
                 R.id.profile->{
                     childFragmentManager.popBackStack("profile",FragmentManager.POP_BACK_STACK_INCLUSIVE)
@@ -93,4 +111,11 @@ class MainFragment : Fragment(R.layout.fragment_main),ProfileFragmentCallBack {
         }
     }
 
+    override fun showEditDetailPage() {
+        parentFragmentManager.beginTransaction().apply {
+            addToBackStack("showEditProductFragment")
+            replace(R.id.main_view_container,EditProductFragment())
+            commit()
+        }
+    }
 }
