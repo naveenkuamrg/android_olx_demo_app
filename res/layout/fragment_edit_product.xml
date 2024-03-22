@@ -53,6 +53,13 @@
                     app:icon="@drawable/ic_add"
                     tools:ignore="MissingConstraints"
                     tools:layout_editor_absoluteX="124dp" />
+            <TextView
+                android:id="@+id/textinput_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/md_theme_error"
+                android:layout_gravity="center"
+                android:visibility="gone"/>
 
             <Button
                 android:id="@+id/edit_image_btn"

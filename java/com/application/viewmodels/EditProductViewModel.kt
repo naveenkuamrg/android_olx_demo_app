@@ -1,6 +1,7 @@
 package com.application.viewmodels
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,8 +26,8 @@ class EditProductViewModel(private val productRepository: ProductRepository) : V
     val product: LiveData<Product> = _product
 
 
-    val _images: MutableLiveData<List<Bitmap>> = MutableLiveData(listOf())
-    val images: LiveData<List<Bitmap>> = _images
+    private val _images: MutableLiveData<MutableList<Bitmap>> = MutableLiveData(mutableListOf())
+    val images: LiveData<MutableList<Bitmap>> = _images
 
 
     fun postProduct(
@@ -39,7 +40,7 @@ class EditProductViewModel(private val productRepository: ProductRepository) : V
     ): Boolean {
         viewModelScope.launch(Dispatchers.Default) {
             _isUpload.postValue(
-                productRepository.insertProductRepository(
+                productRepository.insertProduct(
                     Product(
                         null,
                         title,
@@ -50,9 +51,7 @@ class EditProductViewModel(private val productRepository: ProductRepository) : V
                         AvailabilityStatus.AVAILABLE,
                         location,
                         ProductType.FASHION,
-                        userId,
-                        isInterested = false,
-                        isWishList = false
+                        userId
                     )
                 )
             )
@@ -61,13 +60,22 @@ class EditProductViewModel(private val productRepository: ProductRepository) : V
         return true
     }
 
-    fun updateImages(addedImage: Bitmap){
-        val result: MutableList<Bitmap> = mutableListOf()
-        images.value?.map {
-            result.add(it)
+    fun updateImage(addedImage: Bitmap){
+        _images.value = images.value?.apply {
+            add(addedImage)
         }
-        result.add(addedImage)
-        _images.postValue(result)
+    }
+
+
+    fun removeImage(position: Int){
+        _images.value = images.value?.apply {
+            removeAt(position)
+        }
+        Log.i("TAG",_images.value?.size.toString())
+    }
+
+    fun clearImageList(){
+        _images.value = mutableListOf()
     }
 
 

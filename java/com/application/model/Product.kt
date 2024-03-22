@@ -14,9 +14,10 @@ data class Product(
     val location: String,
     val productType : ProductType,
     val sellerId : Long,
-    val isInterested: Boolean,
-    val isWishList : Boolean
-)
+){
+    val isInterested: Boolean? = null
+    val isWishList : Boolean? = null
+}
 
 
 

@@ -7,6 +7,7 @@ import androidx.fragment.app.viewModels
 import com.application.R
 import com.application.callbacks.SellZoneFragmentCallBack
 import com.application.databinding.FragmentSellZoneBinding
+import com.application.viewmodels.ProductRecycleViewModel
 import com.application.viewmodels.SellZoneViewModel
 
 class SellZoneFragment : Fragment(R.layout.fragment_sell_zone) {
@@ -20,6 +21,10 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone) {
         binding = FragmentSellZoneBinding.bind(view)
         callBack = parentFragment as SellZoneFragmentCallBack
         setOnClickListenerAddProduct()
+        childFragmentManager.beginTransaction().apply {
+            add(R.id.fragment_container_view_tag,ProductRecycleViewFragment())
+            commit()
+        }
     }
 
     private fun setOnClickListenerAddProduct(){

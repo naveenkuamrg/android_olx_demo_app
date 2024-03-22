@@ -2,6 +2,7 @@ package com.application.repositories.impl
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.Log
 import com.application.AppDatabase
 import com.application.helper.ModelConverter
 import com.application.model.Profile
@@ -14,6 +15,8 @@ class UserRepositoryImpl(context : Context) : UserRepository {
     override suspend fun getUserProfile(userId: Long): Profile {
         val profile = ModelConverter.profileFromUserAndUri(dao.getUser(userId))
         profile.profileImage = profileImageRepository.getProfileImage(profile.id.toString())
+
+        Log.i("TAG new ",dao.getProfileWithProduct(1).toString())
         return profile
     }
 

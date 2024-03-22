@@ -6,62 +6,29 @@ import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.application.R
 import com.application.adapter.ImageViewAdapter
+import com.application.callbacks.ImageViewAdapterCallBack
+import com.application.callbacks.ProductImageViewBackgroundFragmentCallBack
 import com.application.databinding.FragmentEditProductBinding
-import com.application.helper.ImageConverter
 import com.application.model.ProductType
 import com.application.viewmodels.EditProductViewModel
 
-class EditProductFragment : Fragment(R.layout.fragment_edit_product) {
+class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageViewAdapterCallBack,
+    ProductImageViewBackgroundFragmentCallBack {
 
-    lateinit var bindind: FragmentEditProductBinding
-    private val editProfileViewModel: EditProductViewModel by viewModels {
+    private lateinit var binding: FragmentEditProductBinding
+    private val editProductViewModel: EditProductViewModel by viewModels {
         EditProductViewModel.FACTORY
-    }
-    val startActivityForResultProductImages: ActivityResultLauncher<PickVisualMediaRequest>  =
-        registerForActivityResult(
-            ActivityResultContracts.PickMultipleVisualMedia(
-                5
-            )
-        ) {
-            val bitmaps: MutableList<Bitmap> = mutableListOf()
-            for (uri in it) {
-                ImageConverter.loadBitmapFromUri(
-                    requireContext(),
-                    uri,
-                    1000,
-                    1000
-                ) { it1 ->
-                    Log.i("tag imag",it1.toString())
-                    if (it1 != null) {
-
-                        editProfileViewModel.updateImages(it1)
-                    }
-                }
-
-            }
-            Log.i("TAG",bitmaps.toString())
-
-
-            bindind.addImageButton.isClickable = true
-        }
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        startActivityForResultProductImages
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        bindind = FragmentEditProductBinding.bind(view)
+        binding = FragmentEditProductBinding.bind(view)
         setUpToolbar()
         setCategoriesButton()
         setOnClickListenerForAddImageButton()
@@ -70,87 +37,93 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product) {
     }
 
     private fun setUpToolbar() {
-        val toolbar = bindind.toolbar
+        val toolbar = binding.toolbar
         toolbar.setNavigationIcon(R.drawable.ic_close)
         toolbar.setNavigationOnClickListener {
             parentFragmentManager.popBackStack()
         }
-
     }
 
     private fun setCategoriesButton() {
-        bindind.categoriesDropdown.setAdapter(
+        binding.categoriesDropdown.setAdapter(
             ArrayAdapter(
-                requireContext(), R.layout.textview, R.id.text, ProductType.entries.toTypedArray()
+                requireContext(), R.layout.textview, R.id.text, ProductType.values().map { it.name }
             )
         )
-        Log.i("tag", "setCategoriesButton")
+        Log.i("Tag", "setCategoriesButton")
     }
 
     private fun setOnClickListenerForAddImageButton() {
-        bindind.addImageButton.setOnClickListener {
-            bindind.addImageButton.isClickable = false
-            startActivityForResultProductImages.launch(
-                PickVisualMediaRequest(
-                    ActivityResultContracts.PickVisualMedia.ImageOnly
-                )
-            )
-
+        binding.addImageButton.setOnClickListener {
+            parentFragmentManager.beginTransaction().apply {
+                add(R.id.main_view_container, ProductImageViewBackgroundFragment().apply {
+                    callBack = this@EditProductFragment
+                })
+                addToBackStack("background")
+                commit()
+            }
         }
     }
 
     private fun setOnClickListenerForPostBtn() {
-        bindind.postBtn.setOnClickListener {
-            val title = bindind.titleEditText.text.toString().trim()
-            val description = bindind.descriptionEditText.text.toString().trim()
-            val price = bindind.priceEditText.text.toString()
-            val category = bindind.categoriesDropdown.text.toString().trim()
-            val location = bindind.locationEditText.text.toString().trim()
+        binding.postBtn.setOnClickListener {
+            val title = binding.titleEditText.text.toString().trim()
+            val description = binding.descriptionEditText.text.toString().trim()
+            val price = binding.priceEditText.text.toString()
+            val category = binding.categoriesDropdown.text.toString().trim()
+            val location = binding.locationEditText.text.toString().trim()
             var isValid = true
 
-            if (title == "") {
-                bindind.titleEditTextLayout.error = "title should be not empty"
+            if (title.isEmpty()) {
+                binding.titleEditTextLayout.error = "Title should not be empty"
                 isValid = false
             } else {
-                bindind.titleEditTextLayout.error = null
+                binding.titleEditTextLayout.error = null
             }
-            if (description == "") {
-                bindind.descriptionEditTextLayout.error = "description should be not empty"
+            if (description.isEmpty()) {
+                binding.descriptionEditTextLayout.error = "Description should not be empty"
                 isValid = false
             } else {
-                bindind.descriptionEditTextLayout.error = null
+                binding.descriptionEditTextLayout.error = null
             }
-            if (price == "") {
-                bindind.priceEditTextLayout.error = "price should be not empty"
+            if (price.isEmpty()) {
+                binding.priceEditTextLayout.error = "Price should not be empty"
                 isValid = false
             } else {
-                bindind.priceEditTextLayout.error = null
+                binding.priceEditTextLayout.error = null
             }
-            if (category == "") {
-                bindind.categoriesDropdownLayout.error = "categories not should be empty"
+            if (category.isEmpty()) {
+                binding.categoriesDropdownLayout.error = "Category should not be empty"
                 isValid = false
             } else {
-                bindind.categoriesDropdownLayout.error = null
+                binding.categoriesDropdownLayout.error = null
             }
-            if (location == "") {
-                bindind.locationEditTextLayout.error = "location should not be empty "
+            if (location.isEmpty()) {
+                binding.locationEditTextLayout.error = "Location should not be empty"
                 isValid = false
             } else {
-                bindind.locationEditTextLayout.error = null
+                binding.locationEditTextLayout.error = null
+            }
+            if(editProductViewModel.images.value!!.size == 0){
+                binding.textinputError.text = "Must upload a single Image"
+                binding.textinputError.visibility = View.VISIBLE
+                isValid = false
+            }else{
+                binding.textinputError.visibility = View.GONE
             }
 
             if (isValid) {
                 requireContext().getSharedPreferences(
                     "mySharePref",
                     AppCompatActivity.MODE_PRIVATE
-                ).getString("userId", "-1")?.let { it1 ->
-                    editProfileViewModel.postProduct(
+                ).getString("userId", "-1")?.let { userId ->
+                    editProductViewModel.postProduct(
                         title,
                         description,
                         price.toDouble(),
                         category,
                         location,
-                        it1.toLong()
+                        userId.toLong()
                     )
                 }
             }
@@ -158,32 +131,46 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product) {
     }
 
     private fun setObserve() {
-        //check if post is upload success
-        editProfileViewModel.isUpload.observe(viewLifecycleOwner) {
-            if (it) {
+        // Check if post is uploaded successfully
+        editProductViewModel.isUpload.observe(viewLifecycleOwner) { isUploaded ->
+            if (isUploaded) {
                 parentFragmentManager.popBackStack()
                 Toast.makeText(
                     requireContext(),
-                    "Post Success upload", Toast.LENGTH_SHORT
+                    "Post uploaded successfully",
+                    Toast.LENGTH_SHORT
                 ).show()
             } else {
                 Toast.makeText(requireContext(), "Unable to post", Toast.LENGTH_SHORT).show()
             }
         }
 
-
-        //add image
-        editProfileViewModel.images.observe(viewLifecycleOwner) {
-
-            Log.i("TAG", "ob ${it.size}")
-            if (it.size != 0) {
-                bindind.viewPager.adapter = ImageViewAdapter(it)
-                bindind.viewPager.visibility = View.VISIBLE
+        // Add image
+        editProductViewModel.images.observe(viewLifecycleOwner) { images ->
+            Log.i("TAG", "Observe: ${images.size}")
+            var count = 5 - images.size
+            binding.viewPager.adapter = ImageViewAdapter(images).apply {
+                callBack = this@EditProductFragment
             }
-            if (it.size == 10) {
-                bindind.addImageButton.visibility = View.GONE
-            }
+            binding.viewPager.visibility = if (images.isNotEmpty()) View.VISIBLE else View.GONE
+            binding.addImageButton.visibility = if (images.size >= 5) View.GONE else View.VISIBLE
         }
+    }
 
+    override fun removeDataFromList(position: Int) {
+        editProductViewModel.removeImage(position)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        editProductViewModel.clearImageList()
+    }
+
+    override fun getCountOfBitmapList(): Int {
+       return editProductViewModel.images.value!!.size
+    }
+
+    override fun setBitmap(bitmap: Bitmap) {
+        editProductViewModel.updateImage(bitmap)
     }
 }
