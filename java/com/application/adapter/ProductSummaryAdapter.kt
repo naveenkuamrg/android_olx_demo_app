@@ -15,6 +15,7 @@ class ProductSummaryAdapter :
     class ProductSummaryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView = itemView.findViewById<ImageView>(R.id.product_main_image_view)
         val title = itemView.findViewById<TextView>(R.id.product_title_textview)
+        val price = itemView.findViewById<TextView>(R.id.product_price_textview)
     }
 
     var  data: List<ProductSummary> = listOf()
@@ -32,7 +33,8 @@ class ProductSummaryAdapter :
     }
 
     override fun onBindViewHolder(holder: ProductSummaryViewHolder, position: Int) {
-//        holder.imageView.setImageBitmap(data[position].image)
+        holder.imageView.setImageBitmap(data[position].image)
         holder.title.text = data[position].title
+        holder.price.text = "Rs: ${data[position].price}"
     }
 }

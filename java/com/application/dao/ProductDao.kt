@@ -11,7 +11,9 @@ interface ProductDao {
     @Insert
     fun insertProductDetails(product: ProductDetails): Long
 
-    @Query("select product_id as productId ,title,postedDate,location from product_details where user_id LIKE :userId")
+    @Query("select product_id as productId ,title,postedDate,location,price from product_details where user_id LIKE :userId")
     fun getProductSummary(userId: Long): List<ProductSummary>
+
+
 
 }

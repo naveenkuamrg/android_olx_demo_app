@@ -49,6 +49,7 @@ class ImageDAOImpl(
 
 
     override suspend fun getImage(name: String): Bitmap? {
+        Log.i("TAG path new",File(context.filesDir,name).path)
         return try {
             val inputStream =  FileInputStream(File(context.filesDir,name))
             val bitmap = BitmapFactory.decodeStream(inputStream)

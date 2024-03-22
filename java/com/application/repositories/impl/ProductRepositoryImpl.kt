@@ -17,13 +17,19 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
     override suspend fun insertProduct(product: Product): Boolean {
         val productDetails = ModelConverter.productModelToProductDetails(product)
         val id = productDao.insertProductDetails(productDetails)
-        productImageRepository.saveImages(id,product.images)
-        return  true
+        productImageRepository.saveImages(id, product.images)
+        return true
     }
 
-    override suspend fun getProductSummaryDetailsForSellZon(userId: Long): List<ProductSummary> {
-        Log.i("TAGcheck",productDao.getProductSummary(userId).toString())
-        return  productDao.getProductSummary(userId)
+    override suspend fun getProductSummaryDetailsForSellZone(userId: Long): List<ProductSummary> {
+        val result = productDao.getProductSummary(userId)
+        for (product in result) {
+            product.image =
+                productImageRepository.getMainImage(
+                    "${product.productId}/0.jpeg"
+                )
+        }
+        return result
     }
 
 }

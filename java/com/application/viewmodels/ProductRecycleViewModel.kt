@@ -22,7 +22,7 @@ class ProductRecycleViewModel(val productRepository: ProductRepository) : ViewMo
 
     fun getProductSummary(id: Long){
         viewModelScope.launch(Dispatchers.Default) {
-            _data.postValue(productRepository.getProductSummaryDetailsForSellZon(id))
+            _data.postValue(productRepository.getProductSummaryDetailsForSellZone(id))
         }
     }
 

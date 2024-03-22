@@ -73,6 +73,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                    is AuthenticationSignInException.PasswordInvalidAuthenticationException ->{
                        binding.passwordEdittextLayout.error = value.message
                    }
+
                }
             }
 

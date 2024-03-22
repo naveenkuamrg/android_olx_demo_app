@@ -6,5 +6,5 @@ import com.application.model.ProductSummary
 interface ProductRepository {
     suspend fun insertProduct(product: Product): Boolean
 
-    suspend fun getProductSummaryDetailsForSellZon(userId: Long): List<ProductSummary>
+    suspend fun getProductSummaryDetailsForSellZone(userId: Long): List<ProductSummary>
 }

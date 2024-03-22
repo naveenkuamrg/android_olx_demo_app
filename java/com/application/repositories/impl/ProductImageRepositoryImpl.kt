@@ -21,4 +21,8 @@ class ProductImageRepositoryImpl(context: Context): ProductImageRepository {
         return imageDAO.countImagesInFolder(path)
     }
 
+    override suspend fun getMainImage(path: String): Bitmap? {
+        return imageDAO.getImage(path)
+    }
+
 }

@@ -24,12 +24,14 @@ class ProductImageViewBackgroundFragment : Fragment() {
             startActivityForResultProductImages(numberToUpload)
         } else {
             registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-                ImageConverter.loadBitmapFromUri(
-                    requireContext(),
-                    uri!!, 1000, 1000
-                ) {bitmap ->
-                    if(bitmap != null){
-                        callBack.setBitmap(bitmap)
+                if(uri != null) {
+                    ImageConverter.loadBitmapFromUri(
+                        requireContext(),
+                        uri, 1000, 1000
+                    ) { bitmap ->
+                        if (bitmap != null) {
+                            callBack.setBitmap(bitmap)
+                        }
                     }
                 }
                 parentFragmentManager.popBackStack()

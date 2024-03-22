@@ -13,21 +13,28 @@ import com.application.viewmodels.SellZoneViewModel
 class SellZoneFragment : Fragment(R.layout.fragment_sell_zone) {
     lateinit var binding: FragmentSellZoneBinding
 
-    val viewModel : SellZoneViewModel by viewModels {SellZoneViewModel.FACTORY }
+    val viewModel: SellZoneViewModel by viewModels { SellZoneViewModel.FACTORY }
 
-    lateinit var callBack : SellZoneFragmentCallBack
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (savedInstanceState == null) {
+            childFragmentManager.beginTransaction().apply {
+                add(R.id.fragment_container_view_tag, ProductRecycleViewFragment())
+                commit()
+            }
+        }
+    }
+
+    lateinit var callBack: SellZoneFragmentCallBack
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentSellZoneBinding.bind(view)
         callBack = parentFragment as SellZoneFragmentCallBack
         setOnClickListenerAddProduct()
-        childFragmentManager.beginTransaction().apply {
-            add(R.id.fragment_container_view_tag,ProductRecycleViewFragment())
-            commit()
-        }
+
     }
 
-    private fun setOnClickListenerAddProduct(){
+    private fun setOnClickListenerAddProduct() {
         binding.addProduct.setOnClickListener {
             callBack.showEditDetailPage()
         }
