@@ -3,6 +3,7 @@ package com.application.fragments
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -17,23 +18,46 @@ import com.application.callbacks.ProductImageViewBackgroundFragmentCallBack
 import com.application.databinding.FragmentEditProductBinding
 import com.application.model.ProductType
 import com.application.viewmodels.EditProductViewModel
+import com.application.viewmodels.ProductDetailViewModel
 
 class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageViewAdapterCallBack,
     ProductImageViewBackgroundFragmentCallBack {
 
+    val productId: Long?
+        get() {
+            return  arguments?.getLong(PRODUCT_ID_KEY)
+        }
+
     private lateinit var binding: FragmentEditProductBinding
+    private val productDetailViewModel: ProductDetailViewModel by activityViewModels {
+        ProductDetailViewModel.FACTORY
+    }
     private val editProductViewModel: EditProductViewModel by viewModels {
         EditProductViewModel.FACTORY
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if(productId == -1L){
+            productDetailViewModel.clearProduct()
+        }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentEditProductBinding.bind(view)
+        productDetailViewModel.product.value?.let {
+            editProductViewModel.setProduct(it)
+            binding.viewmodel = editProductViewModel
+            binding.postBtn.text = "Re-post"
+        }
         setUpToolbar()
         setCategoriesButton()
         setOnClickListenerForAddImageButton()
         setOnClickListenerForPostBtn()
         setObserve()
+        Log.i("adapter check", editProductViewModel.images.value?.size.toString())
     }
 
     private fun setUpToolbar() {
@@ -104,11 +128,11 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageViewA
             } else {
                 binding.locationEditTextLayout.error = null
             }
-            if(editProductViewModel.images.value!!.size == 0){
+            if (editProductViewModel.images.value!!.size == 0) {
                 binding.textinputError.text = "Must upload a single Image"
                 binding.textinputError.visibility = View.VISIBLE
                 isValid = false
-            }else{
+            } else {
                 binding.textinputError.visibility = View.GONE
             }
 
@@ -161,16 +185,25 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageViewA
         editProductViewModel.removeImage(position)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        editProductViewModel.clearImageList()
-    }
 
     override fun getCountOfBitmapList(): Int {
-       return editProductViewModel.images.value!!.size
+        return editProductViewModel.images.value!!.size
     }
 
     override fun setBitmap(bitmap: Bitmap) {
         editProductViewModel.updateImage(bitmap)
+    }
+
+    companion object {
+        val PRODUCT_ID_KEY = "productId"
+
+        fun getInstant(productId: Long): EditProductFragment {
+            return EditProductFragment().apply {
+                arguments = Bundle().apply {
+                    putLong(PRODUCT_ID_KEY, productId)
+                }
+            }
+        }
+
     }
 }

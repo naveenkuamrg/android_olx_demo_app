@@ -19,20 +19,6 @@ import com.bumptech.glide.request.transition.Transition
 
 
 object ImageConverter {
-    fun uriToBitmap(context: Context, uri: Uri): Bitmap? {
-        var bitmap: Bitmap? = null
-        try {
-            val resolver: ContentResolver = context.contentResolver
-            val inputStream = resolver.openInputStream(uri)
-            bitmap = BitmapFactory.decodeStream(inputStream)
-            inputStream?.close()
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        return bitmap
-    }
 
 
     fun loadBitmapFromUri(

@@ -1,45 +1,51 @@
 package com.application.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.application.model.ProductSummary
+import com.application.model.Product
 import com.application.repositories.ProductRepository
 import com.application.repositories.impl.ProductRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ProductRecycleViewModel(private val productRepository: ProductRepository) : ViewModel() {
+class ProductDetailViewModel(private val productRepository: ProductRepository) : ViewModel() {
 
-    private val _isLoading : MutableLiveData<Boolean> = MutableLiveData()
+    private val _isLoading: MutableLiveData<Boolean> = MutableLiveData()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _data: MutableLiveData<List<ProductSummary>> = MutableLiveData(
-        mutableListOf()
-    )
+    private val _product: MutableLiveData<Product?> = MutableLiveData()
+    val product : LiveData<Product?> = _product
 
-    val data: LiveData<List<ProductSummary>> = _data
 
-    fun getProductSummary(id: Long){
+    fun featchProductDetails(productId: Long,userId: Long){
         viewModelScope.launch(Dispatchers.Default) {
-            _data.postValue(productRepository.getProductSummaryDetailsForSellZone(id))
-            _isLoading.postValue(false)
+            _product.postValue( productRepository.getProductDetails(productId, userId))
+            _isLoading.postValue(true)
         }
+
     }
 
+    fun clearProduct(){
+        _product.value = null
+    }
+
+
     companion object {
+
+        @Suppress("UNCHECKED_CAST")
         val FACTORY = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val application = extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]
 
 
-                return ProductRecycleViewModel(
-                    ProductRepositoryImpl
-                        (application!!.applicationContext)
+
+                return ProductDetailViewModel(
+                    ProductRepositoryImpl(application!!.applicationContext)
                 ) as T
             }
         }

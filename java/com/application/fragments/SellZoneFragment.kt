@@ -5,12 +5,12 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.application.R
-import com.application.callbacks.SellZoneFragmentCallBack
+import com.application.callbacks.RecycleProductViewCallback
+import com.application.callbacks.SellZoneFragmentCallback
 import com.application.databinding.FragmentSellZoneBinding
-import com.application.viewmodels.ProductRecycleViewModel
 import com.application.viewmodels.SellZoneViewModel
 
-class SellZoneFragment : Fragment(R.layout.fragment_sell_zone) {
+class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), RecycleProductViewCallback {
     lateinit var binding: FragmentSellZoneBinding
 
     val viewModel: SellZoneViewModel by viewModels { SellZoneViewModel.FACTORY }
@@ -25,18 +25,22 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone) {
         }
     }
 
-    lateinit var callBack: SellZoneFragmentCallBack
+    lateinit var callBack: SellZoneFragmentCallback
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentSellZoneBinding.bind(view)
-        callBack = parentFragment as SellZoneFragmentCallBack
+        callBack = parentFragment as SellZoneFragmentCallback
         setOnClickListenerAddProduct()
 
     }
 
     private fun setOnClickListenerAddProduct() {
         binding.addProduct.setOnClickListener {
-            callBack.showEditDetailPage()
+            callBack.showProductEditDetailPage()
         }
+    }
+
+    override fun productItemIsSelected(productId: Long) {
+        callBack.showProductDetailsPage(productId)
     }
 }

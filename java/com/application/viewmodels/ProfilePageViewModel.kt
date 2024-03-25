@@ -12,7 +12,7 @@ import com.application.repositories.impl.UserRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ProfilePageViewModel(val userRepository : UserRepository) : ViewModel() {
+class ProfilePageViewModel(private val userRepository : UserRepository) : ViewModel() {
     private val _profile = MutableLiveData<Profile>()
     val profile : LiveData<Profile> = _profile
 

@@ -1,7 +1,6 @@
 package com.application.repositories.impl
 
 import android.content.Context
-import android.util.Log
 import com.application.AppDatabase
 import com.application.dao.ProductDao
 import com.application.helper.ModelConverter
@@ -16,13 +15,14 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
     private val productImageRepository: ProductImageRepository = ProductImageRepositoryImpl(context)
     override suspend fun insertProduct(product: Product): Boolean {
         val productDetails = ModelConverter.productModelToProductDetails(product)
-        val id = productDao.insertProductDetails(productDetails)
-        productImageRepository.saveImages(id, product.images)
+        val id = productDao.upsertProductDetails(productDetails)
+        productImageRepository.deleteAllImageFormFile(product.id.toString())
+        productImageRepository.saveImages(product.id?: id , product.images)
         return true
     }
 
     override suspend fun getProductSummaryDetailsForSellZone(userId: Long): List<ProductSummary> {
-        val result = productDao.getProductSummary(userId)
+        val result = productDao.getPostProductSummary(userId)
         for (product in result) {
             product.image =
                 productImageRepository.getMainImage(
@@ -32,4 +32,9 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         return result
     }
 
+    override suspend fun getProductDetails(productId: Long,userId: Long): Product {
+         return productDao.getProduct(productId,userId).apply {
+             images = (productImageRepository.getAllImageFromFile(productId.toString()))
+         }
+    }
 }

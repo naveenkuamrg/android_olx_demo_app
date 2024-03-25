@@ -1,6 +1,7 @@
 package com.application.adapter
 
 import android.graphics.Bitmap
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,14 +16,15 @@ class ImageViewAdapter(private val data: MutableList<Bitmap>) :
     var callBack: ImageViewAdapterCallBack? = null
 
     class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val image = itemView.findViewById<ImageView>(R.id.product_image)
-        val deleteImageView = itemView.findViewById<ImageView>(R.id.delete)
-
+        val image: ImageView = itemView.findViewById(R.id.product_image)
+        val deleteImageView: ImageView = itemView.findViewById(R.id.delete)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
+        Log.i("check1.0","$parent")
+
         val view = LayoutInflater.from(parent.context).inflate(
-            R.layout.product_image_view_item,
+            R.layout.product_image_view_item1,
             parent, false
         )
         return ImageViewHolder(view)
@@ -37,7 +39,6 @@ class ImageViewAdapter(private val data: MutableList<Bitmap>) :
         if(callBack != null){
             holder.deleteImageView.setOnClickListener {
                 callBack?.removeDataFromList(position)
-                notifyDataSetChanged()
             }
         }else{
             holder.deleteImageView.visibility = View.GONE

@@ -4,8 +4,14 @@ import android.graphics.Bitmap
 
 interface ImageDAO {
     suspend fun saveImage(bitmap: Bitmap,path: String, name: String): String
-    suspend fun getImage(name: String): Bitmap?
-    suspend fun deleteImage(name: String): Boolean
+
+    suspend fun getImage(folderPath: String): Bitmap?
+
+    suspend fun deleteFile(folderPath: String): Boolean
 
     suspend fun countImagesInFolder(folderPath: String): Int
+
+    suspend fun getAllImageFromTheDirectory(folderPath: String): List<Bitmap>
+
+    suspend fun deleteAllFile(folderPath: String)
 }

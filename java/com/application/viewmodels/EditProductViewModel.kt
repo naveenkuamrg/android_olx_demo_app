@@ -38,21 +38,24 @@ class EditProductViewModel(private val productRepository: ProductRepository) : V
         location: String,
         userId: Long
     ): Boolean {
+        Log.i("TAG images",images.value.toString())
         viewModelScope.launch(Dispatchers.Default) {
+            Log.i("tag productId",product.value?.id.toString())
             _isUpload.postValue(
                 productRepository.insertProduct(
                     Product(
-                        null,
+                        product.value?.id,
                         title,
                         price,
-                        Date(),
-                        images.value!!,
+                        Date().time,
                         description,
                         AvailabilityStatus.AVAILABLE,
                         location,
                         ProductType.FASHION,
-                        userId
-                    )
+                        userId,
+                    ).apply {
+                        images = this@EditProductViewModel.images.value!!
+                    }
                 )
             )
 
@@ -60,21 +63,26 @@ class EditProductViewModel(private val productRepository: ProductRepository) : V
         return true
     }
 
-    fun updateImage(addedImage: Bitmap){
+    fun updateImage(addedImage: Bitmap) {
         _images.value = images.value?.apply {
             add(addedImage)
         }
     }
 
 
-    fun removeImage(position: Int){
+    fun removeImage(position: Int) {
         _images.value = images.value?.apply {
             removeAt(position)
         }
-        Log.i("TAG",_images.value?.size.toString())
+        Log.i("TAG", _images.value?.size.toString())
     }
 
-    fun clearImageList(){
+    fun setProduct(product: Product){
+        _product.value = product
+        _images.value = product.images.toMutableList()
+    }
+
+    fun clearImageList() {
         _images.value = mutableListOf()
     }
 
@@ -84,7 +92,6 @@ class EditProductViewModel(private val productRepository: ProductRepository) : V
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val application = extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]
-
                 return EditProductViewModel(
                     ProductRepositoryImpl(application!!.applicationContext)
                 ) as T

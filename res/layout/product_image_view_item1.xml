@@ -23,6 +23,7 @@
         android:layout_marginTop="10dp"
         android:contentDescription="delete image"
         android:elevation="10dp"
-        android:src="@drawable/ic_delete" />
+        android:src="@drawable/ic_delete"
+        android:tint="@color/md_theme_error" />
 
 </FrameLayout>

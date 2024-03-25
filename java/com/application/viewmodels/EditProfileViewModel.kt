@@ -22,6 +22,10 @@ class EditProfileViewModel(private val userRepository: UserRepository) : ViewMod
     private val _isUploaded = MutableLiveData<Boolean>()
     val isUploaded: LiveData<Boolean> = _isUploaded
 
+    val tempImage: MutableLiveData<Bitmap?> = MutableLiveData()
+
+    var isRemoveDp: Boolean = false
+
     private val _exception = MutableLiveData<InvalidUserDataException>()
     val exception: LiveData<InvalidUserDataException> = _exception
 
@@ -53,6 +57,14 @@ class EditProfileViewModel(private val userRepository: UserRepository) : ViewMod
                     isUploaded = false
                 }
             }
+
+            if (tempImage.value != null) {
+                uploadProfileImage(tempImage.value, profile.id)
+            }
+            if(isRemoveDp){
+                deleteProfileImage(profile.id)
+            }
+
             if (isUploaded) {
                 _isUploaded.postValue(true)
             }
@@ -60,13 +72,16 @@ class EditProfileViewModel(private val userRepository: UserRepository) : ViewMod
 
 
     }
-    fun uploadProfileImage(image: Bitmap, userId: Long) {
-        viewModelScope.launch {
-            userRepository.updateProfileImage(image, userId)
+
+    private fun uploadProfileImage(image: Bitmap?, userId: Long) {
+        if (image != null) {
+            viewModelScope.launch {
+                userRepository.updateProfileImage(image, userId)
+            }
         }
     }
 
-    fun deleteProfileImage(userId: Long){
+    private fun deleteProfileImage(userId: Long) {
         viewModelScope.launch {
             userRepository.removeProfileImage(userId)
         }

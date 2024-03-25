@@ -12,7 +12,7 @@ import com.application.repositories.impl.AuthenticationRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class SignupViewModel(val repository: AuthenticationRepository) : ViewModel() {
+class SignupViewModel(private val repository: AuthenticationRepository) : ViewModel() {
     private var _userId = MutableLiveData<Long>()
     val userId : LiveData<Long> = _userId
 

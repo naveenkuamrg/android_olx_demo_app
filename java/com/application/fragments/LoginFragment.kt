@@ -47,7 +47,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     }
 
 
-    fun addObserve(){
+    private fun addObserve(){
         viewModel.userId.observe(viewLifecycleOwner,object : Observer<Long>{
             override fun onChanged(value: Long) {
                     val sharedPreferences=requireContext().getSharedPreferences("mySharePref",

@@ -3,12 +3,12 @@ package com.application.repositories.impl
 import android.content.Context
 import android.graphics.Bitmap
 import com.application.dao.ImageDAO
-import com.application.dao.ImageDAOImpl
+import com.application.dao.ImageDaoImpl
 import com.application.repositories.ProfileImageRepository
 
 class ProfileImageRepositoryImpl(context: Context) : ProfileImageRepository {
 
-    val imageDAO: ImageDAO = ImageDAOImpl(context)
+    val imageDAO: ImageDAO = ImageDaoImpl(context)
     override suspend fun getProfileImage(id: String): Bitmap? {
         return imageDAO.getImage("profile/${id}.jpeg")
     }
@@ -18,6 +18,6 @@ class ProfileImageRepositoryImpl(context: Context) : ProfileImageRepository {
     }
 
     override suspend fun deleteProfileImage(id: String) {
-       imageDAO.deleteImage("profile/${id}.jpeg")
+       imageDAO.deleteFile("profile/${id}.jpeg")
     }
 }

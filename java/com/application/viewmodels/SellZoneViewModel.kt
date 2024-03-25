@@ -7,14 +7,15 @@ import com.application.repositories.ProductRepository
 import com.application.repositories.impl.ProductRepositoryImpl
 
 class SellZoneViewModel(val productRepository: ProductRepository) : ViewModel() {
-
-
     companion object {
-        val FACTORY = object  : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        val FACTORY = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val application = extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]
 
-                return SellZoneViewModel(ProductRepositoryImpl(application!!.applicationContext)) as T
+                return SellZoneViewModel(
+                    ProductRepositoryImpl(application!!.applicationContext)
+                ) as T
             }
         }
     }

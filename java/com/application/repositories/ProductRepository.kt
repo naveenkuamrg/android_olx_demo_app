@@ -7,4 +7,6 @@ interface ProductRepository {
     suspend fun insertProduct(product: Product): Boolean
 
     suspend fun getProductSummaryDetailsForSellZone(userId: Long): List<ProductSummary>
+
+    suspend fun getProductDetails(productId: Long,userId: Long): Product
 }

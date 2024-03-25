@@ -30,13 +30,17 @@ object ModelConverter {
         return ProductDetails(
             product.title,
             product.price,
-            product.postedDate.toString(),
+            product.postedDate,
             product.description,
             product.availabilityStatus,
             product.location,
             product.productType,
             product.sellerId
-        )
+        ).apply {
+            if(product.id != null){
+                id = product.id
+            }
+        }
     }
 }
 

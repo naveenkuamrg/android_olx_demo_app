@@ -15,7 +15,7 @@ import java.sql.Date
 data class ProductDetails(
     val title : String,
     val price : Double,
-    val postedDate :String,
+    val postedDate :Long,
     val description : String,
     val availabilityStatus : AvailabilityStatus,
     val location : String,

@@ -10,8 +10,9 @@ data class ProductSummary(
     val title: String,
     val postedDate: String,
     val location: String,
-    val price: String
+    val price: String,
+
 ){
     @Ignore
-     var image: Bitmap? = null
+    var image: Bitmap? = null
 }

@@ -26,14 +26,11 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
     //ActivityResultLauncher
     lateinit var binding: FragmentEditProfileBinding
 
-    val profilePageViewModel: ProfilePageViewModel by
+    private val profilePageViewModel: ProfilePageViewModel by
     activityViewModels { ProfilePageViewModel.FACTORY }
 
-    val editProfileViewModel: EditProfileViewModel by viewModels { EditProfileViewModel.FACTORY }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private val editProfileViewModel: EditProfileViewModel by viewModels { EditProfileViewModel.FACTORY }
 
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -82,6 +79,14 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
                 }
             }
         }
+
+        editProfileViewModel.tempImage.observe(viewLifecycleOwner){
+            if(it != null){
+                binding.userDp.setImageBitmap(it)
+            }else{
+                binding.userDp.setImageResource(R.drawable.ic_profile)
+            }
+        }
     }
 
     private fun setUpNavigationForToolbar() {
@@ -119,9 +124,12 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
                 binding.nameEditTextLayout.error = null
             }
 
+
+
             if (!isValid) {
                 return@setOnClickListener
             }
+
 
             editProfileViewModel.uploadProfile(
                 name, email, phoneNumber, profilePageViewModel.profile.value!!
@@ -133,7 +141,6 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
         val startActivityForResult =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 if (it.data != null) {
-                    binding.userDp.setImageURI(it.data!!.data)
 
                     ImageConverter.loadBitmapFromUri(
                         requireContext(),
@@ -144,10 +151,12 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
                         if (bitmap != null) {
                             // Do something with the bitmap
                             binding.userDp.setImageBitmap(bitmap)
-                            editProfileViewModel.uploadProfileImage(
-                                bitmap,
-                                profilePageViewModel.profile.value!!.id
-                            )
+                            editProfileViewModel.tempImage.value = bitmap
+
+//                            editProfileViewModel.uploadProfileImage(
+//                                bitmap,
+//                                profilePageViewModel.profile.value!!.id
+//                            )
                         } else {
                             // Handle error
                             Log.e("TAG", "Failed to load bitmap from URI")
@@ -173,8 +182,8 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
 
     private fun setOnClickListenerToRemoveBtn() {
         binding.removeImageBtn.setOnClickListener {
-            editProfileViewModel.deleteProfileImage(profilePageViewModel.profile.value!!.id)
-            binding.userDp.setImageResource(R.drawable.ic_profile)
+            editProfileViewModel.isRemoveDp = true
+            editProfileViewModel.tempImage.value = null
             binding.removeImageBtn.visibility = View.GONE
             binding.addImageButton.apply {
                 text = "Add Image"
