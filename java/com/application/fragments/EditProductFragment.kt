@@ -118,8 +118,15 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageViewA
             }
             if (category.isEmpty()) {
                 binding.categoriesDropdownLayout.error = "Category should not be empty"
+
                 isValid = false
             } else {
+                binding.categoriesDropdownLayout.error = null
+            }
+            if( ProductType.stringToProductType(category) == null){
+                binding.categoriesDropdownLayout.error = "Please select the correct category"
+                isValid = false
+            }else{
                 binding.categoriesDropdownLayout.error = null
             }
             if (location.isEmpty()) {
@@ -161,11 +168,11 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageViewA
                 parentFragmentManager.popBackStack()
                 Toast.makeText(
                     requireContext(),
-                    "Post uploaded successfully",
+                    "${binding.postBtn.text} product successfully",
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
-                Toast.makeText(requireContext(), "Unable to post", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Unable to ${binding.postBtn.text}", Toast.LENGTH_SHORT).show()
             }
         }
 

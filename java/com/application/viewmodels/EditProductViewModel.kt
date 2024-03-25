@@ -51,7 +51,7 @@ class EditProductViewModel(private val productRepository: ProductRepository) : V
                         description,
                         AvailabilityStatus.AVAILABLE,
                         location,
-                        ProductType.FASHION,
+                        ProductType.stringToProductType(category)!!,
                         userId,
                     ).apply {
                         images = this@EditProductViewModel.images.value!!
