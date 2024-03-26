@@ -10,6 +10,7 @@ import androidx.compose.runtime.internal.isLiveLiteralsEnabled
 import androidx.recyclerview.widget.RecyclerView
 import com.application.R
 import com.application.callbacks.ProductSummaryAdapterCallBack
+import com.application.helper.Utility
 import com.application.model.ProductSummary
 
 class ProductSummaryAdapter(val callback : ProductSummaryAdapterCallBack) :
@@ -20,6 +21,7 @@ class ProductSummaryAdapter(val callback : ProductSummaryAdapterCallBack) :
         val imageView = itemView.findViewById<ImageView>(R.id.product_main_image_view)
         val title = itemView.findViewById<TextView>(R.id.product_title_textview)
         val price = itemView.findViewById<TextView>(R.id.product_price_textview)
+
 
     }
 
@@ -46,6 +48,7 @@ class ProductSummaryAdapter(val callback : ProductSummaryAdapterCallBack) :
         holder.productId = data[position].productId
         holder.imageView.setImageBitmap(data[position].image)
         holder.title.text = data[position].title
-        holder.price.text = "Rs: ${data[position].price}"
+        holder.price.text = Utility.convertToINR(data[position].price.toDouble())
+
     }
 }

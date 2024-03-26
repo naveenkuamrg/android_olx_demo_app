@@ -3,7 +3,6 @@ package com.application.fragments
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -13,14 +12,14 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.application.R
 import com.application.adapter.ImageViewAdapter
-import com.application.callbacks.ImageViewAdapterCallBack
+import com.application.callbacks.RemoveDataFromAdapterCallBack
 import com.application.callbacks.ProductImageViewBackgroundFragmentCallBack
 import com.application.databinding.FragmentEditProductBinding
 import com.application.model.ProductType
 import com.application.viewmodels.EditProductViewModel
 import com.application.viewmodels.ProductDetailViewModel
 
-class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageViewAdapterCallBack,
+class EditProductFragment : Fragment(R.layout.fragment_edit_product), RemoveDataFromAdapterCallBack,
     ProductImageViewBackgroundFragmentCallBack {
 
     val productId: Long?

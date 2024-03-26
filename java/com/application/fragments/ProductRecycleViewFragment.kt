@@ -6,6 +6,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.R
 import com.application.adapter.ProductSummaryAdapter
@@ -23,7 +24,6 @@ class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_vi
     }
     lateinit var callback: RecycleProductViewCallback
     lateinit var binding: FragmentProductRecycleViewBinding
-
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -56,8 +56,20 @@ class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_vi
     }
 
     private fun setUpRecycleView(adapter: ProductSummaryAdapter) {
-        binding.productRecycleView.layoutManager = LinearLayoutManager(requireContext())
-        binding.productRecycleView.adapter = adapter
+        val recyclerView = binding.productRecycleView
+        val dividerItemDecoration =
+            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        requireContext().getDrawable(
+            R.drawable.recycleview_divider
+        )?.let {
+            dividerItemDecoration.setDrawable(
+                it
+            )
+        }
+        recyclerView.addItemDecoration(dividerItemDecoration)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = adapter
+
     }
 
     override fun callbackOnClick(productId: Long) {

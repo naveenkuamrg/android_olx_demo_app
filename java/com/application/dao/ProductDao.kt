@@ -1,9 +1,11 @@
 package com.application.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import com.application.entity.ProductDetails
+import com.application.model.AvailabilityStatus
 import com.application.model.Product
 import com.application.model.ProductSummary
 
@@ -20,5 +22,11 @@ interface ProductDao {
             " left join (select product_id as isInterested from interested_buyers where user_id Like :userId ) as isInterested " +
             "left join (select product_id as isWishList from wish_list where user_id Like :userId) as isWishList where product_id Like :productId")
     fun getProduct(productId: Long,userId: Long): Product
+
+    @Delete
+    fun deleteProduct(productDetails: ProductDetails): Int
+
+    @Query("UPDATE product_details SET availabilityStatus = :status where product_id Like :productId")
+    fun  updateProductAvailabilityStatus(productId: Long,status: AvailabilityStatus)
 
 }

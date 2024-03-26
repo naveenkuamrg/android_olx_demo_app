@@ -10,34 +10,59 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingStart="10dp"
         android:orientation="vertical">
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/view_pager"
-            style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="300dp"
+            android:layout_marginBottom="15dp"
             android:foreground="?attr/selectableItemBackground"
             android:scaleType="centerCrop" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
             android:text="@{viewModel.product.title}"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:layout_marginBottom="5dp"
+            android:textSize="8pt"
+            android:textStyle="bold"
+            android:alpha="0.8"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textSize="16pt"
+            android:textStyle="bold"
             android:layout_marginBottom="15dp"
             android:text="@{Utility.convertToINR(viewModel.product.price)}" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/md_theme_primary"
+            android:text="Description"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
             android:text="@{viewModel.product.description}" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/md_theme_primary"
+                android:text="Categories" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.product.productType.toString()}" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -47,6 +72,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
                 android:src="@drawable/ic_location" />
 
             <TextView
@@ -59,11 +85,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+
             android:layout_marginBottom="15dp">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
                 android:src="@drawable/ic_date" />
 
             <TextView
@@ -72,21 +100,7 @@
                 android:text="@{Utility.millisecondsToString(viewModel.product.postedDate)}" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Categories : " />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@{viewModel.product.productType.toString()}" />
-        </LinearLayout>
 
     </LinearLayout>
 </layout>

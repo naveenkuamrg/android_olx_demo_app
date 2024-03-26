@@ -8,12 +8,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.application.R
-import com.application.callbacks.ImageViewAdapterCallBack
+import com.application.callbacks.RemoveDataFromAdapterCallBack
 
 class ImageViewAdapter(private val data: MutableList<Bitmap>) :
     RecyclerView.Adapter<ImageViewAdapter.ImageViewHolder>() {
 
-    var callBack: ImageViewAdapterCallBack? = null
+    var callBack: RemoveDataFromAdapterCallBack? = null
 
     class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val image: ImageView = itemView.findViewById(R.id.product_image)

@@ -53,4 +53,10 @@ object Validator {
         return error
     }
 
+    fun priceValidation(price: Double): String?{
+        if(price > 9999990){
+            return  "maximum amount to quotes is 9999990"
+        }
+        return  null
+    }
 }

@@ -1,9 +1,11 @@
 package com.application.repositories.impl
 
 import android.content.Context
+import android.util.Log
 import com.application.AppDatabase
 import com.application.dao.ProductDao
 import com.application.helper.ModelConverter
+import com.application.model.AvailabilityStatus
 import com.application.model.Product
 import com.application.model.ProductSummary
 import com.application.repositories.ProductImageRepository
@@ -36,5 +38,19 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
          return productDao.getProduct(productId,userId).apply {
              images = (productImageRepository.getAllImageFromFile(productId.toString()))
          }
+    }
+
+    override suspend fun removeProduct(product: Product): Boolean {
+
+        productImageRepository.deleteAllImageFormFile(product.id.toString())
+        return if(productDao.deleteProduct(ModelConverter.productModelToProductDetails(product)) != 0){
+            true
+        }else{
+            false
+        }
+    }
+
+    override suspend fun updateProductAvailabilityStatus(product: Product,status: AvailabilityStatus) {
+        product.id?.let { productDao.updateProductAvailabilityStatus(it,status) }
     }
 }

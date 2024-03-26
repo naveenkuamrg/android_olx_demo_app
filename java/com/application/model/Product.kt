@@ -10,7 +10,7 @@ data class Product(
     val price: Double,
     val postedDate: Long,
     val description: String,
-    val availabilityStatus: AvailabilityStatus,
+    var availabilityStatus: AvailabilityStatus,
     val location: String,
     val productType : ProductType,
     val sellerId : Long,

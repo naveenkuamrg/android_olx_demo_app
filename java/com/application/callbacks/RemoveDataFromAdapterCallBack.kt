@@ -1,5 +1,5 @@
 package com.application.callbacks
 
-interface ImageViewAdapterCallBack {
+interface RemoveDataFromAdapterCallBack {
     fun removeDataFromList(position: Int)
 }
