@@ -29,6 +29,7 @@ class ProductSummaryAdapter(val callback: ProductSummaryAdapterCallBack) :
 
     private val diffUtil = object :
         DiffUtil.ItemCallback<ProductSummary>() {
+            
         override fun areItemsTheSame(oldItem: ProductSummary, newItem: ProductSummary): Boolean {
             return oldItem.productId == newItem.productId
         }
