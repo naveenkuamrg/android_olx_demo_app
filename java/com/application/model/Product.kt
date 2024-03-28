@@ -14,7 +14,7 @@ data class Product(
     val location: String,
     val productType : ProductType,
     val sellerId : Long,
-    val isInterested: Boolean? = null,
+    var isInterested: Boolean? = null,
     val isWishList : Boolean? = null
 ){
     @Ignore

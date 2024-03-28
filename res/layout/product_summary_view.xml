@@ -5,9 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="88dp"
-    android:background="@color/md_theme_inverseOnSurface"
+    android:background="@color/md_theme_onSecondaryContainer_highContrast"
     android:clickable="true"
-
     android:foreground="?android:attr/selectableItemBackground"
     android:orientation="horizontal"
     android:padding="16dp"
@@ -24,7 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_profile" />
+            android:src="@drawable/ic_profile_outline" />
     </androidx.cardview.widget.CardView>
 
     <androidx.constraintlayout.widget.ConstraintLayout

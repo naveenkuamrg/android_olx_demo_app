@@ -1,26 +1,23 @@
 package com.application.fragments
 
-import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.application.R
+import com.application.callbacks.BottomSheetDialogPhotoPicker
 import com.application.databinding.FragmentEditProfileBinding
 import com.application.exceptions.InvalidUserDataException
-import com.application.helper.ImageConverter
 import com.application.helper.StringConverter
 import com.application.helper.Validator
 import com.application.viewmodels.EditProfileViewModel
 import com.application.viewmodels.ProfilePageViewModel
-import java.io.File
 
-class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
+class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
+    BottomSheetDialogPhotoPicker {
 
 
     //ActivityResultLauncher
@@ -36,13 +33,16 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentEditProfileBinding.bind(view)
         setUpNavigationForToolbar()
+        if (savedInstanceState == null) {
+            setObserveUpdateUI()
+        }
         setObserve()
         setOnClickListenerToUpdateButton()
         setOnClickListenerToAddImageBtn()
         setOnClickListenerToRemoveBtn()
     }
 
-    private fun setObserve() {
+    private fun setObserveUpdateUI() {
         profilePageViewModel.profile.observe(viewLifecycleOwner) { value ->
             binding.emailEdittext.text = StringConverter.toEditable(value.email)
             binding.nameEdittext.text = StringConverter.toEditable(value.name)
@@ -57,13 +57,14 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
                 binding.removeImageBtn.visibility = View.VISIBLE
             }
         }
+    }
 
+    private fun setObserve() {
         editProfileViewModel.isUploaded.observe(viewLifecycleOwner) { value ->
             if (value) {
                 parentFragmentManager.popBackStack()
             }
         }
-
         editProfileViewModel.exception.observe(viewLifecycleOwner) { value ->
             val emailEditTextLayout = binding.emailEditTextLayout
             val phoneNumberEdittextLayout = binding.phoneNumberEdittextLayout
@@ -80,11 +81,11 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
             }
         }
 
-        editProfileViewModel.tempImage.observe(viewLifecycleOwner){
-            if(it != null){
+        editProfileViewModel.tempImage.observe(viewLifecycleOwner) {
+            if (it != null) {
                 binding.userDp.setImageBitmap(it)
-            }else{
-                binding.userDp.setImageResource(R.drawable.ic_profile)
+            } else {
+                binding.userDp.setImageResource(R.drawable.ic_profile_outline)
             }
         }
     }
@@ -138,44 +139,10 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
     }
 
     private fun setOnClickListenerToAddImageBtn() {
-        val startActivityForResult =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                if (it.data != null) {
 
-                    ImageConverter.loadBitmapFromUri(
-                        requireContext(),
-                        it.data!!.data!!,
-                        1000,
-                        1000
-                    ) { bitmap ->
-                        if (bitmap != null) {
-                            // Do something with the bitmap
-                            binding.userDp.setImageBitmap(bitmap)
-                            editProfileViewModel.tempImage.value = bitmap
-
-//                            editProfileViewModel.uploadProfileImage(
-//                                bitmap,
-//                                profilePageViewModel.profile.value!!.id
-//                            )
-                        } else {
-                            // Handle error
-                            Log.e("TAG", "Failed to load bitmap from URI")
-                        }
-                    }
-
-                    binding.removeImageBtn.visibility = View.VISIBLE
-                    binding.addImageButton.apply {
-                        text = "Change Image"
-                        val drawable: Drawable = resources.getDrawable(R.drawable.ic_edit, null)
-                        icon = drawable
-                    }
-                }
-            }
         binding.addImageButton.setOnClickListener {
-            val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-                type = "image/*"
-            }
-            startActivityForResult.launch(intent)
+            val f = BottomSheetDialogPhotoPicker()
+            f.show(childFragmentManager, "bottomSheet")
         }
 
     }
@@ -190,6 +157,21 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
                 val drawable: Drawable = resources.getDrawable(R.drawable.ic_add, null)
                 icon = drawable
             }
+        }
+    }
+
+    override fun getCountOfBitmapList(): Int {
+        return 1
+    }
+
+    override fun setBitmap(bitmap: Bitmap) {
+        binding.userDp.setImageBitmap(bitmap)
+        editProfileViewModel.tempImage.value = bitmap
+        binding.removeImageBtn.visibility = View.VISIBLE
+        binding.addImageButton.apply {
+            text = "Change Image"
+            val drawable: Drawable = resources.getDrawable(R.drawable.ic_edit, null)
+            icon = drawable
         }
     }
 }

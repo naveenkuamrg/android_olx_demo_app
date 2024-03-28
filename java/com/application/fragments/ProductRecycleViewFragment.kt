@@ -13,7 +13,6 @@ import com.application.adapter.ProductSummaryAdapter
 import com.application.callbacks.ProductSummaryAdapterCallBack
 import com.application.callbacks.RecycleProductViewCallback
 import com.application.databinding.FragmentProductRecycleViewBinding
-import com.application.model.ProductSummary
 import com.application.viewmodels.ProductRecycleViewModel
 
 class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_view),
@@ -26,26 +25,42 @@ class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_vi
     lateinit var binding: FragmentProductRecycleViewBinding
 
 
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val userId = requireActivity().getSharedPreferences(
+            "mySharePref", AppCompatActivity.MODE_PRIVATE
+        ).getString("userId","-1")!!.toLong()
         binding = FragmentProductRecycleViewBinding.bind(view)
         val adapter = ProductSummaryAdapter(this)
-        productRecycleViewModel.getProductSummary(
-            requireActivity().getSharedPreferences
-                (
-                "mySharePref",
-                AppCompatActivity.MODE_PRIVATE
-            ).getString("userId", "0")!!.toLong()
-        )
-        setObserve(adapter)
+        Log.i("TAG parentFragment ", parentFragment.toString())
+        Log.i("TAG ProductRecycleViewFragment",savedInstanceState.toString())
+        if(productRecycleViewModel.isLoading.value != false) {
+            when (parentFragment) {
+                is SellZoneFragment -> {
+                    productRecycleViewModel.getPostProductSummary(userId)
+                }
+
+                is HomeFragment -> {
+                    productRecycleViewModel.getBuyProductSummary(userId)
+                }
+            }
+        }
+
+        setObserve(adapter,savedInstanceState)
         setUpRecycleView(adapter)
+        Log.i("TAG class", (parentFragment is RecycleProductViewCallback).toString())
         callback = parentFragment as RecycleProductViewCallback
     }
 
-    private fun setObserve(adapter: ProductSummaryAdapter) {
+    private fun setObserve(adapter: ProductSummaryAdapter,savedInstanceState: Bundle?) {
 
         productRecycleViewModel.data.observe(viewLifecycleOwner) {
-            adapter.data = it
+            Log.i("TAG ProductRecycleViewFragment","RELOAD set ${savedInstanceState == null}")
+
+                adapter.data = it
+                binding.productRecycleView.adapter = adapter
         }
         productRecycleViewModel.isLoading.observe(viewLifecycleOwner) {
             if (!it) {
@@ -74,5 +89,10 @@ class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_vi
 
     override fun callbackOnClick(productId: Long) {
         callback.productItemIsSelected(productId)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i("TAG ProductRecycleViewFragment","onDestroy  ${parentFragment.toString()}")
     }
 }

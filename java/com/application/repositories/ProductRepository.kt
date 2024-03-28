@@ -9,9 +9,17 @@ interface ProductRepository {
 
     suspend fun getProductSummaryDetailsForSellZone(userId: Long): List<ProductSummary>
 
-    suspend fun getProductDetails(productId: Long,userId: Long): Product
+    suspend fun getProductSummaryDetailsForBuyZone(userId: Long): List<ProductSummary>
+
+    suspend fun getProductDetails(productId: Long, userId: Long): Product
 
     suspend fun removeProduct(product: Product): Boolean
 
-    suspend fun updateProductAvailabilityStatus(product: Product,status: AvailabilityStatus)
+    suspend fun updateProductAvailabilityStatus(product: Product, status: AvailabilityStatus)
+
+    suspend fun updateProductIsInterested(
+        userId: Long,
+        productId: Long,
+        isInterested: Boolean
+    ): Boolean
 }

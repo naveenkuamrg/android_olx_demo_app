@@ -1,7 +1,6 @@
 package com.application.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -42,7 +41,7 @@ class ProfileFragment() : Fragment(R.layout.fragment_profile) {
 
     private fun setNavigatorView() {
         binding.edit.apply {
-            textLabel.text = "Edit"
+            textLabel.text = "Edit Profile"
             imageFilterView.setImageResource(R.drawable.ic_edit)
             navigator.setOnClickListener {
                 callBack.showEditFragment()
@@ -91,7 +90,7 @@ class ProfileFragment() : Fragment(R.layout.fragment_profile) {
             if(profile.profileImage != null){
                 binding.userDp.setImageBitmap(profile.profileImage)
             }else{
-                binding.userDp.setImageResource(R.drawable.ic_profile)
+                binding.userDp.setImageResource(R.drawable.ic_profile_outline)
             }
         }
     }

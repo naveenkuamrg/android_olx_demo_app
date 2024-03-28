@@ -1,5 +1,6 @@
 package com.application.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,18 +15,29 @@ import kotlinx.coroutines.launch
 
 class ProductRecycleViewModel(private val productRepository: ProductRepository) : ViewModel() {
 
-    private val _isLoading : MutableLiveData<Boolean> = MutableLiveData()
+    init {
+        Log.i("TAG ProductRecycleViewModel","init")
+    }
+
+    private val _isLoading: MutableLiveData<Boolean> = MutableLiveData()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _data: MutableLiveData<List<ProductSummary>> = MutableLiveData(
-        mutableListOf()
-    )
+    private val _data: MutableLiveData<List<ProductSummary>> = MutableLiveData()
 
     val data: LiveData<List<ProductSummary>> = _data
 
-    fun getProductSummary(id: Long){
+    fun getPostProductSummary(id: Long) {
+
         viewModelScope.launch(Dispatchers.Default) {
             _data.postValue(productRepository.getProductSummaryDetailsForSellZone(id))
+            _isLoading.postValue(false)
+        }
+    }
+
+    fun getBuyProductSummary(id: Long) {
+        Log.i("TAG ProductRecycleViewModel","getBuyProductSummary")
+        viewModelScope.launch(Dispatchers.Default) {
+            _data.postValue(productRepository.getProductSummaryDetailsForBuyZone(id))
             _isLoading.postValue(false)
         }
     }

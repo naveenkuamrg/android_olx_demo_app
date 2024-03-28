@@ -3,6 +3,7 @@ package com.application.helper
 import android.content.Context
 import android.content.DialogInterface
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import java.text.FieldPosition
@@ -45,10 +46,18 @@ object Utility {
         AlertDialog.Builder(context).apply {
             setMessage(message)
             setPositiveButton("Yes", positionCallback)
-            setNegativeButton("No",negativeCallback)
+            setNegativeButton("No", negativeCallback)
             show()
         }
 
+    }
+
+    fun showToast(context: Context, message: String) {
+        Toast.makeText(
+            context,
+            message,
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
 }

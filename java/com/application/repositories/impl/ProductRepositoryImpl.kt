@@ -19,38 +19,62 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         val productDetails = ModelConverter.productModelToProductDetails(product)
         val id = productDao.upsertProductDetails(productDetails)
         productImageRepository.deleteAllImageFormFile(product.id.toString())
-        productImageRepository.saveImages(product.id?: id , product.images)
+        productImageRepository.saveImages(product.id ?: id, product.images)
         return true
     }
 
     override suspend fun getProductSummaryDetailsForSellZone(userId: Long): List<ProductSummary> {
         val result = productDao.getPostProductSummary(userId)
-        for (product in result) {
-            product.image =
-                productImageRepository.getMainImage(
-                    "${product.productId}/0.jpeg"
-                )
-        }
+        setImage(result)
         return result
     }
 
-    override suspend fun getProductDetails(productId: Long,userId: Long): Product {
-         return productDao.getProduct(productId,userId).apply {
-             images = (productImageRepository.getAllImageFromFile(productId.toString()))
-         }
+    override suspend fun getProductSummaryDetailsForBuyZone(userId: Long): List<ProductSummary> {
+        Log.i("tag main check", productDao.getBuyProductSummary(userId).toString())
+        return productDao.getBuyProductSummary(userId).also {
+            setImage(it)
+        }
+    }
+
+    override suspend fun getProductDetails(productId: Long, userId: Long): Product {
+        return productDao.getProduct(productId, userId).apply {
+            images = (productImageRepository.getAllImageFromFile(productId.toString()))
+        }
     }
 
     override suspend fun removeProduct(product: Product): Boolean {
 
         productImageRepository.deleteAllImageFormFile(product.id.toString())
-        return if(productDao.deleteProduct(ModelConverter.productModelToProductDetails(product)) != 0){
-            true
+        return productDao.deleteProduct(
+                ModelConverter.productModelToProductDetails(product)
+            ) != 0
+    }
+
+    override suspend fun updateProductAvailabilityStatus(
+        product: Product,
+        status: AvailabilityStatus
+    ) {
+        product.id?.let { productDao.updateProductAvailabilityStatus(it, status) }
+    }
+
+    override suspend fun updateProductIsInterested(
+        userId: Long,
+        productId: Long,
+        isInterested: Boolean
+    ): Boolean {
+        return if(isInterested) {
+            productDao.insertInterestedList(productId,userId) > 0
         }else{
-            false
+            productDao.removeInterestedList(productId,userId) > 0
         }
     }
 
-    override suspend fun updateProductAvailabilityStatus(product: Product,status: AvailabilityStatus) {
-        product.id?.let { productDao.updateProductAvailabilityStatus(it,status) }
+    private suspend fun setImage(listOfProductSummary: List<ProductSummary>) {
+        for (product in listOfProductSummary) {
+            product.image =
+                productImageRepository.getMainImage(
+                    "${product.productId}/0.jpeg"
+                )
+        }
     }
 }

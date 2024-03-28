@@ -1,48 +1,56 @@
 package com.application.fragments
 
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import com.application.callbacks.ProductImageViewBackgroundFragmentCallBack
+import com.application.R
+import com.application.callbacks.BottomSheetDialogPhotoPicker
 import com.application.helper.ImageConverter
-import com.application.viewmodels.EditProductViewModel
 
-class ProductImageViewBackgroundFragment : Fragment() {
+class ProductImageViewBackgroundFragment() : Fragment(R.layout.fragment_home) {
 
-    lateinit var callBack: ProductImageViewBackgroundFragmentCallBack
+
+    private lateinit var callBack: BottomSheetDialogPhotoPicker
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        callBack = parentFragment as BottomSheetDialogPhotoPicker
 
         val numberToUpload = callBack.getCountOfBitmapList()
         if (numberToUpload < 4) {
-            startActivityForResultProductImages(numberToUpload)
+            startActivityForResultImages(numberToUpload, savedInstanceState)
         } else {
-            registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-                if(uri != null) {
-                    ImageConverter.loadBitmapFromUri(
-                        requireContext(),
-                        uri, 1000, 1000
-                    ) { bitmap ->
-                        if (bitmap != null) {
-                            callBack.setBitmap(bitmap)
-                        }
-                    }
-                }
-                parentFragmentManager.popBackStack()
-            }.apply {
-                launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-            }
+            startActivityForResultProductImage(savedInstanceState)
         }
 
     }
 
-    fun startActivityForResultProductImages(count: Int) {
+    private fun startActivityForResultProductImage(savedInstanceState: Bundle?) {
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (uri != null) {
+                ImageConverter.loadBitmapFromUri(
+                    requireContext(),
+                    uri, 1000, 1000
+                ) { bitmap ->
+                    if (bitmap != null) {
+                        callBack.setBitmap(bitmap)
+                    }
+                }
+            }
+//                this.dismissNow()
+            parentFragmentManager.popBackStack()
+        }.apply {
+            if (savedInstanceState == null) {
+                launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            }
+        }
+
+
+    }
+
+    private fun startActivityForResultImages(count: Int, savedInstanceState: Bundle?) {
         val startActivityForResultProductImages = registerForActivityResult(
             ActivityResultContracts.PickMultipleVisualMedia(
                 5 - count
@@ -62,12 +70,13 @@ class ProductImageViewBackgroundFragment : Fragment() {
             }
             parentFragmentManager.popBackStack()
         }
-
-        startActivityForResultProductImages.launch(
-            PickVisualMediaRequest(
-                ActivityResultContracts.PickVisualMedia.ImageOnly
+        if (savedInstanceState == null) {
+            startActivityForResultProductImages.launch(
+                PickVisualMediaRequest(
+                    ActivityResultContracts.PickVisualMedia.ImageOnly
+                )
             )
-        )
+        }
     }
 
 

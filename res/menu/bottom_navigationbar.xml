@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
     <item android:id="@+id/home"
-        android:icon="@drawable/ic_home"
+        android:icon="@drawable/home_selector"
         android:title="Home"
         app:showAsAction="ifRoom"/>
     <item android:id="@+id/sell_zone"
@@ -12,6 +12,6 @@
         app:showAsAction="ifRoom"/>
     <item android:id="@+id/profile"
         android:title="Profile"
-        android:icon="@drawable/ic_profile"
+        android:icon="@drawable/profile_selector"
         app:showAsAction="ifRoom"/>
 </menu>

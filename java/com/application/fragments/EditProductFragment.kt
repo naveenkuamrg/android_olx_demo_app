@@ -13,18 +13,20 @@ import androidx.fragment.app.viewModels
 import com.application.R
 import com.application.adapter.ImageViewAdapter
 import com.application.callbacks.RemoveDataFromAdapterCallBack
-import com.application.callbacks.ProductImageViewBackgroundFragmentCallBack
+import com.application.callbacks.BottomSheetDialogPhotoPicker
 import com.application.databinding.FragmentEditProductBinding
+import com.application.helper.StringConverter
+import com.application.helper.Utility
 import com.application.model.ProductType
 import com.application.viewmodels.EditProductViewModel
 import com.application.viewmodels.ProductDetailViewModel
 
 class EditProductFragment : Fragment(R.layout.fragment_edit_product), RemoveDataFromAdapterCallBack,
-    ProductImageViewBackgroundFragmentCallBack {
+    BottomSheetDialogPhotoPicker {
 
     val productId: Long?
         get() {
-            return  arguments?.getLong(PRODUCT_ID_KEY)
+            return arguments?.getLong(PRODUCT_ID_KEY)
         }
 
     private lateinit var binding: FragmentEditProductBinding
@@ -37,7 +39,7 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), RemoveData
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(productId == -1L){
+        if (productId == -1L) {
             productDetailViewModel.clearProduct()
         }
 
@@ -46,10 +48,19 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), RemoveData
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentEditProductBinding.bind(view)
-        productDetailViewModel.product.value?.let {
-            editProductViewModel.setProduct(it)
-            binding.viewmodel = editProductViewModel
-            binding.postBtn.text = "Re-post"
+
+        if (savedInstanceState == null) {
+            productDetailViewModel.product.value?.let {
+                editProductViewModel.setProduct(it)
+                binding.postBtn.text = "Re-post"
+                binding.toolbar.title = "Edit product"
+            }
+        }
+        if (productDetailViewModel.product.value == null) {
+            binding.toolbar.title = "Add product"
+        }
+        if (savedInstanceState == null) {
+            setObserveForUI()
         }
         setUpToolbar()
         setCategoriesButton()
@@ -57,6 +68,20 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), RemoveData
         setOnClickListenerForPostBtn()
         setObserve()
         Log.i("adapter check", editProductViewModel.images.value?.size.toString())
+    }
+
+    private fun setObserveForUI() {
+        productDetailViewModel.product.observe(viewLifecycleOwner) {
+            if (it != null) {
+                binding.titleEditText.text = StringConverter.toEditable(it.title)
+                binding.descriptionEditText.text = StringConverter.toEditable(it.description)
+                binding.priceEditText.text =
+                    StringConverter.toEditable(Utility.convertToString(it.price))
+                binding.categoriesDropdown.text =
+                    StringConverter.toEditable(it.productType.toString())
+                binding.locationEditText.text = StringConverter.toEditable(it.location)
+            }
+        }
     }
 
     private fun setUpToolbar() {
@@ -78,13 +103,8 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), RemoveData
 
     private fun setOnClickListenerForAddImageButton() {
         binding.addImageButton.setOnClickListener {
-            parentFragmentManager.beginTransaction().apply {
-                add(R.id.main_view_container, ProductImageViewBackgroundFragment().apply {
-                    callBack = this@EditProductFragment
-                })
-                addToBackStack("background")
-                commit()
-            }
+           val f = BottomSheetDialogPhotoPicker()
+            f.show(childFragmentManager,"bottomSheet")
         }
     }
 
@@ -122,10 +142,10 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), RemoveData
             } else {
                 binding.categoriesDropdownLayout.error = null
             }
-            if( ProductType.stringToProductType(category) == null){
+            if (ProductType.stringToProductType(category) == null) {
                 binding.categoriesDropdownLayout.error = "Please select the correct category"
                 isValid = false
-            }else{
+            } else {
                 binding.categoriesDropdownLayout.error = null
             }
             if (location.isEmpty()) {
@@ -163,22 +183,27 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), RemoveData
     private fun setObserve() {
         // Check if post is uploaded successfully
         editProductViewModel.isUpload.observe(viewLifecycleOwner) { isUploaded ->
-            if (isUploaded) {
+            if (isUploaded == true) {
                 parentFragmentManager.popBackStack()
                 Toast.makeText(
                     requireContext(),
                     "${binding.postBtn.text} product successfully",
                     Toast.LENGTH_SHORT
                 ).show()
-            } else {
-                Toast.makeText(requireContext(), "Unable to ${binding.postBtn.text}", Toast.LENGTH_SHORT).show()
+            }
+
+            if(isUploaded == false){
+                Toast.makeText(
+                    requireContext(),
+                    "Unable to ${binding.postBtn.text}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
         // Add image
         editProductViewModel.images.observe(viewLifecycleOwner) { images ->
             Log.i("TAG", "Observe: ${images.size}")
-            var count = 5 - images.size
             binding.viewPager.adapter = ImageViewAdapter(images).apply {
                 callBack = this@EditProductFragment
             }
@@ -193,12 +218,14 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), RemoveData
 
 
     override fun getCountOfBitmapList(): Int {
-        return editProductViewModel.images.value!!.size
+        return 5 - editProductViewModel.images.value!!.size
     }
 
     override fun setBitmap(bitmap: Bitmap) {
         editProductViewModel.updateImage(bitmap)
     }
+
+
 
     companion object {
         val PRODUCT_ID_KEY = "productId"

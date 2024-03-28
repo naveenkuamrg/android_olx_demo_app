@@ -19,11 +19,11 @@ import java.util.Date
 
 class EditProductViewModel(private val productRepository: ProductRepository) : ViewModel() {
 
-    private val _isUpload: MutableLiveData<Boolean> = MutableLiveData()
-    val isUpload: LiveData<Boolean> = _isUpload
+    private val _isUpload: MutableLiveData<Boolean?> = MutableLiveData()
+    val isUpload: LiveData<Boolean?> = _isUpload
 
-    private val _product: MutableLiveData<Product> = MutableLiveData()
-    val product: LiveData<Product> = _product
+    private var _product: MutableLiveData<Product?> = MutableLiveData()
+    val product: LiveData<Product?> = _product
 
 
     private val _images: MutableLiveData<MutableList<Bitmap>> = MutableLiveData(mutableListOf())
@@ -84,6 +84,8 @@ class EditProductViewModel(private val productRepository: ProductRepository) : V
 
     fun clearImageList() {
         _images.value = mutableListOf()
+        _product.value = null
+        _isUpload.value = null 
     }
 
 

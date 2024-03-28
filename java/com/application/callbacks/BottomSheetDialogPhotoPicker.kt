@@ -2,7 +2,7 @@ package com.application.callbacks
 
 import android.graphics.Bitmap
 
-interface ProductImageViewBackgroundFragmentCallBack {
+interface BottomSheetDialogPhotoPicker {
     fun getCountOfBitmapList(): Int
     fun setBitmap(bitmap: Bitmap)
 }

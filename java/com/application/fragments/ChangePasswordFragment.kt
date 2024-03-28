@@ -16,10 +16,6 @@ class ChangePasswordFragment : Fragment(R.layout.fragment_change_password) {
     private lateinit var binding: FragmentChangePasswordBinding
 
     private val viewModel: ChangePasswordViewModel by viewModels { ChangePasswordViewModel.FACTORY }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

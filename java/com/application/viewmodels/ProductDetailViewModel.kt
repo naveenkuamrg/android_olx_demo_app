@@ -1,5 +1,6 @@
 package com.application.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,14 +16,17 @@ import kotlinx.coroutines.launch
 
 class ProductDetailViewModel(private val productRepository: ProductRepository) : ViewModel() {
 
-    private val _isLoading: MutableLiveData<Boolean> = MutableLiveData()
-    val isLoading: LiveData<Boolean> = _isLoading
+    private val _isLoading: MutableLiveData<Boolean?> = MutableLiveData()
+    val isLoading: LiveData<Boolean?> = _isLoading
 
     private val _product: MutableLiveData<Product?> = MutableLiveData()
     val product: LiveData<Product?> = _product
 
     private val _isDelete: MutableLiveData<Boolean?> = MutableLiveData()
     val isDelete: LiveData<Boolean?> = _isDelete
+
+    private val _isInterestedChangeIsUpdate: MutableLiveData<Boolean?> = MutableLiveData()
+    val isInterestedChangeIsUpdate: LiveData<Boolean?> = _isInterestedChangeIsUpdate
 
 
     fun fetchProductDetails(productId: Long, userId: Long) {
@@ -33,8 +37,23 @@ class ProductDetailViewModel(private val productRepository: ProductRepository) :
 
     }
 
+    fun updateProductInterested(productId: Long, userId: Long, isInterested: Boolean) {
+        _isInterestedChangeIsUpdate.value = null
+        viewModelScope.launch(Dispatchers.Default) {
+            _isInterestedChangeIsUpdate.postValue(
+                productRepository.updateProductIsInterested(
+                    userId,
+                    productId,
+                    isInterested
+                )
+            )
+            Log.i("TAG _isInterestedChangeIsUpdate",_isInterestedChangeIsUpdate.value.toString())
+
+        }
+    }
 
     fun removeProductDetail() {
+
         viewModelScope.launch(Dispatchers.Default) {
             product.value?.let {
                 _isDelete.postValue(productRepository.removeProduct(it))
@@ -46,8 +65,10 @@ class ProductDetailViewModel(private val productRepository: ProductRepository) :
         _product.value = null
     }
 
-    fun clearIsDelete() {
+    fun clearLiveData() {
         _isDelete.value = null
+        _isLoading.value = null
+        _isInterestedChangeIsUpdate.value = null
     }
 
     fun updateMarkAsSold() {
