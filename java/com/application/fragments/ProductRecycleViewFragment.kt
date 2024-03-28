@@ -1,7 +1,6 @@
 package com.application.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -24,53 +23,38 @@ class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_vi
     lateinit var callback: RecycleProductViewCallback
     lateinit var binding: FragmentProductRecycleViewBinding
 
-
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val userId = requireActivity().getSharedPreferences(
             "mySharePref", AppCompatActivity.MODE_PRIVATE
         ).getString("userId","-1")!!.toLong()
         binding = FragmentProductRecycleViewBinding.bind(view)
-        val adapter = ProductSummaryAdapter(this)
-        Log.i("TAG parentFragment ", parentFragment.toString())
-        Log.i("TAG ProductRecycleViewFragment",savedInstanceState.toString())
-        if(productRecycleViewModel.isLoading.value != false) {
             when (parentFragment) {
                 is SellZoneFragment -> {
                     productRecycleViewModel.getPostProductSummary(userId)
                 }
-
                 is HomeFragment -> {
                     productRecycleViewModel.getBuyProductSummary(userId)
                 }
             }
-        }
-
-        setObserve(adapter,savedInstanceState)
-        setUpRecycleView(adapter)
-        Log.i("TAG class", (parentFragment is RecycleProductViewCallback).toString())
+        setObserve()
+        setUpRecycleView()
         callback = parentFragment as RecycleProductViewCallback
     }
 
-    private fun setObserve(adapter: ProductSummaryAdapter,savedInstanceState: Bundle?) {
-
+    private fun setObserve() {
         productRecycleViewModel.data.observe(viewLifecycleOwner) {
-            Log.i("TAG ProductRecycleViewFragment","RELOAD set ${savedInstanceState == null}")
-
-                adapter.data = it
-                binding.productRecycleView.adapter = adapter
+            (binding.productRecycleView.adapter as ProductSummaryAdapter).saveData(it)
         }
         productRecycleViewModel.isLoading.observe(viewLifecycleOwner) {
+            //setLoader
             if (!it) {
-                binding.productRecycleView.adapter = adapter
             }
         }
 
     }
 
-    private fun setUpRecycleView(adapter: ProductSummaryAdapter) {
+    private fun setUpRecycleView() {
         val recyclerView = binding.productRecycleView
         val dividerItemDecoration =
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
@@ -83,7 +67,7 @@ class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_vi
         }
         recyclerView.addItemDecoration(dividerItemDecoration)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = adapter
+        recyclerView.adapter = ProductSummaryAdapter(this)
 
     }
 
@@ -91,8 +75,4 @@ class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_vi
         callback.productItemIsSelected(productId)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.i("TAG ProductRecycleViewFragment","onDestroy  ${parentFragment.toString()}")
-    }
 }

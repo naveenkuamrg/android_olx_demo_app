@@ -65,9 +65,9 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
                     }
                     childFragmentManager.popBackStack(
                         "home",
-                        FragmentManager.POP_BACK_STACK_INCLUSIVE
+                        0
                     )
-                    addHomeFragment()
+//                    addHomeFragment()
                 }
 
                 R.id.sell_zone -> {
@@ -76,7 +76,7 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
                     }
                     childFragmentManager.popBackStack(
                         "sellZone",
-                        FragmentManager.POP_BACK_STACK_INCLUSIVE
+                        0
                     )
                      childFragmentManager.beginTransaction().apply {
                         replace(R.id.bottom_navigation_fragment_view_container, SellZoneFragment())
@@ -91,7 +91,7 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
                     }
                     childFragmentManager.popBackStack(
                         "profile",
-                        FragmentManager.POP_BACK_STACK_INCLUSIVE
+                      0
                     )
                     val transaction = childFragmentManager.beginTransaction()
                     transaction.replace(

@@ -18,6 +18,8 @@
             android:id="@+id/profile_edit_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+
+            app:titleTextColor="@color/md_theme_primary"
             app:title="Edit Profile"
             app:titleCentered="true" />
     </com.google.android.material.appbar.AppBarLayout>

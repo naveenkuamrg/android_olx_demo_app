@@ -36,5 +36,9 @@ class HomeFragment : Fragment(R.layout.fragment_home), RecycleProductViewCallbac
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i("TAG HomeFragment","onDestroy")
+    }
 
 }

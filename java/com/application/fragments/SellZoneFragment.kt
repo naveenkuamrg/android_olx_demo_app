@@ -1,6 +1,7 @@
 package com.application.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -42,5 +43,10 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), RecycleProductVi
 
     override fun productItemIsSelected(productId: Long) {
         callBack.showProductDetailsPage(productId)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i("TAG SellZoneFragment","onDestroy")
     }
 }

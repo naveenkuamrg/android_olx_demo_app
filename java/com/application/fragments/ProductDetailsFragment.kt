@@ -141,20 +141,6 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
                             userId
                         )
                     }
-//                    viewModel.product.value?.isInterested?.let {
-//                        if (it) {
-//                            Utility.showToast(
-//                                requireContext(),
-//                                "We have sent your information to the product owner",
-//                            )
-//                        } else {
-//                            Utility.showToast(
-//                                requireContext(),
-//                                "Your information has been removed from this product " +
-//                                        "owner."
-//                            )
-//                        }
-//                    }
                 } else {
                     Utility.showToast(
                         requireContext(),
