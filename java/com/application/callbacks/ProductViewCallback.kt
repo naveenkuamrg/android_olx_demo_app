@@ -1,6 +1,6 @@
 package com.application.callbacks
 
-interface SellZoneFragmentCallback {
+interface ProductViewCallback {
     fun showProductEditDetailPage()
     fun showProductDetailsPage(productId: Long)
 }

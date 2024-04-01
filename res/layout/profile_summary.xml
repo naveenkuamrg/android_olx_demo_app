@@ -8,37 +8,53 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView2"
         android:layout_width="40dp"
-        android:layout_marginStart="16dp"
         android:layout_height="40dp"
+        android:layout_marginStart="6dp"
         app:cardCornerRadius="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
+        <FrameLayout
+            android:id="@+id/profile_back_ground"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/md_theme_primary" />
-
+            android:padding="1dp"
+            android:background="@color/md_theme_profile_outline"
+            android:layout_height="match_parent">
+            <com.google.android.material.imageview.ShapeableImageView
+                android:background="@color/md_theme_surfaceContainer"
+                android:id="@+id/user_dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="Image of profile"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/Circular"
+                android:src="@drawable/ic_profile_outline" />
+        </FrameLayout>
     </androidx.cardview.widget.CardView>
 
+
+
+
     <TextView
+        android:id="@+id/user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
         android:layout_marginStart="10dp"
-        android:textSize="10pt"
-        android:text="Name"
-        android:maxLines="1"
         android:ellipsize="end"
+        android:maxLines="1"
+        android:text="Name"
+        android:textSize="10pt"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/cardView2"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/phoneBtn"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="6dp"
         android:src="@drawable/ic_phone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

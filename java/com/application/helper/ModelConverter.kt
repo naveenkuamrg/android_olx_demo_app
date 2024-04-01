@@ -23,7 +23,7 @@ object ModelConverter {
     }
 
     fun profileFromUserAndUri(user: User): Profile {
-        return Profile(user.id, user.name, null, user.phoneNumber, user.email)
+        return Profile(user.id, user.name, null,user.phoneNumber, user.email)
     }
 
     fun productModelToProductDetails(product: Product): ProductDetails {
@@ -42,6 +42,8 @@ object ModelConverter {
             }
         }
     }
+
+
 }
 
 

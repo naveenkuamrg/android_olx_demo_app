@@ -11,12 +11,10 @@ import com.application.repositories.UserRepository
 
 class UserRepositoryImpl(context : Context) : UserRepository {
     val dao = AppDatabase.getInstance(context).userDao
-    val profileImageRepository : ProfileImageRepository = ProfileImageRepositoryImpl(context)
+    private val profileImageRepository : ProfileImageRepository = ProfileImageRepositoryImpl(context)
     override suspend fun getUserProfile(userId: Long): Profile {
         val profile = ModelConverter.profileFromUserAndUri(dao.getUser(userId))
         profile.profileImage = profileImageRepository.getProfileImage(profile.id.toString())
-
-        Log.i("TAG new ",dao.getProfileWithProduct(1).toString())
         return profile
     }
 

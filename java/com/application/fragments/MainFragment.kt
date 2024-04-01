@@ -6,14 +6,17 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.recyclerview.widget.RecyclerView
 import com.application.R
-import com.application.callbacks.SellZoneFragmentCallback
+import com.application.callbacks.HomeFragmentCallback
+import com.application.callbacks.ProductViewCallback
 import com.application.callbacks.ProfileFragmentCallBack
 import com.application.databinding.FragmentMainBinding
 
 class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
-    SellZoneFragmentCallback {
+    ProductViewCallback, HomeFragmentCallback {
     lateinit var binding: FragmentMainBinding
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +24,8 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
             addHomeFragment()
         }
     }
+
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -46,7 +51,11 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
                     }
                     Log.i("TAG", childFragmentManager.fragments.toString())
                 } else {
-                    requireActivity().finish()
+                    if (binding.searchView.isShowing) {
+                         binding.searchView.hide()
+                    } else {
+                        requireActivity().finish()
+                    }
                 }
             }
         }
@@ -58,27 +67,28 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
 
     private fun setOnItemSelectListener() {
         binding.navigationBar.setOnItemSelectedListener {
+
             when (it.itemId) {
                 R.id.home -> {
-                    if(childFragmentManager.fragments[0] is HomeFragment){
+                    if (childFragmentManager.fragments[0] is HomeFragment) {
                         return@setOnItemSelectedListener true
                     }
-                    childFragmentManager.popBackStack(
+                    childFragmentManager.popBackStackImmediate(
                         "home",
-                        0
+                        FragmentManager.POP_BACK_STACK_INCLUSIVE
                     )
-//                    addHomeFragment()
+                    addHomeFragment()
                 }
 
                 R.id.sell_zone -> {
-                    if(childFragmentManager.fragments[0] is SellZoneFragment){
+                    if (childFragmentManager.fragments[0] is SellZoneFragment) {
                         return@setOnItemSelectedListener true
                     }
-                    childFragmentManager.popBackStack(
+                    childFragmentManager.popBackStackImmediate(
                         "sellZone",
-                        0
+                        FragmentManager.POP_BACK_STACK_INCLUSIVE
                     )
-                     childFragmentManager.beginTransaction().apply {
+                    childFragmentManager.beginTransaction().apply {
                         replace(R.id.bottom_navigation_fragment_view_container, SellZoneFragment())
                         addToBackStack("sellZone")
                         commit()
@@ -86,12 +96,12 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
                 }
 
                 R.id.profile -> {
-                    if(childFragmentManager.fragments[0] is ProfileFragment){
+                    if (childFragmentManager.fragments[0] is ProfileFragment) {
                         return@setOnItemSelectedListener true
                     }
-                    childFragmentManager.popBackStack(
+                    childFragmentManager.popBackStackImmediate(
                         "profile",
-                      0
+                        FragmentManager.POP_BACK_STACK_INCLUSIVE
                     )
                     val transaction = childFragmentManager.beginTransaction()
                     transaction.replace(
@@ -155,10 +165,20 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
             addToBackStack("showProductDetailFragment")
             replace(R.id.main_view_container, ProductDetailsFragment().apply {
                 arguments = Bundle().apply {
-                    putLong("currentProductId",productId)
+                    putLong("currentProductId", productId)
                 }
             })
             commit()
         }
     }
+
+    override fun getSearchView(): com.google.android.material.search.SearchView {
+        return binding.searchView
+    }
+
+    override fun getSearchRecyclerView(): RecyclerView {
+       return binding.searchResult
+    }
+
+
 }

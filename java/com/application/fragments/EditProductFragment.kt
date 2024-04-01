@@ -67,7 +67,6 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), RemoveData
         setOnClickListenerForAddImageButton()
         setOnClickListenerForPostBtn()
         setObserve()
-        Log.i("adapter check", editProductViewModel.images.value?.size.toString())
     }
 
     private fun setObserveForUI() {
@@ -86,7 +85,7 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), RemoveData
 
     private fun setUpToolbar() {
         val toolbar = binding.toolbar
-        toolbar.setNavigationIcon(R.drawable.ic_close)
+        toolbar.setNavigationIcon(R.drawable.ic_back)
         toolbar.setNavigationOnClickListener {
             parentFragmentManager.popBackStack()
         }
@@ -98,7 +97,6 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), RemoveData
                 requireContext(), R.layout.textview, R.id.text, ProductType.values().map { it.name }
             )
         )
-        Log.i("Tag", "setCategoriesButton")
     }
 
     private fun setOnClickListenerForAddImageButton() {

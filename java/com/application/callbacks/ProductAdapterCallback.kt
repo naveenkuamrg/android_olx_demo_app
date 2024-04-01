@@ -1,5 +1,5 @@
 package com.application.callbacks
 
-interface ProductSummaryAdapterCallBack {
+interface ProductAdapterCallback {
     fun callbackOnClick(productId: Long)
 }

@@ -6,7 +6,6 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.application.model.AvailabilityStatus
 import com.application.model.ProductType
-import java.sql.Date
 
 
 @Entity(tableName = "product_details", foreignKeys = [

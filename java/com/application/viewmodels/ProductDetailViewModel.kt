@@ -9,10 +9,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.application.model.AvailabilityStatus
 import com.application.model.Product
+import com.application.model.Profile
 import com.application.repositories.ProductRepository
 import com.application.repositories.impl.ProductRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ProductDetailViewModel(private val productRepository: ProductRepository) : ViewModel() {
 
@@ -28,13 +30,24 @@ class ProductDetailViewModel(private val productRepository: ProductRepository) :
     private val _isInterestedChangeIsUpdate: MutableLiveData<Boolean?> = MutableLiveData()
     val isInterestedChangeIsUpdate: LiveData<Boolean?> = _isInterestedChangeIsUpdate
 
+    private val _profileList: MutableLiveData<List<Profile>> = MutableLiveData()
+    val profileList: LiveData<List<Profile>> = _profileList
+
 
     fun fetchProductDetails(productId: Long, userId: Long) {
-        viewModelScope.launch(Dispatchers.Default) {
-            _product.postValue(productRepository.getProductDetails(productId, userId))
-            _isLoading.postValue(true)
+        if(productId != -1L) {
+            _isLoading.value = true
+            viewModelScope.launch(Dispatchers.Default) {
+                _product.postValue(productRepository.getProductDetails(productId, userId))
+                _isLoading.postValue(false)
+            }
         }
+    }
 
+    fun fetchProfileList(productId: Long){
+        viewModelScope.launch(Dispatchers.IO) {
+            _profileList.postValue(productRepository.getInterestedProfile(productId))
+        }
     }
 
     fun updateProductInterested(productId: Long, userId: Long, isInterested: Boolean) {
@@ -79,14 +92,14 @@ class ProductDetailViewModel(private val productRepository: ProductRepository) :
                     AvailabilityStatus.SOLD_OUT
                 )
             }
-            _isLoading.postValue(false)
+            _isLoading.postValue(true)
             _product.postValue(
                 productRepository.getProductDetails(
                     product.value?.id!!,
                     product.value?.sellerId!!
                 )
             )
-            _isLoading.postValue(true)
+            _isLoading.postValue(false)
 
         }
     }

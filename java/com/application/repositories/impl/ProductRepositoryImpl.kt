@@ -4,17 +4,25 @@ import android.content.Context
 import android.util.Log
 import com.application.AppDatabase
 import com.application.dao.ProductDao
+import com.application.dao.ProfileDao
 import com.application.helper.ModelConverter
 import com.application.model.AvailabilityStatus
 import com.application.model.Product
 import com.application.model.ProductSummary
+import com.application.model.Profile
+import com.application.model.SearchProductResultItem
 import com.application.repositories.ProductImageRepository
 import com.application.repositories.ProductRepository
+import com.application.repositories.ProfileImageRepository
 
 class ProductRepositoryImpl(val context: Context) : ProductRepository {
 
+
     private val productDao: ProductDao = AppDatabase.getInstance(context).productDao
+    private val profileDao: ProfileDao = AppDatabase.getInstance(context).profileDao
+
     private val productImageRepository: ProductImageRepository = ProductImageRepositoryImpl(context)
+    private val profileImageRepository: ProfileImageRepository = ProfileImageRepositoryImpl(context)
     override suspend fun insertProduct(product: Product): Boolean {
         val productDetails = ModelConverter.productModelToProductDetails(product)
         val id = productDao.upsertProductDetails(productDetails)
@@ -30,7 +38,6 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
     }
 
     override suspend fun getProductSummaryDetailsForBuyZone(userId: Long): List<ProductSummary> {
-        Log.i("tag main check", productDao.getBuyProductSummary(userId).toString())
         return productDao.getBuyProductSummary(userId).also {
             setImage(it)
         }
@@ -46,8 +53,8 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
 
         productImageRepository.deleteAllImageFormFile(product.id.toString())
         return productDao.deleteProduct(
-                ModelConverter.productModelToProductDetails(product)
-            ) != 0
+            ModelConverter.productModelToProductDetails(product)
+        ) != 0
     }
 
     override suspend fun updateProductAvailabilityStatus(
@@ -62,11 +69,25 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         productId: Long,
         isInterested: Boolean
     ): Boolean {
-        return if(isInterested) {
-            productDao.insertInterestedList(productId,userId) > 0
-        }else{
-            productDao.removeInterestedList(productId,userId) > 0
+        return if (isInterested) {
+            productDao.insertInterestedList(productId, userId) > 0
+        } else {
+            productDao.removeInterestedList(productId, userId) > 0
         }
+    }
+
+    override suspend fun getInterestedProfile(productId: Long): List<Profile> {
+        val profiles: MutableList<Profile> = mutableListOf()
+        profileDao.getInterestedProfile(productId).profileList.map {
+            profiles.add(ModelConverter.profileFromUserAndUri(it).apply {
+                profileImage = profileImageRepository.getProfileImage(it.id.toString())
+            })
+        }
+        return profiles
+    }
+
+    override suspend fun getSearchProduct(searchTerm: String,userId: Long): List<SearchProductResultItem> {
+        return productDao.getProductListForSearchResult(searchTerm,userId)
     }
 
     private suspend fun setImage(listOfProductSummary: List<ProductSummary>) {

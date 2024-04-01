@@ -21,8 +21,6 @@ class ImageViewAdapter(private val data: MutableList<Bitmap>) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
-        Log.i("check1.0","$parent")
-
         val view = LayoutInflater.from(parent.context).inflate(
             R.layout.product_image_view_item1,
             parent, false

@@ -10,6 +10,7 @@ import com.application.entity.ProductDetails
 import com.application.model.AvailabilityStatus
 import com.application.model.Product
 import com.application.model.ProductSummary
+import com.application.model.SearchProductResultItem
 
 @Dao
 interface ProductDao {
@@ -31,13 +32,18 @@ interface ProductDao {
     @Delete
     fun deleteProduct(productDetails: ProductDetails): Int
 
-    @Query("UPDATE product_details SET availabilityStatus = :status where product_id Like :productId")
+    @Query("UPDATE product_details SET availabilityStatus = :status where product_id = :productId")
     fun  updateProductAvailabilityStatus(productId: Long,status: AvailabilityStatus)
 
     @Query("insert into interested_buyers values(:userId,:productId)")
     fun insertInterestedList(productId: Long,userId: Long): Long
 
-    @Query("delete from interested_buyers where product_id LIKE :productId and user_id LIKE :userId")
+    @Query("delete from interested_buyers where product_id LIKE :productId and user_id = :userId")
     fun removeInterestedList(productId: Long,userId: Long): Int
+
+@Query("SELECT product_id AS id, title AS name, productType AS type FROM product_details " +
+        "WHERE (title LIKE '%' || :searchTerm || '%' OR productType LIKE '%' || :searchTerm || '%') " +
+        "AND user_id NOT LIKE :userId AND availabilityStatus = 'AVAILABLE'")
+    fun getProductListForSearchResult(searchTerm: String,userId: Long): List<SearchProductResultItem>
 
 }

@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:titleTextColor="@color/md_theme_primary"
-            app:title="Sell Zone"/>
+            app:title="Sellzone"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 

@@ -9,13 +9,13 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.R
 import com.application.adapter.ProductSummaryAdapter
-import com.application.callbacks.ProductSummaryAdapterCallBack
+import com.application.callbacks.ProductAdapterCallback
 import com.application.callbacks.RecycleProductViewCallback
 import com.application.databinding.FragmentProductRecycleViewBinding
 import com.application.viewmodels.ProductRecycleViewModel
 
 class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_view),
-    ProductSummaryAdapterCallBack {
+    ProductAdapterCallback {
 
     val productRecycleViewModel: ProductRecycleViewModel by viewModels {
         ProductRecycleViewModel.FACTORY
@@ -49,6 +49,7 @@ class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_vi
         productRecycleViewModel.isLoading.observe(viewLifecycleOwner) {
             //setLoader
             if (!it) {
+                binding.progressCircular.visibility = View.GONE
             }
         }
 

@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.application.R
 import com.application.callbacks.RecycleProductViewCallback
-import com.application.callbacks.SellZoneFragmentCallback
+import com.application.callbacks.ProductViewCallback
 import com.application.databinding.FragmentSellZoneBinding
 import com.application.viewmodels.SellZoneViewModel
 
@@ -26,11 +26,11 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), RecycleProductVi
         }
     }
 
-    lateinit var callBack: SellZoneFragmentCallback
+    lateinit var callBack: ProductViewCallback
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentSellZoneBinding.bind(view)
-        callBack = parentFragment as SellZoneFragmentCallback
+        callBack = parentFragment as ProductViewCallback
         setOnClickListenerAddProduct()
 
     }

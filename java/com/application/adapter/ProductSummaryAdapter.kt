@@ -1,21 +1,19 @@
 package com.application.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.compose.runtime.internal.isLiveLiteralsEnabled
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.application.R
-import com.application.callbacks.ProductSummaryAdapterCallBack
+import com.application.callbacks.ProductAdapterCallback
 import com.application.helper.Utility
 import com.application.model.ProductSummary
 
-class ProductSummaryAdapter(val callback: ProductSummaryAdapterCallBack) :
+class ProductSummaryAdapter(val callback: ProductAdapterCallback) :
     RecyclerView.Adapter<ProductSummaryAdapter.ProductSummaryViewHolder>() {
     class ProductSummaryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var productId: Long = -1
@@ -29,7 +27,7 @@ class ProductSummaryAdapter(val callback: ProductSummaryAdapterCallBack) :
 
     private val diffUtil = object :
         DiffUtil.ItemCallback<ProductSummary>() {
-            
+
         override fun areItemsTheSame(oldItem: ProductSummary, newItem: ProductSummary): Boolean {
             return oldItem.productId == newItem.productId
         }
