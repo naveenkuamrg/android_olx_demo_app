@@ -5,13 +5,14 @@ import com.application.model.Product
 import com.application.model.ProductSummary
 import com.application.model.Profile
 import com.application.model.SearchProductResultItem
+import com.application.model.ProductSortType
 
 interface ProductRepository {
     suspend fun insertProduct(product: Product): Boolean
 
     suspend fun getProductSummaryDetailsForSellZone(userId: Long): List<ProductSummary>
 
-    suspend fun getProductSummaryDetailsForBuyZone(userId: Long): List<ProductSummary>
+    suspend fun getProductSummaryDetailsForBuyZone(userId: Long,sort: ProductSortType): List<ProductSummary>
 
     suspend fun getProductDetails(productId: Long, userId: Long): Product
 

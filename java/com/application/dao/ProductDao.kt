@@ -2,10 +2,8 @@ package com.application.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
-import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Upsert
-import com.application.entity.InterestedList
 import com.application.entity.ProductDetails
 import com.application.model.AvailabilityStatus
 import com.application.model.Product
@@ -17,16 +15,25 @@ interface ProductDao {
     @Upsert
     fun upsertProductDetails(product: ProductDetails): Long
 
-    @Query("select product_id as productId ,title,postedDate,location,price from product_details where user_id LIKE :userId")
+    @Query("select product_id as productId ,title,postedDate,location,price from product_details where user_id LIKE :userId ")
     fun getPostProductSummary(userId: Long): List<ProductSummary>
 
-    @Query("select product_id as productId ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE'  ")
-    fun getBuyProductSummary(userId: Long): List<ProductSummary>
+    @Query("select product_id as productId ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' ORDER BY postedDate DESC ")
+    fun getBuyProductSummaryOrderByPostedDateDESC(userId: Long): List<ProductSummary>
+
+    @Query("select product_id as productId ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' ORDER BY postedDate ASC ")
+    fun getBuyProductSummaryOrderByPostedDateASC(userId: Long): List<ProductSummary>
+
+    @Query("select product_id as productId ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' ORDER BY price DESC ")
+    fun getBuyProductSummaryOrderByPriceDESC(userId: Long): List<ProductSummary>
+
+    @Query("select product_id as productId ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' ORDER BY price ASC ")
+    fun getBuyProductSummaryOrderByPriceASC(userId: Long): List<ProductSummary>
 
     @Query("select product_id as id ,title,price,postedDate,description,availabilityStatus,location,productType,user_id as sellerId," +
-            "case when isInterested is null then 0 else 1 end as isInterested ,case when isWishList is null then 0 else 1 end as isWishList from product_details" +
+            "case when isInterested is null then 0 else 1 end as isInterested ,case when isWishList is null then 0 else 1 end as isWishList from product_details as dp" +
             " left join (select product_id as isInterested from interested_buyers where user_id Like :userId and product_id Like :productId) as isInterested " +
-            "left join (select product_id as isWishList from wish_list where user_id Like :userId and product_id Like :productId) as isWishList where product_id Like :productId")
+            "left join (select product_id as isWishList from wish_list where user_id Like :userId and product_id Like :productId) as isWishList where product_id Like :productId ")
     fun getProduct(productId: Long,userId: Long): Product
 
     @Delete

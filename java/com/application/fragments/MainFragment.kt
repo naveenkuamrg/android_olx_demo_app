@@ -125,7 +125,7 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
         transaction.commit()
     }
 
-    override fun showEditFragment() {
+    override fun showEditPage() {
         parentFragmentManager.beginTransaction().apply {
             addToBackStack("editProfileFragment")
             replace(R.id.main_view_container, EditProfileFragment())
@@ -133,14 +133,14 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
         }
     }
 
-    override fun showLoginFragment() {
+    override fun showLoginPage() {
         parentFragmentManager.beginTransaction().apply {
             replace(R.id.main_view_container, LoginFragment())
             commit()
         }
     }
 
-    override fun showChangePasswordFragment() {
+    override fun showChangePasswordPage() {
         parentFragmentManager.beginTransaction().apply {
             addToBackStack("changePasswordFragment")
             replace(R.id.main_view_container, ChangePasswordFragment())

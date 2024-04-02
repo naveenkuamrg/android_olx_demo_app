@@ -44,7 +44,7 @@ class ProfileFragment() : Fragment(R.layout.fragment_profile) {
             textLabel.text = "Edit Profile"
             imageFilterView.setImageResource(R.drawable.ic_edit)
             navigator.setOnClickListener {
-                callBack.showEditFragment()
+                callBack.showEditPage()
             }
         }
 
@@ -52,7 +52,7 @@ class ProfileFragment() : Fragment(R.layout.fragment_profile) {
             textLabel.text = "Change password"
             imageFilterView.setImageResource(R.drawable.ic_lock)
             navigator.setOnClickListener {
-                callBack.showChangePasswordFragment()
+                callBack.showChangePasswordPage()
             }
         }
         binding.logout.apply {
@@ -70,7 +70,7 @@ class ProfileFragment() : Fragment(R.layout.fragment_profile) {
                             remove("userId")
                             apply()
                         }
-                        callBack.showLoginFragment()
+                        callBack.showLoginPage()
                     }
                    setNegativeButton("No"){_,_->}
                     show()

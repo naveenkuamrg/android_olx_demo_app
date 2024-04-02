@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.application.model.ProductSortType
 import com.application.model.ProductSummary
 import com.application.repositories.ProductRepository
 import com.application.repositories.impl.ProductRepositoryImpl
@@ -15,9 +16,6 @@ import kotlinx.coroutines.launch
 
 class ProductRecycleViewModel(private val productRepository: ProductRepository) : ViewModel() {
 
-    init {
-        Log.i("TAG ProductRecycleViewModel","init")
-    }
 
     private val _isLoading: MutableLiveData<Boolean> = MutableLiveData()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -27,17 +25,22 @@ class ProductRecycleViewModel(private val productRepository: ProductRepository) 
     val data: LiveData<List<ProductSummary>> = _data
 
     fun getPostProductSummary(id: Long) {
-
+        _isLoading.postValue(true)
         viewModelScope.launch(Dispatchers.Default) {
             _data.postValue(productRepository.getProductSummaryDetailsForSellZone(id))
             _isLoading.postValue(false)
         }
     }
 
-    fun getBuyProductSummary(id: Long) {
-        Log.i("TAG ProductRecycleViewModel","getBuyProductSummary")
+    fun getBuyProductSummary(id: Long, sortType: ProductSortType) {
         viewModelScope.launch(Dispatchers.Default) {
-            _data.postValue(productRepository.getProductSummaryDetailsForBuyZone(id))
+            _isLoading.postValue(true)
+            _data.postValue(
+                productRepository.getProductSummaryDetailsForBuyZone(
+                    id,
+                    sortType
+                )
+            )
             _isLoading.postValue(false)
         }
     }

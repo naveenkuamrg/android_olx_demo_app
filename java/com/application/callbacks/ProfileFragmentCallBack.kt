@@ -1,9 +1,9 @@
 package com.application.callbacks
 
 interface ProfileFragmentCallBack {
-    fun showEditFragment()
+    fun showEditPage()
 
-    fun showLoginFragment()
+    fun showLoginPage()
 
-    fun showChangePasswordFragment()
+    fun showChangePasswordPage()
 }

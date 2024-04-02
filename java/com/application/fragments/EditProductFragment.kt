@@ -101,8 +101,8 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), RemoveData
 
     private fun setOnClickListenerForAddImageButton() {
         binding.addImageButton.setOnClickListener {
-           val f = BottomSheetDialogPhotoPicker()
-            f.show(childFragmentManager,"bottomSheet")
+           val bottomSheet = BottomSheetDialogPhotoPicker()
+            bottomSheet.show(childFragmentManager,"bottomSheet")
         }
     }
 
@@ -210,7 +210,7 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), RemoveData
         }
     }
 
-    override fun removeDataFromList(position: Int) {
+    override fun removeButtonOnClick(position: Int) {
         editProductViewModel.removeImage(position)
     }
 

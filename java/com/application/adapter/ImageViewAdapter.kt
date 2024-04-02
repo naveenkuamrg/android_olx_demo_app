@@ -1,7 +1,6 @@
 package com.application.adapter
 
 import android.graphics.Bitmap
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,7 +35,7 @@ class ImageViewAdapter(private val data: MutableList<Bitmap>) :
         holder.image.setImageBitmap(data[position])
         if(callBack != null){
             holder.deleteImageView.setOnClickListener {
-                callBack?.removeDataFromList(position)
+                callBack?.removeButtonOnClick(position)
             }
         }else{
             holder.deleteImageView.visibility = View.GONE

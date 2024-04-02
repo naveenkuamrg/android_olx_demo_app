@@ -1,13 +1,13 @@
 package com.application.repositories.impl
 
 import android.content.Context
-import android.util.Log
 import com.application.AppDatabase
 import com.application.dao.ProductDao
 import com.application.dao.ProfileDao
 import com.application.helper.ModelConverter
 import com.application.model.AvailabilityStatus
 import com.application.model.Product
+import com.application.model.ProductSortType
 import com.application.model.ProductSummary
 import com.application.model.Profile
 import com.application.model.SearchProductResultItem
@@ -37,13 +37,33 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         return result
     }
 
-    override suspend fun getProductSummaryDetailsForBuyZone(userId: Long): List<ProductSummary> {
-        return productDao.getBuyProductSummary(userId).also {
+    override suspend fun getProductSummaryDetailsForBuyZone(userId: Long, sort: ProductSortType):
+            List<ProductSummary> {
+        val productList = when (sort) {
+            ProductSortType.POSTED_DATE_ASC -> {
+                productDao.getBuyProductSummaryOrderByPostedDateASC(userId)
+            }
+
+            ProductSortType.POSTED_DATE_DESC -> {
+                productDao.getBuyProductSummaryOrderByPostedDateDESC(userId)
+            }
+
+            ProductSortType.PRICE_ASC -> {
+                productDao.getBuyProductSummaryOrderByPriceASC(userId)
+            }
+
+            ProductSortType.PRICE_DESC -> {
+                productDao.getBuyProductSummaryOrderByPriceDESC(userId)
+            }
+        }
+
+        return productList.also {
             setImage(it)
         }
     }
 
     override suspend fun getProductDetails(productId: Long, userId: Long): Product {
+
         return productDao.getProduct(productId, userId).apply {
             images = (productImageRepository.getAllImageFromFile(productId.toString()))
         }
@@ -86,8 +106,11 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         return profiles
     }
 
-    override suspend fun getSearchProduct(searchTerm: String,userId: Long): List<SearchProductResultItem> {
-        return productDao.getProductListForSearchResult(searchTerm,userId)
+    override suspend fun getSearchProduct(
+        searchTerm: String,
+        userId: Long
+    ): List<SearchProductResultItem> {
+        return productDao.getProductListForSearchResult(searchTerm, userId)
     }
 
     private suspend fun setImage(listOfProductSummary: List<ProductSummary>) {

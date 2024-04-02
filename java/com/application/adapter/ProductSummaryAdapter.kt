@@ -9,11 +9,11 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.application.R
-import com.application.callbacks.ProductAdapterCallback
+import com.application.callbacks.ItemOnClickCallback
 import com.application.helper.Utility
 import com.application.model.ProductSummary
 
-class ProductSummaryAdapter(val callback: ProductAdapterCallback) :
+class ProductSummaryAdapter(val callback: ItemOnClickCallback) :
     RecyclerView.Adapter<ProductSummaryAdapter.ProductSummaryViewHolder>() {
     class ProductSummaryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var productId: Long = -1
@@ -54,7 +54,7 @@ class ProductSummaryAdapter(val callback: ProductAdapterCallback) :
 
         return ProductSummaryViewHolder(itemView).apply {
             itemView.setOnClickListener {
-                callback.callbackOnClick(productId)
+                callback.itemOnClick(productId)
             }
         }
     }
