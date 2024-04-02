@@ -18,9 +18,6 @@ import com.application.viewmodels.ProfilePageViewModel
 
 class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
     BottomSheetDialogPhotoPicker {
-
-
-    //ActivityResultLauncher
     lateinit var binding: FragmentEditProfileBinding
 
     private val profilePageViewModel: ProfilePageViewModel by

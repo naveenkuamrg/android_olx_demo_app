@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,7 +38,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), ItemOnClickCallback,
         ProductRecycleViewModel.FACTORY
     }
 
-    private val homeViewModel: HomeViewModel by viewModels { HomeViewModel.FACTORY }
+    private val homeViewModel: HomeViewModel by activityViewModels { HomeViewModel.FACTORY }
 
 
 
@@ -53,10 +54,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), ItemOnClickCallback,
         setUpSearchBar()
         setObserve()
         setUpRecycleView()
-        productRecycleViewModel.getBuyProductSummary(
-            userId,
-            homeViewModel.currentSortType
-        )
     }
 
     override fun itemOnClick(productId: Long) {
@@ -127,15 +124,21 @@ class HomeFragment : Fragment(R.layout.fragment_home), ItemOnClickCallback,
             }
         }
 
+
+        homeViewModel.currentSortType.observe(viewLifecycleOwner){
+            productRecycleViewModel.getBuyProductSummary(
+                userId,
+                it
+            )
+        }
+
     }
 
 
 
     override fun onClick(sortType: ProductSortType) {
-        productRecycleViewModel.getBuyProductSummary(
-            userId,
-           sortType
-        )
+
+        homeViewModel._currentSortType.value = sortType
     }
 
     private fun setUpRecycleView() {

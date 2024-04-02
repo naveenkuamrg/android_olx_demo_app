@@ -1,19 +1,22 @@
 package com.application.viewmodels
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.application.model.ProductSortType
 
-class HomeViewModel: ViewModel() {
-    val currentSortType: ProductSortType = ProductSortType.PRICE_ASC
+class HomeViewModel : ViewModel() {
+    val _currentSortType: MutableLiveData<ProductSortType> =
+        MutableLiveData(ProductSortType.POSTED_DATE_ASC)
+    var currentSortType: LiveData<ProductSortType> = _currentSortType
 
 
-
-    companion object{
+    companion object {
 
         @Suppress("UNCHECKED_CAST")
-        val FACTORY = object: ViewModelProvider.Factory{
+        val FACTORY = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
 
                 return HomeViewModel() as T
