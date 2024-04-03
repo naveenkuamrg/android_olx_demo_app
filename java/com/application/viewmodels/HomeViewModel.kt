@@ -8,9 +8,14 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.application.model.ProductSortType
 
 class HomeViewModel : ViewModel() {
-    val _currentSortType: MutableLiveData<ProductSortType> =
+    private val _currentSortType: MutableLiveData<ProductSortType> =
         MutableLiveData(ProductSortType.POSTED_DATE_ASC)
     var currentSortType: LiveData<ProductSortType> = _currentSortType
+
+
+    fun setSortType(type: ProductSortType){
+        _currentSortType.value = type
+    }
 
 
     companion object {

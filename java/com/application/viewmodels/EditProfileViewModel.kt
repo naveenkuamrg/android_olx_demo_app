@@ -40,7 +40,6 @@ class EditProfileViewModel(private val userRepository: UserRepository) : ViewMod
                 try {
                     userRepository.updateUserEmail(email, userId)
                 } catch (e: SQLiteConstraintException) {
-                    Log.i("TAG", e.message.toString())
                     withContext(Dispatchers.Main) {
                         _exception.value = InvalidUserDataException.EmailAlreadyExists()
                     }

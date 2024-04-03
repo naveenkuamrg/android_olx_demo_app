@@ -45,7 +45,6 @@ class ImageDaoImpl(
         }
         if (imageFiles != null) {
             for (file in imageFiles) {
-                Log.i("path file", file.path)
                 val inputStream = FileInputStream(file)
                 val bitmap = BitmapFactory.decodeStream(inputStream)
                 withContext(Dispatchers.IO) {
@@ -82,7 +81,6 @@ class ImageDaoImpl(
 
 
     override suspend fun getImage(folderPath: String): Bitmap? {
-        Log.i("TAG path new", File(context.filesDir, folderPath).path)
         return try {
             val inputStream = FileInputStream(File(context.filesDir, folderPath))
             val bitmap = BitmapFactory.decodeStream(inputStream)

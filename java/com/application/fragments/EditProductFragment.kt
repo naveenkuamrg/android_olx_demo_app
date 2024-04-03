@@ -201,7 +201,6 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), RemoveData
 
         // Add image
         editProductViewModel.images.observe(viewLifecycleOwner) { images ->
-            Log.i("TAG", "Observe: ${images.size}")
             binding.viewPager.adapter = ImageViewAdapter(images).apply {
                 callBack = this@EditProductFragment
             }

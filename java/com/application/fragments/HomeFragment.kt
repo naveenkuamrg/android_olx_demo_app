@@ -15,7 +15,7 @@ import com.application.R
 import com.application.adapter.ProductSummaryAdapter
 import com.application.adapter.SearchAdapter
 import com.application.callbacks.HomeFragmentCallback
-import com.application.callbacks.ItemOnClickCallback
+import com.application.callbacks.AdapterItemClickListener
 import com.application.callbacks.SortBottomSheetCallback
 import com.application.databinding.FragmentHomeBinding
 import com.application.model.ProductSortType
@@ -24,13 +24,14 @@ import com.application.viewmodels.ProductRecycleViewModel
 import com.application.viewmodels.SearchProductViewModel
 import java.util.Locale
 
-class HomeFragment : Fragment(R.layout.fragment_home), ItemOnClickCallback,
+class HomeFragment : Fragment(R.layout.fragment_home), AdapterItemClickListener,
     SortBottomSheetCallback {
 
     lateinit var binding: FragmentHomeBinding
 
     lateinit var callback: HomeFragmentCallback
 
+    var isSortTypeUpdate = false
 
     private val searchProductViewModel: SearchProductViewModel by viewModels { SearchProductViewModel.FACTORY }
 
@@ -40,13 +41,12 @@ class HomeFragment : Fragment(R.layout.fragment_home), ItemOnClickCallback,
 
     private val homeViewModel: HomeViewModel by activityViewModels { HomeViewModel.FACTORY }
 
-
-
     var userId: Long = -1L
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         callback = parentFragment as HomeFragmentCallback
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,6 +54,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), ItemOnClickCallback,
         setUpSearchBar()
         setObserve()
         setUpRecycleView()
+
     }
 
     override fun itemOnClick(productId: Long) {
@@ -111,9 +112,13 @@ class HomeFragment : Fragment(R.layout.fragment_home), ItemOnClickCallback,
         }
 
         productRecycleViewModel.data.observe(viewLifecycleOwner) {
-            (binding.productSummaryRecyclerView.adapter as ProductSummaryAdapter).saveData(it)
+            binding.productSummaryRecyclerView.adapter = ProductSummaryAdapter(this).apply {
+                saveData(it)
+            }
+
         }
         productRecycleViewModel.isLoading.observe(viewLifecycleOwner) {
+
             if (!it) {
                 binding.progressCircular.visibility = View.GONE
                 binding.productSummaryRecyclerView.visibility = View.VISIBLE
@@ -126,10 +131,13 @@ class HomeFragment : Fragment(R.layout.fragment_home), ItemOnClickCallback,
 
 
         homeViewModel.currentSortType.observe(viewLifecycleOwner){
-            productRecycleViewModel.getBuyProductSummary(
-                userId,
-                it
-            )
+            if(!isSortTypeUpdate){
+                productRecycleViewModel.getBuyProductSummary(
+                    userId,
+                    it
+                )
+                isSortTypeUpdate = true
+            }
         }
 
     }
@@ -137,8 +145,10 @@ class HomeFragment : Fragment(R.layout.fragment_home), ItemOnClickCallback,
 
 
     override fun onClick(sortType: ProductSortType) {
-
-        homeViewModel._currentSortType.value = sortType
+        if(homeViewModel.currentSortType.value != sortType) {
+            homeViewModel.setSortType(sortType)
+        }
+        isSortTypeUpdate = false
     }
 
     private fun setUpRecycleView() {
@@ -155,11 +165,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), ItemOnClickCallback,
         recyclerView.addItemDecoration(dividerItemDecoration)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = ProductSummaryAdapter(this)
-
     }
-
-
-
-
 
 }

@@ -16,17 +16,12 @@ import com.application.databinding.FragmentMainBinding
 class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
     ProductViewCallback, HomeFragmentCallback {
     lateinit var binding: FragmentMainBinding
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
             addHomeFragment()
         }
     }
-
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentMainBinding.bind(view)
@@ -49,7 +44,6 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
                             bottomNavigation.selectedItemId = R.id.home
                         }
                     }
-                    Log.i("TAG", childFragmentManager.fragments.toString())
                 } else {
                     if (binding.searchView.isShowing) {
                          binding.searchView.hide()
@@ -62,7 +56,6 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner, onBackPressedCallback
         )
-
     }
 
     private fun setOnItemSelectListener() {
@@ -75,9 +68,8 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
                     }
                     childFragmentManager.popBackStackImmediate(
                         "home",
-                        FragmentManager.POP_BACK_STACK_INCLUSIVE
+                       0
                     )
-                    addHomeFragment()
                 }
 
                 R.id.sell_zone -> {
@@ -117,14 +109,12 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
             return@setOnItemSelectedListener true
         }
     }
-
     fun addHomeFragment() {
         val transaction = childFragmentManager.beginTransaction()
         transaction.replace(R.id.bottom_navigation_fragment_view_container, HomeFragment())
         transaction.addToBackStack("home")
         transaction.commit()
     }
-
     override fun showEditPage() {
         parentFragmentManager.beginTransaction().apply {
             addToBackStack("editProfileFragment")
@@ -132,14 +122,12 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
             commit()
         }
     }
-
     override fun showLoginPage() {
         parentFragmentManager.beginTransaction().apply {
             replace(R.id.main_view_container, LoginFragment())
             commit()
         }
     }
-
     override fun showChangePasswordPage() {
         parentFragmentManager.beginTransaction().apply {
             addToBackStack("changePasswordFragment")
@@ -147,7 +135,6 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
             commit()
         }
     }
-
     override fun showProductEditDetailPage() {
         parentFragmentManager.beginTransaction().apply {
             addToBackStack("showEditProductFragment")
@@ -155,7 +142,6 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
             commit()
         }
     }
-
     override fun showProductDetailsPage(productId: Long) {
         parentFragmentManager.popBackStackImmediate(
             "showProductDetailFragment",
@@ -179,6 +165,4 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
     override fun getSearchRecyclerView(): RecyclerView {
        return binding.searchResult
     }
-
-
 }

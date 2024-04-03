@@ -8,10 +8,10 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.application.R
-import com.application.callbacks.ItemOnClickCallback
+import com.application.callbacks.AdapterItemClickListener
 import com.application.model.SearchProductResultItem
 
-class SearchAdapter(val callback: ItemOnClickCallback) :
+class SearchAdapter(val callback: AdapterItemClickListener) :
     RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
 
 

@@ -60,13 +60,10 @@ class ProductDetailViewModel(private val productRepository: ProductRepository) :
                     isInterested
                 )
             )
-            Log.i("TAG _isInterestedChangeIsUpdate",_isInterestedChangeIsUpdate.value.toString())
-
         }
     }
 
     fun removeProductDetail() {
-
         viewModelScope.launch(Dispatchers.Default) {
             product.value?.let {
                 _isDelete.postValue(productRepository.removeProduct(it))
@@ -100,7 +97,6 @@ class ProductDetailViewModel(private val productRepository: ProductRepository) :
                 )
             )
             _isLoading.postValue(false)
-
         }
     }
 

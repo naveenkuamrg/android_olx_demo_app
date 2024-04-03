@@ -10,15 +10,13 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.R
 import com.application.adapter.ProductSummaryAdapter
-import com.application.adapter.SearchAdapter
-import com.application.callbacks.ItemOnClickCallback
+import com.application.callbacks.AdapterItemClickListener
 import com.application.callbacks.ProductViewCallback
 import com.application.databinding.FragmentSellZoneBinding
-import com.application.model.ProductSortType
 import com.application.viewmodels.ProductRecycleViewModel
 import com.application.viewmodels.SellZoneViewModel
 
-class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), ItemOnClickCallback {
+class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), AdapterItemClickListener {
     lateinit var binding: FragmentSellZoneBinding
 
     val viewModel: SellZoneViewModel by viewModels { SellZoneViewModel.FACTORY }

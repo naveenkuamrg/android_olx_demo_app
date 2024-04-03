@@ -1,5 +1,5 @@
 package com.application.callbacks
 
-interface ItemOnClickCallback {
+interface AdapterItemClickListener {
     fun itemOnClick(productId: Long)
 }

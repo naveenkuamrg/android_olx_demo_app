@@ -20,7 +20,6 @@ import com.application.viewmodels.ProductDetailViewModel
 class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
     val viewModel: ProductDetailViewModel by activityViewModels { ProductDetailViewModel.FACTORY }
     lateinit var binding: FragmentProductDetailsBinding
-
     private val isCurrentUserProduct: Boolean
         get() {
             return arguments?.getString("fragment") != "home"
@@ -37,7 +36,6 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.clearLiveData()
-        Log.i("TAG ProductDetailsFragment","viewModel")
     }
 
 
@@ -106,19 +104,21 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
             }
         }
     }
-
     private fun setObserve() {
         //add loader background image should be gone while loading
         viewModel.isLoading.observe(viewLifecycleOwner) {
 
-            Log.i("id ProductDetailsFragment",it.toString())
+            if (it == true) {
+                binding.productDetailLayout.productDetailLayout.visibility = View.GONE
+                binding.progressCircular.visibility = View.VISIBLE
+            }
 
-            if (it != true) {
-
+            if(it == false){
+                binding.productDetailLayout.productDetailLayout.visibility = View.VISIBLE
+                binding.progressCircular.visibility = View.GONE
             }
         }
         viewModel.product.observe(viewLifecycleOwner){
-            Log.i("observe","observe")
             if(isCurrentUserProduct && it?.availabilityStatus != AvailabilityStatus.SOLD_OUT) {
                 if(it?.id != null) {
                     viewModel.fetchProfileList(it.id)
@@ -168,17 +168,13 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
         }
 
         viewModel.profileList.observe(viewLifecycleOwner){
-            Log.i("profileList",it.toString())
             val adapter = ProfileSummaryAdapter(it,requireContext())
             binding.productDetailLayout.profileRecyclerView.layoutManager = LinearLayoutManager(requireContext())
             binding.productDetailLayout.profileRecyclerView.adapter = adapter
         }
 
     }
-
-
     private fun setUpToolbar() {
-        Log.i("toolTest", viewModel.product.value?.sellerId.toString())
         val toolbar = binding.toolbar
         toolbar.setNavigationIcon(R.drawable.ic_back)
         toolbar.setNavigationOnClickListener {
@@ -230,18 +226,12 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
             }
         }
     }
-
     private fun updateButtonUI() {
-
-
             if (viewModel.product.value?.isInterested == false) {
                 binding.productDetailLayout.imInterestedBtn.text = "I'm Interested"
             } else {
                 binding.productDetailLayout.imInterestedBtn.text = "remove from Interested"
             }
-
-
-
     }
 
 

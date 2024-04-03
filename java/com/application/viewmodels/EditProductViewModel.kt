@@ -38,9 +38,7 @@ class EditProductViewModel(private val productRepository: ProductRepository) : V
         location: String,
         userId: Long
     ): Boolean {
-        Log.i("TAG images",images.value.toString())
         viewModelScope.launch(Dispatchers.Default) {
-            Log.i("tag productId",product.value?.id.toString())
             _isUpload.postValue(
                 productRepository.insertProduct(
                     Product(
@@ -74,7 +72,6 @@ class EditProductViewModel(private val productRepository: ProductRepository) : V
         _images.value = images.value?.apply {
             removeAt(position)
         }
-        Log.i("TAG", _images.value?.size.toString())
     }
 
     fun setProduct(product: Product){
