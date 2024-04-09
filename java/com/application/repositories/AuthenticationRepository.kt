@@ -1,5 +1,7 @@
 package com.application.repositories
 
+import com.application.model.Profile
+
 interface AuthenticationRepository {
 
     suspend fun setUserProfile(name: String,
@@ -7,6 +9,6 @@ interface AuthenticationRepository {
                                phoneNumber: String,
                                password: String): Long
 
-    suspend fun getUserId(email: String, password: String) : Long
+    suspend fun getUser(email: String, password: String) : Profile
 
 }

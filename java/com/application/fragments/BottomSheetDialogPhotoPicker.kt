@@ -3,7 +3,6 @@ package com.application.fragments
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
@@ -11,27 +10,26 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import com.application.R
-import com.application.callbacks.BottomSheetDialogPhotoPicker
+import com.application.callbacks.PhotoPickerBottomSheet
 import com.application.databinding.FragmentBottomSheetDialogPhotoPickerBinding
 import com.application.helper.ImageConverter
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class BottomSheetDialogPhotoPicker :
     BottomSheetDialogFragment(R.layout.fragment_bottom_sheet_dialog_photo_picker) {
-    lateinit var callback: BottomSheetDialogPhotoPicker
+    lateinit var callback: PhotoPickerBottomSheet
     lateinit var binding: FragmentBottomSheetDialogPhotoPickerBinding
     private lateinit var startActivityForResultProductImages:
             ActivityResultLauncher<PickVisualMediaRequest>
     private lateinit var startActivityForResultProductImage:
             ActivityResultLauncher<PickVisualMediaRequest>
     private lateinit var imageRegister: ActivityResultLauncher<Intent>
-    private lateinit var photoUri: Uri
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        callback = parentFragment as BottomSheetDialogPhotoPicker
-        setRegisterForActivityResult(callback.getCountOfBitmapList())
+        callback = parentFragment as PhotoPickerBottomSheet
+        setRegisterForActivityResult(callback.getBitmapCount())
     }
 
     private fun setRegisterForActivityResult(count: Int) {
@@ -44,7 +42,7 @@ class BottomSheetDialogPhotoPicker :
                             uri, 1000, 1000
                         ) { bitmap ->
                             if (bitmap != null) {
-                                callback.setBitmap(bitmap)
+                                callback.addBitmap(bitmap)
                             }
                         }
                     }
@@ -64,7 +62,7 @@ class BottomSheetDialogPhotoPicker :
                         1000
                     ) { it1 ->
                         if (it1 != null) {
-                            callback.setBitmap(it1)
+                            callback.addBitmap(it1)
                         }
                     }
                 }
@@ -75,7 +73,7 @@ class BottomSheetDialogPhotoPicker :
         imageRegister =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 if (it.resultCode == Activity.RESULT_OK) {
-                    callback.setBitmap(it.data?.extras?.get("data") as Bitmap)
+                    callback.addBitmap(it.data?.extras?.get("data") as Bitmap)
                 }
 
                 this.dismiss()
@@ -91,7 +89,7 @@ class BottomSheetDialogPhotoPicker :
 
     private fun setOnClickListener() {
         binding.galleryBtn.setOnClickListener {
-            if (callback.getCountOfBitmapList() > 1) {
+            if (callback.getBitmapCount() > 1) {
                 startActivityForResultImages()
             } else {
                 startActivityForResultProductImage()

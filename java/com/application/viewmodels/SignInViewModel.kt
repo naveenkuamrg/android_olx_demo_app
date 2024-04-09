@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.application.exceptions.AuthenticationSignInException
+import com.application.model.Profile
 import com.application.repositories.AuthenticationRepository
 import com.application.repositories.impl.AuthenticationRepositoryImpl
 import kotlinx.coroutines.Dispatchers
@@ -14,8 +15,8 @@ import kotlinx.coroutines.launch
 
 class SignInViewModel(private val repository: AuthenticationRepository) : ViewModel() {
 
-    private val _userId = MutableLiveData<Long>()
-    val userId: LiveData<Long> = _userId
+    private val _user = MutableLiveData<Profile>()
+    val user: LiveData<Profile> = _user
 
     private val _exceptions = MutableLiveData<AuthenticationSignInException>()
     val exceptions: LiveData<AuthenticationSignInException> = _exceptions
@@ -23,8 +24,8 @@ class SignInViewModel(private val repository: AuthenticationRepository) : ViewMo
     fun signIn(email: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val id = repository.getUserId(email, password)
-                _userId.postValue(id)
+                val id = repository.getUser(email, password)
+                _user.postValue(id)
             } catch (e: AuthenticationSignInException) {
                 _exceptions.postValue(e)
             }

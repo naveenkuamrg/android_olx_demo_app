@@ -2,13 +2,13 @@ package com.application.repositories.impl
 
 import android.content.Context
 import android.graphics.Bitmap
-import com.application.dao.ImageDAO
+import com.application.dao.ImageDao
 import com.application.dao.ImageDaoImpl
 import com.application.repositories.ProfileImageRepository
 
 class ProfileImageRepositoryImpl(context: Context) : ProfileImageRepository {
 
-    val imageDAO: ImageDAO = ImageDaoImpl(context)
+    private val imageDAO: ImageDao = ImageDaoImpl(context)
     override suspend fun getProfileImage(id: String): Bitmap? {
         return imageDAO.getImage("profile/${id}.jpeg")
     }

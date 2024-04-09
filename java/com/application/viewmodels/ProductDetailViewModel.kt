@@ -1,6 +1,5 @@
 package com.application.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,7 +13,6 @@ import com.application.repositories.ProductRepository
 import com.application.repositories.impl.ProductRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ProductDetailViewModel(private val productRepository: ProductRepository) : ViewModel() {
 
@@ -33,6 +31,9 @@ class ProductDetailViewModel(private val productRepository: ProductRepository) :
     private val _profileList: MutableLiveData<List<Profile>> = MutableLiveData()
     val profileList: LiveData<List<Profile>> = _profileList
 
+    private val _isWishListIsUpdate: MutableLiveData<Boolean?> = MutableLiveData()
+    val isWishListIsUpdate: LiveData<Boolean?> = _isWishListIsUpdate
+
 
     fun fetchProductDetails(productId: Long, userId: Long) {
         if(productId != -1L) {
@@ -50,13 +51,13 @@ class ProductDetailViewModel(private val productRepository: ProductRepository) :
         }
     }
 
-    fun updateProductInterested(productId: Long, userId: Long, isInterested: Boolean) {
+    fun updateProductInterested(product: Product, userId: Long, isInterested: Boolean) {
         _isInterestedChangeIsUpdate.value = null
         viewModelScope.launch(Dispatchers.Default) {
             _isInterestedChangeIsUpdate.postValue(
                 productRepository.updateProductIsInterested(
                     userId,
-                    productId,
+                    product,
                     isInterested
                 )
             )
@@ -84,9 +85,10 @@ class ProductDetailViewModel(private val productRepository: ProductRepository) :
     fun updateMarkAsSold() {
         viewModelScope.launch(Dispatchers.Default) {
             product.value?.let {
-                productRepository.updateProductAvailabilityStatus(
+                productRepository.updateProductAvailabilityAndNotify(
                     it,
-                    AvailabilityStatus.SOLD_OUT
+                    AvailabilityStatus.SOLD_OUT,
+                    profileList.value!!
                 )
             }
             _isLoading.postValue(true)
@@ -100,6 +102,15 @@ class ProductDetailViewModel(private val productRepository: ProductRepository) :
         }
     }
 
+    fun updateIsInterested(userId: Long){
+        _isWishListIsUpdate.value  = false
+        product.value?.isWishList = !product.value?.isWishList!!
+        viewModelScope.launch(Dispatchers.Default) {
+            productRepository.updateIsFavorite(product.value!!, product.value?.isWishList!!, userId)
+            _isWishListIsUpdate.postValue(true)
+        }
+
+    }
     companion object {
 
         @Suppress("UNCHECKED_CAST")

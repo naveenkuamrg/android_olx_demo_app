@@ -7,12 +7,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.application.R
-import com.application.callbacks.RemoveDataFromAdapterCallBack
+import com.application.callbacks.ImageAdapterListener
 
 class ImageViewAdapter(private val data: MutableList<Bitmap>) :
     RecyclerView.Adapter<ImageViewAdapter.ImageViewHolder>() {
 
-    var callBack: RemoveDataFromAdapterCallBack? = null
+    var callBack: ImageAdapterListener? = null
 
     class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val image: ImageView = itemView.findViewById(R.id.product_image)
@@ -35,7 +35,7 @@ class ImageViewAdapter(private val data: MutableList<Bitmap>) :
         holder.image.setImageBitmap(data[position])
         if(callBack != null){
             holder.deleteImageView.setOnClickListener {
-                callBack?.removeButtonOnClick(position)
+                callBack?.onRemoveButtonClick(position)
             }
         }else{
             holder.deleteImageView.visibility = View.GONE

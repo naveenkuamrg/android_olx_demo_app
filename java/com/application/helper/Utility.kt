@@ -52,6 +52,16 @@ object Utility {
 
     }
 
+    fun getLoginUserId(context: Context): Long {
+       return context.getSharedPreferences("mySharePref", AppCompatActivity.MODE_PRIVATE)
+           .getString("userId", "-1")?.toLong() ?: -1
+    }
+
+    fun getLoginUserName(context: Context): String{
+        return context.getSharedPreferences("mySharePref",AppCompatActivity.MODE_PRIVATE)
+            .getString("userName","") ?: ""
+    }
+
     fun showToast(context: Context, message: String) {
         Toast.makeText(
             context,

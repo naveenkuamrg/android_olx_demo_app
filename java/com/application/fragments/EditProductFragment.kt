@@ -2,7 +2,6 @@ package com.application.fragments
 
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -12,8 +11,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.application.R
 import com.application.adapter.ImageViewAdapter
-import com.application.callbacks.RemoveDataFromAdapterCallBack
-import com.application.callbacks.BottomSheetDialogPhotoPicker
+import com.application.callbacks.ImageAdapterListener
+import com.application.callbacks.PhotoPickerBottomSheet
 import com.application.databinding.FragmentEditProductBinding
 import com.application.helper.StringConverter
 import com.application.helper.Utility
@@ -21,8 +20,8 @@ import com.application.model.ProductType
 import com.application.viewmodels.EditProductViewModel
 import com.application.viewmodels.ProductDetailViewModel
 
-class EditProductFragment : Fragment(R.layout.fragment_edit_product), RemoveDataFromAdapterCallBack,
-    BottomSheetDialogPhotoPicker {
+class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapterListener,
+    PhotoPickerBottomSheet {
 
     val productId: Long?
         get() {
@@ -209,24 +208,23 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), RemoveData
         }
     }
 
-    override fun removeButtonOnClick(position: Int) {
+    override fun onRemoveButtonClick(position: Int) {
         editProductViewModel.removeImage(position)
     }
 
 
-    override fun getCountOfBitmapList(): Int {
-        return 5 - editProductViewModel.images.value!!.size
+    override fun getBitmapCount(): Int {
+        return MAX_IMAGE_SIZE - editProductViewModel.images.value!!.size
     }
 
-    override fun setBitmap(bitmap: Bitmap) {
+    override fun addBitmap(bitmap: Bitmap) {
         editProductViewModel.updateImage(bitmap)
     }
 
 
-
     companion object {
-        val PRODUCT_ID_KEY = "productId"
-
+        const val PRODUCT_ID_KEY = "productId"
+        const val MAX_IMAGE_SIZE = 5
         fun getInstant(productId: Long): EditProductFragment {
             return EditProductFragment().apply {
                 arguments = Bundle().apply {

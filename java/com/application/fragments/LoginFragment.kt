@@ -1,6 +1,7 @@
 package com.application.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -32,9 +33,9 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             val email = binding.emailEdittext.text.toString().trim()
             val password = binding.passwordEdittext.text.toString()
             if (!Validator.isEmailValid(email) || email == "") {
-                if(email == ""){
+                if (email == "") {
                     binding.emailEdittextLayout.error = "Email not should be empty"
-                }else{
+                } else {
                     binding.emailEdittextLayout.error = "Email is not valid"
                 }
                 return@setOnClickListener
@@ -42,42 +43,46 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 binding.emailEdittextLayout.error = null
             }
 
-            viewModel.signIn(email,password)
+            viewModel.signIn(email, password)
         }
     }
 
 
-    private fun addObserve(){
-        viewModel.userId.observe(viewLifecycleOwner,object : Observer<Long>{
-            override fun onChanged(value: Long) {
-                    val sharedPreferences=requireContext().getSharedPreferences("mySharePref",
-                        AppCompatActivity.MODE_PRIVATE
-                    )
-                    sharedPreferences.edit().apply {
-                        putString("userId", value.toString())
-                        apply()
-                    }
-                    val fragmentTransaction = parentFragmentManager.beginTransaction()
-                    fragmentTransaction.replace(R.id.main_view_container, MainFragment())
-                    fragmentTransaction.commit()
+    private fun addObserve() {
+        viewModel.user.observe(
+            viewLifecycleOwner
+        ) { value ->
+            Log.i("TAG",value.name)
+            val sharedPreferences = requireContext().getSharedPreferences(
+                "mySharePref",
+                AppCompatActivity.MODE_PRIVATE
+            )
+            sharedPreferences.edit().apply {
+                putString("userId", value.id.toString())
+                putString("userName",value.name)
+                apply()
             }
-        })
+            val fragmentTransaction = parentFragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.main_view_container, MainFragment())
+            fragmentTransaction.commit()
+        }
 
         viewModel.exceptions.observe(
-            viewLifecycleOwner,object : Observer<AuthenticationSignInException>{
-            override fun onChanged(value: AuthenticationSignInException) {
-               when(value){
-                   is AuthenticationSignInException.UserNotFoundAuthenticationException -> {
-                       binding.emailEdittextLayout.error = value.message
-                   }
-                   is AuthenticationSignInException.PasswordInvalidAuthenticationException ->{
-                       binding.passwordEdittextLayout.error = value.message
-                   }
+            viewLifecycleOwner, object : Observer<AuthenticationSignInException> {
+                override fun onChanged(value: AuthenticationSignInException) {
+                    when (value) {
+                        is AuthenticationSignInException.UserNotFoundAuthenticationException -> {
+                            binding.emailEdittextLayout.error = value.message
+                        }
 
-               }
-            }
+                        is AuthenticationSignInException.PasswordInvalidAuthenticationException -> {
+                            binding.passwordEdittextLayout.error = value.message
+                        }
 
-        })
+                    }
+                }
+
+            })
     }
 
 

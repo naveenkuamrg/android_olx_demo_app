@@ -15,7 +15,7 @@ data class Product(
     val productType : ProductType,
     val sellerId : Long,
     var isInterested: Boolean? = null,
-    val isWishList : Boolean? = null
+    var isWishList : Boolean? = null
 ){
     @Ignore
     lateinit var images: List<Bitmap>

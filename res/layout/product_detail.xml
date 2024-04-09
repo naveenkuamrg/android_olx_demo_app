@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -20,13 +20,30 @@
         android:orientation="vertical"
         android:paddingStart="10dp">
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/view_pager"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginBottom="15dp"
-            android:foreground="?attr/selectableItemBackground"
-            android:scaleType="centerCrop" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/view_pager"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginBottom="15dp"
+                android:foreground="?attr/selectableItemBackground"
+                android:scaleType="centerCrop" />
+
+            <ImageView
+                android:id="@+id/favourite_img"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="end|top"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:clickable="true"
+                android:padding="2dp"
+                android:src="@{viewModel.product.isWishList() ? @drawable/ic_favorite_fill : @drawable/ic_favorite_outline }" />
+        </FrameLayout>
 
         <TextView
             android:layout_width="match_parent"
@@ -48,108 +65,124 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:background="@color/md_theme_surfaceContainer"
+            android:orientation="vertical"
+            android:padding="5dp">
 
-            <FrameLayout
-                android:layout_width="80dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp">
+                android:orientation="horizontal">
+
+                <FrameLayout
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:text="Description"
+                        android:textColor="@color/md_theme_primary" />
+                </FrameLayout>
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="Description"
-                    android:textColor="@color/md_theme_primary" />
-            </FrameLayout>
+                    android:layout_marginBottom="15dp"
+                    android:text="@{viewModel.product.description}" />
+            </LinearLayout>
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:text="@{viewModel.product.description}" />
-        </LinearLayout>
+                android:layout_marginBottom="15dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp">
+                <FrameLayout
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp">
 
-            <FrameLayout
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:text="Categories"
+                        android:textColor="@color/md_theme_primary" />
+                </FrameLayout>
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="Categories"
-                    android:textColor="@color/md_theme_primary" />
-            </FrameLayout>
+                    android:text="@{viewModel.product.productType.toString()}" />
+            </LinearLayout>
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.product.productType.toString()}" />
-        </LinearLayout>
+                android:layout_marginBottom="15dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp">
-
-            <FrameLayout
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp">
-
-                <ImageView
-                    android:layout_width="wrap_content"
+                <FrameLayout
+                    android:layout_width="80dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:src="@drawable/ic_location" />
-            </FrameLayout>
+                    android:layout_marginEnd="10dp">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@{viewModel.product.location}" />
-        </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:text="Location"
+                        android:textColor="@color/md_theme_primary" />
+                </FrameLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            android:layout_marginBottom="15dp">
-
-            <FrameLayout
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp">
-
-                <ImageView
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:src="@drawable/ic_date" />
-            </FrameLayout>
+                    android:layout_gravity="center"
+                    android:text="@{viewModel.product.location}" />
+            </LinearLayout>
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@{Utility.millisecondsToString(viewModel.product.postedDate)}" />
+                android:layout_height="wrap_content">
+
+                <FrameLayout
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:text="Posted Date"
+                        android:textColor="@color/md_theme_primary" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{Utility.millisecondsToString(viewModel.product.postedDate)}" />
+
+            </LinearLayout>
+
 
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/profile_recycler_view_container"
-            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintHeight_max="170dp"
-            >
+            app:layout_constraintHeight_max="170dp">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Interested Profile"
+                android:textColor="@color/md_theme_primary"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/profile_recycler_view"
@@ -158,9 +191,7 @@
                 android:maxHeight="57dp"
                 android:nestedScrollingEnabled="true"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/textView" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <FrameLayout

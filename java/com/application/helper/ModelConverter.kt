@@ -1,14 +1,15 @@
 package com.application.helper
 
-import android.graphics.Bitmap
-import android.net.Uri
+import com.application.entity.Notification
 import com.application.entity.ProductDetails
 import com.application.entity.User
+import com.application.entity.WishList
 import com.application.model.Product
 import com.application.model.Profile
+import java.util.Date
 
 object ModelConverter {
-    fun userEntityFromUserDetails(
+    fun buildUserEntityFromUserDetails(
         name: String,
         phoneNumber: String,
         email: String,
@@ -23,7 +24,7 @@ object ModelConverter {
     }
 
     fun profileFromUserAndUri(user: User): Profile {
-        return Profile(user.id, user.name, null,user.phoneNumber, user.email)
+        return Profile(user.id, user.name, null, user.phoneNumber, user.email)
     }
 
     fun productModelToProductDetails(product: Product): ProductDetails {
@@ -37,12 +38,43 @@ object ModelConverter {
             product.productType,
             product.sellerId
         ).apply {
-            if(product.id != null){
+            if (product.id != null) {
                 id = product.id
             }
         }
     }
 
+    fun notificationBuilder(
+        recipientId: Long,
+        productId: Long,
+        content: String
+    ): Notification {
+        return Notification(
+            Date().time,
+            false,
+            recipientId,
+            productId,
+            content
+        )
+    }
+
+    fun userEntityToProfile(user: User): Profile {
+        return Profile(user.id, user.name, null, user.phoneNumber, user.email)
+    }
+
+    fun notificationEntityToNotificationModel(notification: Notification):
+            com.application.model.Notification {
+        return com.application.model.Notification(
+            notification.id,
+            notification.timestamp,
+            notification.isRead,
+            notification.content
+        )
+    }
+
+    fun wishListEntityBuilder(productId: Long,userId: Long): WishList{
+        return WishList(userId,productId)
+    }
 
 }
 

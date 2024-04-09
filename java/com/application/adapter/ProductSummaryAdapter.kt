@@ -8,53 +8,64 @@ import android.widget.TextView
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.application.R
-import com.application.callbacks.AdapterItemClickListener
+import com.application.callbacks.OnItemClickListener
 import com.application.helper.Utility
-import com.application.model.ProductSummary
+import com.application.model.Product
+import com.application.model.ProductListItem
+import com.application.model.ProductListItem.ProductItem
 
-class ProductSummaryAdapter(val callback: AdapterItemClickListener) :
-    RecyclerView.Adapter<ProductSummaryAdapter.ProductSummaryViewHolder>() {
+open class ProductSummaryAdapter(protected val itemClickListener: OnItemClickListener) :
+    RecyclerView.Adapter<ViewHolder>() {
+
+
     class ProductSummaryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var productId: Long = -1
         val imageView = itemView.findViewById<ImageView>(R.id.product_main_image_view)
         val title = itemView.findViewById<TextView>(R.id.product_title_textview)
         val price = itemView.findViewById<TextView>(R.id.product_price_textview)
 
     }
 
-    var data: List<ProductSummary> = listOf()
 
     private val diffUtil = object :
-        DiffUtil.ItemCallback<ProductSummary>() {
+        DiffUtil.ItemCallback<ProductListItem>() {
 
-        override fun areItemsTheSame(oldItem: ProductSummary, newItem: ProductSummary): Boolean {
-            return oldItem.productId == newItem.productId
+        override fun areItemsTheSame(oldItem: ProductListItem, newItem: ProductListItem): Boolean {
+            return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: ProductSummary, newItem: ProductSummary): Boolean {
+        override fun areContentsTheSame(
+            oldItem: ProductListItem,
+            newItem: ProductListItem
+        ): Boolean {
             return oldItem == newItem
         }
 
     }
 
-    private val asyncListDiffer = AsyncListDiffer(this, diffUtil)
+
+    private val asyncListDiffer = AsyncListDiffer(
+        this,
+        diffUtil
+    )
 
 
-    fun saveData(dataResponse: List<ProductSummary>) {
+    open fun submitData(dataResponse: List<ProductListItem>) {
         asyncListDiffer.submitList(dataResponse)
+//        data = dataResponse
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductSummaryViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+
         val itemView =
             LayoutInflater.from(parent.context)
                 .inflate(R.layout.product_summary_view, parent, false)
 
 
-
         return ProductSummaryViewHolder(itemView).apply {
             itemView.setOnClickListener {
-                callback.itemOnClick(productId)
+                itemClickListener.onItemClick(adapterPosition)
             }
         }
     }
@@ -63,13 +74,14 @@ class ProductSummaryAdapter(val callback: AdapterItemClickListener) :
         return asyncListDiffer.currentList.size
     }
 
-    override fun onBindViewHolder(holder: ProductSummaryViewHolder, position: Int) {
-        asyncListDiffer.currentList[position]
-        holder.productId = asyncListDiffer.currentList[position].productId
-        holder.imageView.setImageBitmap(asyncListDiffer.currentList[position].image)
-        holder.title.text = asyncListDiffer.currentList[position].title
-        holder.price.text =
-            Utility.convertToINR(asyncListDiffer.currentList[position].price.toDouble())
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val data = asyncListDiffer.currentList[position]
+        if (holder is ProductSummaryViewHolder && data is ProductItem) {
+            holder.imageView.setImageBitmap(data.image)
+            holder.title.text = data.title
+            holder.price.text =
+                Utility.convertToINR(data.price.toDouble())
+        }
 
     }
 }

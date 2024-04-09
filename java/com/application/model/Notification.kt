@@ -1,13 +1,13 @@
 package com.application.model
 
-import java.util.Date
-
+import android.graphics.Bitmap
 
 
 data class Notification(
-    val id : Int,
-    val content: String,
-    val notificationType: NotificationType,
-    val timestamp: Date,
-    var isRead : Boolean
-)
+    val id : Long,
+    val timestamp: Long,
+    val isRead : Boolean,
+    val content: String
+){
+    lateinit var image: Bitmap
+}

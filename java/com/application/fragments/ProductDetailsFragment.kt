@@ -1,8 +1,8 @@
 package com.application.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuInflater
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -19,17 +19,23 @@ import com.application.viewmodels.ProductDetailViewModel
 
 class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
     val viewModel: ProductDetailViewModel by activityViewModels { ProductDetailViewModel.FACTORY }
+
     lateinit var binding: FragmentProductDetailsBinding
     private val isCurrentUserProduct: Boolean
         get() {
-            return arguments?.getString("fragment") != "home"
+            Log.i("TAG","isCurrentUserProduct ${po()}")
+            return arguments?.getBoolean("isCurrentUserProduct",true) == true
         }
 
-    private val userId: Long by lazy {
-        requireContext().getSharedPreferences(
-            "mySharePref",
-            AppCompatActivity.MODE_PRIVATE
-        ).getString("userId", "-1")?.toLong() ?: -1
+    private var userId: Long = -1
+
+    private  fun po(): Boolean{
+        return viewModel.product.value?.sellerId == Utility.getLoginUserId(requireContext())
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        userId = Utility.getLoginUserId(context)
     }
 
 
@@ -49,7 +55,7 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
         }
         super.onViewCreated(view, savedInstanceState)
 
-            viewModel.fetchProductDetails(arguments?.getLong("currentProductId")!!, userId)
+        viewModel.fetchProductDetails(arguments?.getLong("currentProductId")!!, userId)
 
         binding = FragmentProductDetailsBinding.bind(view)
         setObserve()
@@ -64,7 +70,9 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
             binding.productDetailLayout.markAsSoldButton.visibility = View.GONE
             binding.productDetailLayout.imInterestedBtn.visibility = View.VISIBLE
             binding.productDetailLayout.profileRecyclerViewContainer.visibility = View.GONE
+
         } else {
+            binding.productDetailLayout.favouriteImg.visibility = View.GONE
             if (
                 viewModel.product.value?.availabilityStatus == AvailabilityStatus.SOLD_OUT
             ) {
@@ -100,10 +108,16 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
         binding.productDetailLayout.imInterestedBtn.setOnClickListener { btn ->
             btn.isEnabled = false
             viewModel.product.value?.let {
-                viewModel.updateProductInterested(it.id!!, userId, !it.isInterested!!)
+                viewModel.updateProductInterested(it, userId, !it.isInterested!!)
+
             }
         }
+        binding.productDetailLayout.favouriteImg.setOnClickListener {
+            viewModel.updateIsInterested(userId)
+
+        }
     }
+
     private fun setObserve() {
         //add loader background image should be gone while loading
         viewModel.isLoading.observe(viewLifecycleOwner) {
@@ -113,14 +127,14 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
                 binding.progressCircular.visibility = View.VISIBLE
             }
 
-            if(it == false){
+            if (it == false) {
                 binding.productDetailLayout.productDetailLayout.visibility = View.VISIBLE
                 binding.progressCircular.visibility = View.GONE
             }
         }
-        viewModel.product.observe(viewLifecycleOwner){
-            if(isCurrentUserProduct && it?.availabilityStatus != AvailabilityStatus.SOLD_OUT) {
-                if(it?.id != null) {
+        viewModel.product.observe(viewLifecycleOwner) {
+            if (isCurrentUserProduct && it?.availabilityStatus != AvailabilityStatus.SOLD_OUT) {
+                if (it?.id != null) {
                     viewModel.fetchProfileList(it.id)
                 }
             }
@@ -151,12 +165,8 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
             it?.let { isUpdate ->
                 binding.productDetailLayout.imInterestedBtn.isEnabled = true
                 if (isUpdate) {
-                    viewModel.product.value?.id?.let { it1 ->
-                        viewModel.fetchProductDetails(
-                            it1,
-                            userId
-                        )
-                    }
+                    viewModel.product.value?.isInterested = !viewModel.product.value?.isInterested!!
+                    updateButtonUI()
                 } else {
                     Utility.showToast(
                         requireContext(),
@@ -167,13 +177,29 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
             }
         }
 
-        viewModel.profileList.observe(viewLifecycleOwner){
-            val adapter = ProfileSummaryAdapter(it,requireContext())
-            binding.productDetailLayout.profileRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        viewModel.profileList.observe(viewLifecycleOwner) {
+            val adapter = ProfileSummaryAdapter(it, requireContext())
+            binding.productDetailLayout.profileRecyclerView.layoutManager =
+                LinearLayoutManager(requireContext())
             binding.productDetailLayout.profileRecyclerView.adapter = adapter
         }
 
+        viewModel.isWishListIsUpdate.observe(viewLifecycleOwner){
+            if (viewModel.product.value?.isWishList == true) {
+                binding.productDetailLayout.favouriteImg.setImageResource(
+                    R.drawable.ic_favorite_fill
+                )
+            }
+
+            if (viewModel.product.value?.isWishList == false) {
+                binding.productDetailLayout.favouriteImg.setImageResource(
+                    R.drawable.ic_favorite_outline
+                )
+            }
+        }
+
     }
+
     private fun setUpToolbar() {
         val toolbar = binding.toolbar
         toolbar.setNavigationIcon(R.drawable.ic_back)
@@ -181,7 +207,7 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
             parentFragmentManager.popBackStack()
         }
         if (isCurrentUserProduct) {
-            MenuInflater(requireContext()).inflate(R.menu.product_details_menu, toolbar.menu)
+
             toolbar.setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.edit -> {
@@ -212,7 +238,7 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
                             setMessage("Are you sure to delete product")
                             setPositiveButton("Yes") { _, _ ->
                                 viewModel.removeProductDetail()
-                                arguments?.putLong("currentProductId",-1)
+                                arguments?.putLong("currentProductId", -1)
                             }
                             setNegativeButton("No") { _, _ -> }
                             show()
@@ -224,14 +250,18 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
 
                 return@setOnMenuItemClickListener true
             }
+        } else {
+            toolbar.menu.removeItem(R.id.edit)
+            toolbar.menu.removeItem(R.id.delete)
         }
     }
+
     private fun updateButtonUI() {
-            if (viewModel.product.value?.isInterested == false) {
-                binding.productDetailLayout.imInterestedBtn.text = "I'm Interested"
-            } else {
-                binding.productDetailLayout.imInterestedBtn.text = "remove from Interested"
-            }
+        if (viewModel.product.value?.isInterested == false) {
+            binding.productDetailLayout.imInterestedBtn.text = "I'm Interested"
+        } else {
+            binding.productDetailLayout.imInterestedBtn.text = "remove from Interested"
+        }
     }
 
 

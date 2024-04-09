@@ -9,7 +9,6 @@ import com.application.entity.ProductDetails
 import com.application.entity.User
 import com.application.entity.WishList
 import com.application.entity.relations.NotificationWithProductDetails
-import com.application.entity.relations.NotificationWithUser
 import com.application.entity.relations.ProductsWithInterestedProfile
 import com.application.entity.relations.ProfileWithInterestedProducts
 import com.application.entity.relations.ProfileWithWishListProducts
@@ -60,8 +59,10 @@ interface UserDao {
     fun getNotification(id : Long) : List<Notification>
 
 
+/*
     @Query("select * from notification where id  Like :id")
     fun getNotificationWithProfile(id : Long) : NotificationWithUser
+*/
 
     @Query("select * from notification where id  Like :id")
     fun getNotificationWithProduct(id : Long) : NotificationWithProductDetails
@@ -100,4 +101,5 @@ interface UserDao {
 
     @Query("UPDATE user SET password = :newPassword where user_id Like :id and password LIKE :currentPassword")
     fun updateUserPassword(id: Long,currentPassword: String,newPassword: String) : Int
+
 }

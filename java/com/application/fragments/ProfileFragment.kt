@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.application.R
-import com.application.callbacks.ProfileFragmentCallBack
+import com.application.callbacks.ProfileFragmentCallback
 import com.application.databinding.FragmentProfileBinding
 import com.application.viewmodels.ProfilePageViewModel
 
@@ -17,11 +17,11 @@ class ProfileFragment() : Fragment(R.layout.fragment_profile) {
 
     val viewModel: ProfilePageViewModel by activityViewModels { ProfilePageViewModel.FACTORY }
 
-    private lateinit var callBack: ProfileFragmentCallBack
+    private lateinit var callBack: ProfileFragmentCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        callBack = parentFragment as ProfileFragmentCallBack
+        callBack = parentFragment as ProfileFragmentCallback
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -44,7 +44,7 @@ class ProfileFragment() : Fragment(R.layout.fragment_profile) {
             textLabel.text = "Edit Profile"
             imageFilterView.setImageResource(R.drawable.ic_edit)
             navigator.setOnClickListener {
-                callBack.showEditPage()
+                callBack.onShowEditPage()
             }
         }
 
@@ -52,7 +52,7 @@ class ProfileFragment() : Fragment(R.layout.fragment_profile) {
             textLabel.text = "Change password"
             imageFilterView.setImageResource(R.drawable.ic_lock)
             navigator.setOnClickListener {
-                callBack.showChangePasswordPage()
+                callBack.onShowChangePasswordPage()
             }
         }
         binding.logout.apply {
@@ -68,9 +68,10 @@ class ProfileFragment() : Fragment(R.layout.fragment_profile) {
                             AppCompatActivity.MODE_PRIVATE
                         ).edit().apply {
                             remove("userId")
+                            remove("userName")
                             apply()
                         }
-                        callBack.showLoginPage()
+                        callBack.onShowLoginPage()
                     }
                    setNegativeButton("No"){_,_->}
                     show()
@@ -79,6 +80,13 @@ class ProfileFragment() : Fragment(R.layout.fragment_profile) {
             }
         }
 
+        binding.monitor.apply {
+            textLabel.text = "Your's Activity"
+            imageFilterView.setImageResource(R.drawable.ic_monitor)
+            navigator.setOnClickListener {
+                callBack.onShowActivityPage()
+            }
+        }
     }
 
 

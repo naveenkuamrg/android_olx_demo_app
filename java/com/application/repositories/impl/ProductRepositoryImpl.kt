@@ -2,13 +2,18 @@ package com.application.repositories.impl
 
 import android.content.Context
 import com.application.AppDatabase
+import com.application.dao.NotificationDao
 import com.application.dao.ProductDao
 import com.application.dao.ProfileDao
 import com.application.helper.ModelConverter
+import com.application.helper.NotificationContentBuilder
+import com.application.helper.Utility
 import com.application.model.AvailabilityStatus
+import com.application.model.NotificationType
 import com.application.model.Product
 import com.application.model.ProductSortType
-import com.application.model.ProductSummary
+import com.application.model.ProductListItem.ProductItem
+import com.application.model.ProductType
 import com.application.model.Profile
 import com.application.model.SearchProductResultItem
 import com.application.repositories.ProductImageRepository
@@ -20,9 +25,12 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
 
     private val productDao: ProductDao = AppDatabase.getInstance(context).productDao
     private val profileDao: ProfileDao = AppDatabase.getInstance(context).profileDao
+    private val notificationDao: NotificationDao = AppDatabase.getInstance(context).notificationDao
 
     private val productImageRepository: ProductImageRepository = ProductImageRepositoryImpl(context)
     private val profileImageRepository: ProfileImageRepository = ProfileImageRepositoryImpl(context)
+
+
     override suspend fun insertProduct(product: Product): Boolean {
         val productDetails = ModelConverter.productModelToProductDetails(product)
         val id = productDao.upsertProductDetails(productDetails)
@@ -31,14 +39,43 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         return true
     }
 
-    override suspend fun getProductSummaryDetailsForSellZone(userId: Long): List<ProductSummary> {
+    override suspend fun getProductSummaryDetailsForSellZone(userId: Long): List<ProductItem> {
         val result = productDao.getPostProductSummary(userId)
         setImage(result)
         return result
     }
 
+    override suspend fun getProductSummaryDetailsForBuyZone(
+        userId: Long,
+        type: ProductType,
+        sort: ProductSortType
+    ): List<ProductItem> {
+        val productList = when (sort) {
+            ProductSortType.POSTED_DATE_ASC -> {
+                productDao.getBuyProductSummaryOrderByPostedDateASCWithProductType(userId,type)
+            }
+
+            ProductSortType.POSTED_DATE_DESC -> {
+                productDao.getBuyProductSummaryOrderByPostedDateDESCWithProductType(userId,type)
+            }
+
+            ProductSortType.PRICE_ASC -> {
+                productDao.getBuyProductSummaryOrderByPriceASCWithProductType(userId,type)
+            }
+
+            ProductSortType.PRICE_DESC -> {
+                productDao.getBuyProductSummaryOrderByPriceDESCWithProductType(userId,type)
+            }
+        }
+
+        return productList.also {
+            setImage(it)
+        }
+
+    }
+
     override suspend fun getProductSummaryDetailsForBuyZone(userId: Long, sort: ProductSortType):
-            List<ProductSummary> {
+            List<ProductItem> {
         val productList = when (sort) {
             ProductSortType.POSTED_DATE_ASC -> {
                 productDao.getBuyProductSummaryOrderByPostedDateASC(userId)
@@ -77,22 +114,50 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         ) != 0
     }
 
-    override suspend fun updateProductAvailabilityStatus(
+    override suspend fun updateProductAvailabilityAndNotify(
         product: Product,
-        status: AvailabilityStatus
+        status: AvailabilityStatus,
+        productInterestedProfile: List<Profile>
     ) {
-        product.id?.let { productDao.updateProductAvailabilityStatus(it, status) }
+
+        product.id?.let {
+            productDao.updateProductAvailabilityStatus(it, status)
+            for (i in productInterestedProfile) {
+                notificationDao.upsertNotification(
+                    ModelConverter.notificationBuilder(
+                        i.id, product.id,
+                        NotificationContentBuilder.build(
+                            NotificationType.PRODUCT,
+                            Utility.getLoginUserName(context),
+                            product.title
+                        )
+                    )
+                )
+            }
+        }
     }
 
     override suspend fun updateProductIsInterested(
         userId: Long,
-        productId: Long,
+        product: Product,
         isInterested: Boolean
     ): Boolean {
+        notificationDao.upsertNotification(
+            ModelConverter.notificationBuilder(
+                product.sellerId,
+                product.id!!,
+                NotificationContentBuilder.build(
+                    NotificationType.PROFILE,
+                    Utility.getLoginUserName(context),
+                    product.title,
+                    isInterested
+                )
+            )
+        )
         return if (isInterested) {
-            productDao.insertInterestedList(productId, userId) > 0
+            productDao.insertInterestedList(product.id, userId) > 0
         } else {
-            productDao.removeInterestedList(productId, userId) > 0
+            productDao.removeInterestedList(product.id, userId) > 0
         }
     }
 
@@ -113,11 +178,31 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         return productDao.getProductListForSearchResult(searchTerm, userId)
     }
 
-    private suspend fun setImage(listOfProductSummary: List<ProductSummary>) {
+    override suspend fun updateIsFavorite(product: Product, isFavorite: Boolean,userId: Long) {
+        if(isFavorite){
+            productDao.insertIsWishList(ModelConverter.wishListEntityBuilder(product.id!!,userId))
+        }else{
+            productDao.removeIsWishList(ModelConverter.wishListEntityBuilder(product.id!!,userId))
+        }
+    }
+
+    override suspend fun getFavouriteProductList(userId: Long): List<ProductItem> {
+        return  productDao.getFavouriteProductSummary(userId).also {
+            setImage(it)
+        }
+    }
+
+    override suspend fun getInterestedProductList(userId: Long): List<ProductItem> {
+       return  productDao.getInterestedProductSummary(userId).also {
+           setImage(it)
+       }
+    }
+
+    private suspend fun setImage(listOfProductSummary: List<ProductItem>) {
         for (product in listOfProductSummary) {
             product.image =
                 productImageRepository.getMainImage(
-                    "${product.productId}/0.jpeg"
+                    product.id.toString()
                 )
         }
     }

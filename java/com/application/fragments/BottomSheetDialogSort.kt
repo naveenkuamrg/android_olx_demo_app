@@ -38,7 +38,7 @@ class BottomSheetDialogSort(private val callback: SortBottomSheetCallback) :
     }
 
     private fun onClickListener(sortType: ProductSortType){
-        callback.onClick(sortType)
+        callback.onSortTypeSelected(sortType)
         this.dismiss()
     }
 

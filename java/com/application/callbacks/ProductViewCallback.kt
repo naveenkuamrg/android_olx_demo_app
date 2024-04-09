@@ -1,7 +1,7 @@
 package com.application.callbacks
 
 interface ProductViewCallback {
-    fun showProductEditDetailPage()
-    fun showProductDetailsPage(productId: Long)
+    fun onShowProductEditDetailPage()
+    fun onShowProductDetailsPage(productId: Long)
 }
 

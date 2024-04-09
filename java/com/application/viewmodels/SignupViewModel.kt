@@ -28,9 +28,7 @@ class SignupViewModel(private val repository: AuthenticationRepository) : ViewMo
             }catch (e : SQLiteConstraintException){
                 _errorMessage.postValue("This email already register")
             }
-
          }
-
     }
     companion object{
         val FACTORY = object : ViewModelProvider.Factory{

@@ -1,6 +1,5 @@
 package com.application.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,7 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.application.model.ProductSortType
-import com.application.model.ProductSummary
+import com.application.model.ProductListItem.ProductItem
 import com.application.repositories.ProductRepository
 import com.application.repositories.impl.ProductRepositoryImpl
 import kotlinx.coroutines.Dispatchers
@@ -20,9 +19,9 @@ class ProductRecycleViewModel(private val productRepository: ProductRepository) 
     private val _isLoading: MutableLiveData<Boolean> = MutableLiveData()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _data: MutableLiveData<List<ProductSummary>> = MutableLiveData()
+    private val _data: MutableLiveData<List<ProductItem>> = MutableLiveData()
 
-    val data: LiveData<List<ProductSummary>> = _data
+    val data: LiveData<List<ProductItem>> = _data
 
     fun getPostProductSummary(id: Long) {
         _isLoading.postValue(true)
@@ -56,6 +55,32 @@ class ProductRecycleViewModel(private val productRepository: ProductRepository) 
                     ProductRepositoryImpl
                         (application!!.applicationContext)
                 ) as T
+            }
+        }
+    }
+}
+
+
+class ProductRecycleViewModelCheck : ViewModel() {
+
+     val isLoading: MutableLiveData<Boolean> = MutableLiveData(true)
+
+
+    private val _data: MutableLiveData<List<ProductItem>> = MutableLiveData()
+    val data: LiveData<List<ProductItem>> = _data
+
+    fun setData(list: List<ProductItem>){
+        _data.postValue(list)
+    }
+
+    companion object {
+        val FACTORY = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+
+
+
+                return ProductRecycleViewModelCheck() as T
             }
         }
     }

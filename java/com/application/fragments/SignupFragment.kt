@@ -49,7 +49,7 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
 
     }
 
-    fun isValid(
+    private fun isValid(
         name: String, email: String, phoneNumber: String, password: String, confirmPassword: String
     ): Boolean {
         var isValid = true
@@ -97,7 +97,7 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
         return isValid
     }
 
-    fun addObserver() {
+    private fun addObserver() {
         viewModel.errorMessage.observe(
             viewLifecycleOwner
         ) { value -> binding.emailEditTextLayout.error = value }
@@ -108,6 +108,7 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
                 AppCompatActivity.MODE_PRIVATE
             ).edit()
             sharedPreferences.putString("userId", value.toString())
+            sharedPreferences.putString("userName",binding.name.text.toString())
             sharedPreferences.apply()
             val homeTransaction = parentFragmentManager.beginTransaction()
             homeTransaction.replace(R.id.main_view_container, MainFragment())

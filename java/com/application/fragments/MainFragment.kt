@@ -1,7 +1,6 @@
 package com.application.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
@@ -10,10 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.application.R
 import com.application.callbacks.HomeFragmentCallback
 import com.application.callbacks.ProductViewCallback
-import com.application.callbacks.ProfileFragmentCallBack
+import com.application.callbacks.ProfileFragmentCallback
 import com.application.databinding.FragmentMainBinding
 
-class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
+class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
     ProductViewCallback, HomeFragmentCallback {
     lateinit var binding: FragmentMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,12 +75,14 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
                     if (childFragmentManager.fragments[0] is SellZoneFragment) {
                         return@setOnItemSelectedListener true
                     }
-                    childFragmentManager.popBackStackImmediate(
+
+                    childFragmentManager.popBackStack(
                         "sellZone",
                         FragmentManager.POP_BACK_STACK_INCLUSIVE
                     )
                     childFragmentManager.beginTransaction().apply {
                         replace(R.id.bottom_navigation_fragment_view_container, SellZoneFragment())
+
                         addToBackStack("sellZone")
                         commit()
                     }
@@ -91,7 +92,7 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
                     if (childFragmentManager.fragments[0] is ProfileFragment) {
                         return@setOnItemSelectedListener true
                     }
-                    childFragmentManager.popBackStackImmediate(
+                    childFragmentManager.popBackStack(
                         "profile",
                         FragmentManager.POP_BACK_STACK_INCLUSIVE
                     )
@@ -115,38 +116,44 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallBack,
         transaction.addToBackStack("home")
         transaction.commit()
     }
-    override fun showEditPage() {
+    override fun onShowEditPage() {
         parentFragmentManager.beginTransaction().apply {
             addToBackStack("editProfileFragment")
             replace(R.id.main_view_container, EditProfileFragment())
             commit()
         }
     }
-    override fun showLoginPage() {
+    override fun onShowLoginPage() {
         parentFragmentManager.beginTransaction().apply {
             replace(R.id.main_view_container, LoginFragment())
             commit()
         }
     }
-    override fun showChangePasswordPage() {
+    override fun onShowChangePasswordPage() {
         parentFragmentManager.beginTransaction().apply {
             addToBackStack("changePasswordFragment")
             replace(R.id.main_view_container, ChangePasswordFragment())
             commit()
         }
     }
-    override fun showProductEditDetailPage() {
+
+    override fun onShowActivityPage() {
+        parentFragmentManager.beginTransaction().apply {
+            addToBackStack("showActivityFragment")
+            replace(R.id.main_view_container,YoursActivityFragment())
+            commit()
+        }
+    }
+
+    override fun onShowProductEditDetailPage() {
         parentFragmentManager.beginTransaction().apply {
             addToBackStack("showEditProductFragment")
             replace(R.id.main_view_container, EditProductFragment.getInstant(-1))
             commit()
         }
     }
-    override fun showProductDetailsPage(productId: Long) {
-        parentFragmentManager.popBackStackImmediate(
-            "showProductDetailFragment",
-            FragmentManager.POP_BACK_STACK_INCLUSIVE
-        )
+    override fun onShowProductDetailsPage(productId: Long) {
+
         parentFragmentManager.beginTransaction().apply {
             addToBackStack("showProductDetailFragment")
             replace(R.id.main_view_container, ProductDetailsFragment().apply {

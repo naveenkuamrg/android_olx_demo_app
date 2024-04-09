@@ -5,20 +5,20 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.application.R
-import com.application.callbacks.BottomSheetDialogPhotoPicker
+import com.application.callbacks.PhotoPickerBottomSheet
 import com.application.helper.ImageConverter
 
 class ProductImageViewBackgroundFragment() : Fragment(R.layout.fragment_home) {
 
 
-    private lateinit var callBack: BottomSheetDialogPhotoPicker
+    private lateinit var callBack: PhotoPickerBottomSheet
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        callBack = parentFragment as BottomSheetDialogPhotoPicker
+        callBack = parentFragment as PhotoPickerBottomSheet
 
-        val numberToUpload = callBack.getCountOfBitmapList()
+        val numberToUpload = callBack.getBitmapCount()
         if (numberToUpload < 4) {
             startActivityForResultImages(numberToUpload, savedInstanceState)
         } else {
@@ -35,7 +35,7 @@ class ProductImageViewBackgroundFragment() : Fragment(R.layout.fragment_home) {
                     uri, 1000, 1000
                 ) { bitmap ->
                     if (bitmap != null) {
-                        callBack.setBitmap(bitmap)
+                        callBack.addBitmap(bitmap)
                     }
                 }
             }
@@ -64,7 +64,7 @@ class ProductImageViewBackgroundFragment() : Fragment(R.layout.fragment_home) {
                     1000
                 ) { it1 ->
                     if (it1 != null) {
-                        callBack.setBitmap(it1)
+                        callBack.addBitmap(it1)
                     }
                 }
             }
@@ -78,6 +78,4 @@ class ProductImageViewBackgroundFragment() : Fragment(R.layout.fragment_home) {
             )
         }
     }
-
-
 }

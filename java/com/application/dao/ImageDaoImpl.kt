@@ -3,7 +3,10 @@ package com.application.dao
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.LinearLayout
+import androidx.core.view.setPadding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -14,7 +17,7 @@ import java.util.Locale
 
 class ImageDaoImpl(
     private val context: Context
-) : ImageDAO {
+) : ImageDao {
 
     override suspend fun countImagesInFolder(folderPath: String): Int {
         val folder = File(folderPath)
@@ -30,6 +33,7 @@ class ImageDaoImpl(
 
         return imageFiles?.size ?: 0
     }
+
 
     override suspend fun getAllImageFromTheDirectory(folderPath: String): List<Bitmap> {
         val result = mutableListOf<Bitmap>()

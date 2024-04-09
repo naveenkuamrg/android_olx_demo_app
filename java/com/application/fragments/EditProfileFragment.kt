@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.application.R
-import com.application.callbacks.BottomSheetDialogPhotoPicker
+import com.application.callbacks.PhotoPickerBottomSheet
 import com.application.databinding.FragmentEditProfileBinding
 import com.application.exceptions.InvalidUserDataException
 import com.application.helper.StringConverter
@@ -17,7 +17,7 @@ import com.application.viewmodels.EditProfileViewModel
 import com.application.viewmodels.ProfilePageViewModel
 
 class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
-    BottomSheetDialogPhotoPicker {
+    PhotoPickerBottomSheet {
     lateinit var binding: FragmentEditProfileBinding
 
     private val profilePageViewModel: ProfilePageViewModel by
@@ -157,11 +157,11 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
         }
     }
 
-    override fun getCountOfBitmapList(): Int {
+    override fun getBitmapCount(): Int {
         return 1
     }
 
-    override fun setBitmap(bitmap: Bitmap) {
+    override fun addBitmap(bitmap: Bitmap) {
         binding.userDp.setImageBitmap(bitmap)
         editProfileViewModel.tempImage.value = bitmap
         binding.removeImageBtn.visibility = View.VISIBLE

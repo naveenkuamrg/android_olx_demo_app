@@ -149,8 +149,13 @@
                 layout="@layout/navigator" />
 
             <include
+                android:id="@+id/monitor"
+                layout="@layout/navigator"/>
+
+            <include
                 android:id="@+id/logout"
                 layout="@layout/navigator" />
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.application.dao.NotificationDao
 import com.application.dao.ProductDao
 import com.application.dao.ProfileDao
 import com.application.dao.UserDao
@@ -23,6 +24,8 @@ abstract  class AppDatabase : RoomDatabase() {
     abstract  val productDao: ProductDao
 
     abstract val profileDao: ProfileDao
+
+    abstract val notificationDao: NotificationDao
 
     companion object {
         @Volatile

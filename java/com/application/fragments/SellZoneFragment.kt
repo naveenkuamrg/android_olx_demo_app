@@ -6,36 +6,33 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.R
-import com.application.adapter.ProductSummaryAdapter
-import com.application.callbacks.AdapterItemClickListener
+import com.application.callbacks.OnItemClickListener
 import com.application.callbacks.ProductViewCallback
 import com.application.databinding.FragmentSellZoneBinding
-import com.application.viewmodels.ProductRecycleViewModel
 import com.application.viewmodels.SellZoneViewModel
 
-class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), AdapterItemClickListener {
+class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), OnItemClickListener {
     lateinit var binding: FragmentSellZoneBinding
 
     val viewModel: SellZoneViewModel by viewModels { SellZoneViewModel.FACTORY }
-
-    private val productRecycleViewModel: ProductRecycleViewModel by viewModels {
-        ProductRecycleViewModel.FACTORY
-    }
 
     var userId: Long = -1L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-//            childFragmentManager.beginTransaction().apply {
-//                add(R.id.fragment_container_view_tag, ProductRecycleViewFragment())
-//                commit()
-//            }
+            childFragmentManager.beginTransaction().apply {
+                add(
+                    R.id.fragment_container_view_tag,
+                    ProductRecycleViewFragment(),
+                    "recyclerView"
+                )
+                commit()
+            }
         }
     }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         userId = context.getSharedPreferences("mySharePref", AppCompatActivity.MODE_PRIVATE)
@@ -48,52 +45,35 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), AdapterItemClick
         binding = FragmentSellZoneBinding.bind(view)
         callBack = parentFragment as ProductViewCallback
         setOnClickListenerAddProduct()
-        setUpRecycleView()
         setObserve()
-        productRecycleViewModel.getPostProductSummary(
+        viewModel.getProductSummary(
             userId
         )
     }
 
     private fun setOnClickListenerAddProduct() {
         binding.addProduct.setOnClickListener {
-            callBack.showProductEditDetailPage()
+            callBack.onShowProductEditDetailPage()
         }
     }
 
-    override fun itemOnClick(productId: Long) {
-        callBack.showProductDetailsPage(productId)
-    }
-
-    private fun setUpRecycleView() {
-        val recyclerView = binding.productSummaryRecyclerView
-        val dividerItemDecoration =
-            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-        requireContext().getDrawable(
-            R.drawable.recycleview_divider
-        )?.let {
-            dividerItemDecoration.setDrawable(
-                it
-            )
-        }
-        recyclerView.addItemDecoration(dividerItemDecoration)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = ProductSummaryAdapter(this)
-
+    override fun onItemClick(position: Int) {
+        callBack.onShowProductDetailsPage(viewModel.data.value!![position].id)
     }
 
     private fun setObserve() {
-        productRecycleViewModel.data.observe(viewLifecycleOwner) {
-            (binding.productSummaryRecyclerView.adapter as ProductSummaryAdapter).saveData(it)
-        }
-        productRecycleViewModel.isLoading.observe(viewLifecycleOwner) {
-            if (!it) {
-                binding.progressCircular.visibility = View.GONE
-                binding.productSummaryRecyclerView.visibility = View.VISIBLE
+        viewModel.data.observe(viewLifecycleOwner) {
+            val fragment = childFragmentManager.findFragmentByTag("recyclerView")
+            if (fragment is ProductRecycleViewFragment) {
+                fragment.onSetData(it)
             }
-            if(it){
-                binding.progressCircular.visibility = View.VISIBLE
-                binding.productSummaryRecyclerView.visibility = View.GONE
+        }
+        viewModel.isLoading.observe(viewLifecycleOwner) {
+            if (!it) {
+
+            }
+            if (it) {
+
             }
         }
     }

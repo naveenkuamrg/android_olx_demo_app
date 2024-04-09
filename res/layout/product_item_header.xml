@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:padding="16dp"
+    android:paddingTop="15dp"
+    android:paddingEnd="16dp"
+    android:orientation="vertical">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Browse categories"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="11dp"
+        android:textSize="8pt" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/vehicles"
+                android:text="Vehicles"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp" />
+
+            <Button
+                android:id="@+id/mobiles"
+                android:text="Mobiles"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp" />
+
+            <Button
+                android:id="@+id/electronics"
+                android:text="Electronics and \n Appliances"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp" />
+
+            <Button
+                android:id="@+id/furniture"
+                android:text="Furniture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp" />
+
+            <Button
+                android:id="@+id/fashion"
+                android:text="Fashion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp" />
+
+            <Button
+                android:id="@+id/books"
+                android:text="Books and Sports"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+</LinearLayout>

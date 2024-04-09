@@ -2,41 +2,40 @@ package com.application.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.R
-import com.application.adapter.ProductSummaryAdapter
 import com.application.adapter.SearchAdapter
 import com.application.callbacks.HomeFragmentCallback
-import com.application.callbacks.AdapterItemClickListener
+import com.application.callbacks.OnFilterItemClickListener
+import com.application.callbacks.OnItemClickListener
 import com.application.callbacks.SortBottomSheetCallback
 import com.application.databinding.FragmentHomeBinding
+import com.application.helper.Utility
 import com.application.model.ProductSortType
+import com.application.model.ProductType
 import com.application.viewmodels.HomeViewModel
-import com.application.viewmodels.ProductRecycleViewModel
+//import com.application.viewmodels.ProductRecycleViewModel
 import com.application.viewmodels.SearchProductViewModel
 import java.util.Locale
 
-class HomeFragment : Fragment(R.layout.fragment_home), AdapterItemClickListener,
-    SortBottomSheetCallback {
+class HomeFragment : Fragment(R.layout.fragment_home),
+    SortBottomSheetCallback,OnFilterItemClickListener {
 
     lateinit var binding: FragmentHomeBinding
 
     lateinit var callback: HomeFragmentCallback
 
-    var isSortTypeUpdate = false
+    private var isSortTypeUpdate = false
 
-    private val searchProductViewModel: SearchProductViewModel by viewModels { SearchProductViewModel.FACTORY }
-
-    private val productRecycleViewModel: ProductRecycleViewModel by viewModels {
-        ProductRecycleViewModel.FACTORY
+    private val searchProductViewModel: SearchProductViewModel by viewModels {
+        SearchProductViewModel.FACTORY
     }
 
     private val homeViewModel: HomeViewModel by activityViewModels { HomeViewModel.FACTORY }
@@ -45,6 +44,15 @@ class HomeFragment : Fragment(R.layout.fragment_home), AdapterItemClickListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         callback = parentFragment as HomeFragmentCallback
+        if (savedInstanceState == null) {
+            childFragmentManager.beginTransaction().apply {
+                replace(R.id.product_recycle_view, ProductRecycleViewFragment(), "recyclerView")
+                commit()
+            }
+
+            homeViewModel.setCurrentProductType(ProductSortType.POSTED_DATE_DESC)
+
+        }
     }
 
 
@@ -53,11 +61,17 @@ class HomeFragment : Fragment(R.layout.fragment_home), AdapterItemClickListener,
         binding = FragmentHomeBinding.bind(view)
         setUpSearchBar()
         setObserve()
-        setUpRecycleView()
-
     }
 
-    override fun itemOnClick(productId: Long) {
+    override fun onFilterItemClick(productType: ProductType) {
+        parentFragment?.parentFragmentManager?.beginTransaction()?.apply {
+            replace(R.id.main_view_container,FilterProductFragment.getInstant(productType))
+            addToBackStack("Filter")
+            commit()
+        }
+    }
+
+    override fun onItemClick(position: Int) {
         parentFragment?.parentFragmentManager?.popBackStackImmediate(
             "showProductDetailFragment",
             FragmentManager.POP_BACK_STACK_INCLUSIVE
@@ -66,8 +80,11 @@ class HomeFragment : Fragment(R.layout.fragment_home), AdapterItemClickListener,
             addToBackStack("showProductDetailFragment")
             replace(R.id.main_view_container, ProductDetailsFragment().apply {
                 arguments = Bundle().apply {
-                    putLong("currentProductId", productId)
-                    putString("fragment", "home")
+                    putLong(
+                        "currentProductId",
+                        homeViewModel.data.value!![position - 1].id
+                    )
+                    putBoolean("isCurrentUserProduct", false)
                 }
             })
             commit()
@@ -78,14 +95,21 @@ class HomeFragment : Fragment(R.layout.fragment_home), AdapterItemClickListener,
         callback.getSearchView().setupWithSearchBar(binding.searchBar)
         binding.searchBar.setOnMenuItemClickListener {
             when (it.itemId) {
-                R.id.notification -> {}
+                R.id.notification -> {
+                    parentFragment?.parentFragmentManager?.beginTransaction()?.apply {
+                        addToBackStack("notification fragment")
+                        replace(R.id.main_view_container, NotificationFragment())
+                        commit()
+                    }
+                }
+
                 R.id.sort -> {
                     val bottomSheet = BottomSheetDialogSort(this)
                     bottomSheet.show(childFragmentManager, "bottomSheet")
                 }
             }
 
-            return@setOnMenuItemClickListener true
+            return@setOnMenuItemClickListener false
         }
         val searchRecyclerView = callback.getSearchRecyclerView()
         searchRecyclerView.adapter = SearchAdapter(this)
@@ -100,39 +124,39 @@ class HomeFragment : Fragment(R.layout.fragment_home), AdapterItemClickListener,
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        userId = context.getSharedPreferences("mySharePref", AppCompatActivity.MODE_PRIVATE)
-            .getString("userId", "-1L")!!.toLong()
+        userId = Utility.getLoginUserId(context)
     }
 
     private fun setObserve() {
+
         val adapter = SearchAdapter(this)
         callback.getSearchRecyclerView().adapter = adapter
         searchProductViewModel.searchResult.observe(viewLifecycleOwner) {
             adapter.submitData(it)
         }
 
-        productRecycleViewModel.data.observe(viewLifecycleOwner) {
-            binding.productSummaryRecyclerView.adapter = ProductSummaryAdapter(this).apply {
-                saveData(it)
+        homeViewModel.data.observe(viewLifecycleOwner) {
+
+            val fragment = childFragmentManager.findFragmentByTag("recyclerView")
+            if (fragment is ProductRecycleViewFragment) {
+                fragment.onSetData(it)
             }
 
         }
-        productRecycleViewModel.isLoading.observe(viewLifecycleOwner) {
+        homeViewModel.isLoading.observe(viewLifecycleOwner) {
 
             if (!it) {
-                binding.progressCircular.visibility = View.GONE
-                binding.productSummaryRecyclerView.visibility = View.VISIBLE
+
             }
-            if(it){
-                binding.progressCircular.visibility = View.VISIBLE
-                binding.productSummaryRecyclerView.visibility = View.GONE
+            if (it) {
+
             }
         }
 
 
-        homeViewModel.currentSortType.observe(viewLifecycleOwner){
-            if(!isSortTypeUpdate){
-                productRecycleViewModel.getBuyProductSummary(
+        homeViewModel.currentSortType.observe(viewLifecycleOwner) {
+            if (!isSortTypeUpdate) {
+                homeViewModel.getProductSummary(
                     userId,
                     it
                 )
@@ -143,28 +167,11 @@ class HomeFragment : Fragment(R.layout.fragment_home), AdapterItemClickListener,
     }
 
 
-
-    override fun onClick(sortType: ProductSortType) {
-        if(homeViewModel.currentSortType.value != sortType) {
-            homeViewModel.setSortType(sortType)
+    override fun onSortTypeSelected(sortType: ProductSortType) {
+        if (homeViewModel.currentSortType.value != sortType) {
+            isSortTypeUpdate = false
+            homeViewModel.setCurrentProductType(sortType)
         }
-        isSortTypeUpdate = false
-    }
-
-    private fun setUpRecycleView() {
-        val recyclerView = binding.productSummaryRecyclerView
-        val dividerItemDecoration =
-            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-        requireContext().getDrawable(
-            R.drawable.recycleview_divider
-        )?.let {
-            dividerItemDecoration.setDrawable(
-                it
-            )
-        }
-        recyclerView.addItemDecoration(dividerItemDecoration)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = ProductSummaryAdapter(this)
     }
 
 }
