@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.R
@@ -16,14 +15,9 @@ import com.application.callbacks.ProductRecycleViewModelCallback
 import com.application.databinding.FragmentProductRecycleViewBinding
 import com.application.model.ProductListItem.ProductItem
 import com.application.model.ProductType
-import com.application.viewmodels.ProductRecycleViewModel
-
 class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_view),
     OnFilterItemClickListener, ProductRecycleViewModelCallback {
 
-    private val productRecycleViewModel: ProductRecycleViewModel by viewModels {
-        ProductRecycleViewModel.FACTORY
-    }
     lateinit var callback: OnItemClickListener
     lateinit var binding: FragmentProductRecycleViewBinding
     lateinit var adapter: ProductSummaryAdapter
@@ -39,19 +33,11 @@ class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_vi
             ProductSummaryAdapter(this)
         }
 
-
-        setObserve()
         setUpRecycleView()
         callback = parentFragment as OnItemClickListener
     }
 
-    private fun setObserve() {
 
-        productRecycleViewModel.data.observe(viewLifecycleOwner) {
-            adapter.submitData(it)
-            binding.progressCircular.visibility = View.GONE
-        }
-    }
 
     private fun setUpRecycleView() {
         val recyclerView = binding.productRecycleView
@@ -79,10 +65,8 @@ class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_vi
     }
 
     override fun onSetData(list: List<ProductItem>) {
-//        adapter.submitData(list)
-
-        //tempSolution remove the data for this model
-        productRecycleViewModel.setData(list)
+        adapter.submitData(list)
+        binding.progressCircular.visibility = View.GONE
     }
 
 }

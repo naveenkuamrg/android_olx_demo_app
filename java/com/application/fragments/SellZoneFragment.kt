@@ -70,13 +70,5 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), OnItemClickListe
                 fragment.onSetData(it)
             }
         }
-        productListViewModel.isLoading.observe(viewLifecycleOwner) {
-            if (!it) {
-
-            }
-            if (it) {
-
-            }
-        }
     }
 }

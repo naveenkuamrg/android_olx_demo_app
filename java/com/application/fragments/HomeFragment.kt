@@ -3,15 +3,12 @@ package com.application.fragments
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.R
-import com.application.adapter.SearchAdapter
-import com.application.callbacks.HomeFragmentCallback
+import com.application.callbacks.SearchbarCallback
 import com.application.callbacks.OnFilterItemClickListener
 import com.application.callbacks.SortBottomSheetCallback
 import com.application.databinding.FragmentHomeBinding
@@ -21,27 +18,22 @@ import com.application.model.ProductType
 import com.application.viewmodels.ProductListViewModel
 //import com.application.viewmodels.ProductRecycleViewModel
 import com.application.viewmodels.SearchProductViewModel
-import java.util.Locale
 
 class HomeFragment : Fragment(R.layout.fragment_home),
     SortBottomSheetCallback,OnFilterItemClickListener {
 
     lateinit var binding: FragmentHomeBinding
 
-    lateinit var callback: HomeFragmentCallback
+    lateinit var callback: SearchbarCallback
 
     private var isSortTypeUpdate = false
-
-    private val searchProductViewModel: SearchProductViewModel by viewModels {
-        SearchProductViewModel.FACTORY
-    }
 
     private val productListViewModel: ProductListViewModel by activityViewModels { ProductListViewModel.FACTORY }
 
     var userId: Long = -1L
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        callback = parentFragment as HomeFragmentCallback
+        callback = parentFragment as SearchbarCallback
         if (savedInstanceState == null) {
             childFragmentManager.beginTransaction().apply {
                 replace(R.id.product_recycle_view, ProductRecycleViewFragment(), "recyclerView")
@@ -90,8 +82,8 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     }
 
     private fun setUpSearchBar() {
-        callback.getSearchView().setupWithSearchBar(binding.searchBar)
-        binding.searchBar.setOnMenuItemClickListener {
+        val searchBar = binding.searchBar
+        searchBar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.notification -> {
                     parentFragment?.parentFragmentManager?.beginTransaction()?.apply {
@@ -109,15 +101,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
             return@setOnMenuItemClickListener false
         }
-        val searchRecyclerView = callback.getSearchRecyclerView()
-        searchRecyclerView.adapter = SearchAdapter(this)
-        searchRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        callback.getSearchView().editText.addTextChangedListener {
-            val searchTerm = it.toString().trim().lowercase(Locale.ROOT)
-
-            searchProductViewModel.search(searchTerm.trim(), userId)
-        }
-
+        callback.setUpWithSearchBar(searchBar)
     }
 
     override fun onAttach(context: Context) {
@@ -126,13 +110,6 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     }
 
     private fun setObserve() {
-
-        val adapter = SearchAdapter(this)
-        callback.getSearchRecyclerView().adapter = adapter
-        searchProductViewModel.searchResult.observe(viewLifecycleOwner) {
-            adapter.submitData(it)
-        }
-
         productListViewModel.data.observe(viewLifecycleOwner) {
 
             val fragment = childFragmentManager.findFragmentByTag("recyclerView")
@@ -140,15 +117,6 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                 fragment.onSetData(it)
             }
 
-        }
-        productListViewModel.isLoading.observe(viewLifecycleOwner) {
-
-            if (!it) {
-
-            }
-            if (it) {
-
-            }
         }
 
 

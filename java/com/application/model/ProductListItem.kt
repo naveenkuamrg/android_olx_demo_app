@@ -14,7 +14,6 @@ sealed class ProductListItem {
         val postedDate: String,
         val location: String,
         val price: String,
-
         ) : ProductListItem() {
         @Ignore
         var image: Bitmap? = null

@@ -16,8 +16,6 @@ import kotlinx.coroutines.launch
 
 class ProductListViewModel(private val productRepository: ProductRepository) : ViewModel() {
 
-    private val _isLoading: MutableLiveData<Boolean> = MutableLiveData()
-    val isLoading: LiveData<Boolean> = _isLoading
 
     private val _currentSortType: MutableLiveData<ProductSortType> = MutableLiveData()
     var currentSortType: LiveData<ProductSortType> = _currentSortType
@@ -26,24 +24,20 @@ class ProductListViewModel(private val productRepository: ProductRepository) : V
     val data: LiveData<List<ProductListItem.ProductItem>> = _data
 
     fun getProductSummary(id: Long) {
-        _isLoading.postValue(true)
         viewModelScope.launch(Dispatchers.Default) {
             _data.postValue(productRepository.getProductSummaryDetailsForSellZone(id))
-            _isLoading.postValue(false)
         }
     }
 
     fun getProductSummary(id: Long, sortType: ProductSortType) {
         _currentSortType.value = sortType
         viewModelScope.launch(Dispatchers.Default) {
-            _isLoading.postValue(true)
             _data.postValue(
                 productRepository.getProductSummaryDetailsForBuyZone(
                     id,
                     sortType
                 )
             )
-            _isLoading.postValue(false)
         }
     }
 
@@ -55,7 +49,6 @@ class ProductListViewModel(private val productRepository: ProductRepository) : V
     fun getProductSummary(id: Long, sortType: ProductSortType,type: ProductType) {
         _currentSortType.value = sortType
         viewModelScope.launch(Dispatchers.Default) {
-            _isLoading.postValue(true)
             _data.postValue(
                 productRepository.getProductSummaryDetailsForBuyZone(
                     id,
@@ -63,7 +56,6 @@ class ProductListViewModel(private val productRepository: ProductRepository) : V
                     sortType
                 )
             )
-            _isLoading.postValue(false)
         }
     }
 

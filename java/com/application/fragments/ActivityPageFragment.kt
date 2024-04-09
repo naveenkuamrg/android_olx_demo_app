@@ -1,21 +1,12 @@
 package com.application.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import com.application.R
 import com.application.databinding.FragmentActivityBinding
-import com.application.helper.Utility
-import com.application.viewmodels.YoursActivityPageViewModel
-
-class YoursActivityFragment: Fragment(R.layout.fragment_activity) {
+class ActivityPageFragment: Fragment(R.layout.fragment_activity) {
     lateinit var binding: FragmentActivityBinding
-
-
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentActivityBinding.bind(view)

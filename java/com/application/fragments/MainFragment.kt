@@ -3,18 +3,30 @@ package com.application.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.R
-import com.application.callbacks.HomeFragmentCallback
+import com.application.adapter.SearchAdapter
+import com.application.callbacks.SearchbarCallback
+import com.application.callbacks.OnItemClickListener
 import com.application.callbacks.ProductViewCallback
 import com.application.callbacks.ProfileFragmentCallback
 import com.application.databinding.FragmentMainBinding
+import com.application.helper.Utility
+import com.application.viewmodels.SearchProductViewModel
+import com.google.android.material.search.SearchBar
+import java.util.Locale
 
 class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
-    ProductViewCallback, HomeFragmentCallback {
+    ProductViewCallback, SearchbarCallback, OnItemClickListener {
     lateinit var binding: FragmentMainBinding
+
+    private val searchProductViewModel: SearchProductViewModel by viewModels {
+        SearchProductViewModel.FACTORY
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
@@ -55,6 +67,7 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner, onBackPressedCallback
         )
+        setObserve()
     }
 
     private fun setOnItemSelectListener() {
@@ -110,7 +123,7 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
             return@setOnItemSelectedListener true
         }
     }
-    fun addHomeFragment() {
+    private fun addHomeFragment() {
         val transaction = childFragmentManager.beginTransaction()
         transaction.replace(R.id.bottom_navigation_fragment_view_container, HomeFragment())
         transaction.addToBackStack("home")
@@ -140,7 +153,7 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
     override fun onShowActivityPage() {
         parentFragmentManager.beginTransaction().apply {
             addToBackStack("showActivityFragment")
-            replace(R.id.main_view_container,YoursActivityFragment())
+            replace(R.id.main_view_container,ActivityPageFragment())
             commit()
         }
     }
@@ -153,7 +166,6 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
         }
     }
     override fun onShowProductDetailsPage(productId: Long) {
-
         parentFragmentManager.beginTransaction().apply {
             addToBackStack("showProductDetailFragment")
             replace(R.id.main_view_container, ProductDetailsFragment().apply {
@@ -165,11 +177,45 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
         }
     }
 
-    override fun getSearchView(): com.google.android.material.search.SearchView {
-        return binding.searchView
+
+
+    private fun setObserve() {
+        searchProductViewModel.searchResult.observe(viewLifecycleOwner) {
+          val adapter =  binding.searchResult.adapter
+            if(adapter is SearchAdapter) {
+                adapter.submitData(it)
+            }
+        }
     }
 
-    override fun getSearchRecyclerView(): RecyclerView {
-       return binding.searchResult
+    override fun setUpWithSearchBar(searchBar: SearchBar) {
+        val searchView = binding.searchView
+        searchView.setupWithSearchBar(searchBar)
+        searchView.editText.addTextChangedListener {
+            val searchTerm = it.toString().trim().lowercase(Locale.ROOT)
+            searchProductViewModel.search(searchTerm,Utility.getLoginUserId(requireContext()))
+        }
+        val searchRecyclerView = binding.searchResult
+        searchRecyclerView.adapter = SearchAdapter(this)
+        searchRecyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
+
+
+    override fun onItemClick(position: Int) {
+        parentFragmentManager.beginTransaction().apply {
+            addToBackStack("showProductDetailFragment")
+            replace(R.id.main_view_container, ProductDetailsFragment().apply {
+                arguments = Bundle().apply {
+                    putLong(
+                        "currentProductId",
+                        searchProductViewModel.searchResult.value!![position].id
+                    )
+                    putBoolean("isCurrentUserProduct", false)
+                }
+            })
+            commit()
+        }
+    }
+
+
 }
