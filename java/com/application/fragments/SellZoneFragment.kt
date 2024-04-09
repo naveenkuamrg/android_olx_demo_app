@@ -10,14 +10,17 @@ import com.application.R
 import com.application.callbacks.OnItemClickListener
 import com.application.callbacks.ProductViewCallback
 import com.application.databinding.FragmentSellZoneBinding
-import com.application.viewmodels.SellZoneViewModel
+import com.application.viewmodels.ProductListViewModel
 
 class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), OnItemClickListener {
     lateinit var binding: FragmentSellZoneBinding
 
-    val viewModel: SellZoneViewModel by viewModels { SellZoneViewModel.FACTORY }
+    private val productListViewModel: ProductListViewModel by viewModels { ProductListViewModel.FACTORY }
 
     var userId: Long = -1L
+
+    private lateinit var callBack: ProductViewCallback
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,14 +42,13 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), OnItemClickListe
             .getString("userId", "-1L")!!.toLong()
     }
 
-    lateinit var callBack: ProductViewCallback
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentSellZoneBinding.bind(view)
         callBack = parentFragment as ProductViewCallback
         setOnClickListenerAddProduct()
         setObserve()
-        viewModel.getProductSummary(
+        productListViewModel.getProductSummary(
             userId
         )
     }
@@ -58,17 +60,17 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), OnItemClickListe
     }
 
     override fun onItemClick(position: Int) {
-        callBack.onShowProductDetailsPage(viewModel.data.value!![position].id)
+        callBack.onShowProductDetailsPage(productListViewModel.data.value!![position].id)
     }
 
     private fun setObserve() {
-        viewModel.data.observe(viewLifecycleOwner) {
+        productListViewModel.data.observe(viewLifecycleOwner) {
             val fragment = childFragmentManager.findFragmentByTag("recyclerView")
             if (fragment is ProductRecycleViewFragment) {
                 fragment.onSetData(it)
             }
         }
-        viewModel.isLoading.observe(viewLifecycleOwner) {
+        productListViewModel.isLoading.observe(viewLifecycleOwner) {
             if (!it) {
 
             }

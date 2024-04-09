@@ -12,14 +12,14 @@ import com.application.databinding.FragmentFilterProductsBinding
 import com.application.helper.Utility
 import com.application.model.ProductSortType
 import com.application.model.ProductType
-import com.application.viewmodels.FilterProductViewModel
+import com.application.viewmodels.ProductListViewModel
 
 class FilterProductFragment : Fragment(R.layout.fragment_filter_products), OnItemClickListener,
 SortBottomSheetCallback{
 
     lateinit var binding: FragmentFilterProductsBinding
 
-    val viewmodel: FilterProductViewModel by viewModels { FilterProductViewModel.FACTORY }
+    private val productListViewModel: ProductListViewModel by viewModels { ProductListViewModel.FACTORY }
 
     private var isSortTypeUpdate = false
 
@@ -46,7 +46,7 @@ SortBottomSheetCallback{
                 replace(R.id.product_recycle_view, ProductRecycleViewFragment(), "recyclerView")
                 commit()
             }
-            viewmodel.setCurrentProductType(ProductSortType.POSTED_DATE_DESC)
+            productListViewModel.setCurrentProductType(ProductSortType.POSTED_DATE_DESC)
         }
     }
 
@@ -80,7 +80,7 @@ SortBottomSheetCallback{
 
 
     private fun setObserve() {
-        viewmodel.data.observe(viewLifecycleOwner) {
+        productListViewModel.data.observe(viewLifecycleOwner) {
 
             val fragment = childFragmentManager.findFragmentByTag("recyclerView")
             if (fragment is ProductRecycleViewFragment) {
@@ -89,10 +89,10 @@ SortBottomSheetCallback{
 
         }
 
-        viewmodel.currentSortType.observe(viewLifecycleOwner) {
+        productListViewModel.currentSortType.observe(viewLifecycleOwner) {
             val filterType = getFilterType
             if (!isSortTypeUpdate && filterType != null) {
-                viewmodel.getProductSummary(
+                productListViewModel.getProductSummary(
                     userId,
                     it,
                     filterType
@@ -110,7 +110,7 @@ SortBottomSheetCallback{
                 arguments = Bundle().apply {
                     putLong(
                         "currentProductId",
-                        viewmodel.data.value!![position].id
+                        productListViewModel.data.value!![position].id
                     )
                     putBoolean("isCurrentUserProduct", false)
                 }
@@ -130,9 +130,9 @@ SortBottomSheetCallback{
     }
 
     override fun onSortTypeSelected(sortType: ProductSortType) {
-        if (viewmodel.currentSortType.value != sortType) {
+        if (productListViewModel.currentSortType.value != sortType) {
             isSortTypeUpdate = false
-            viewmodel.setCurrentProductType(sortType)
+            productListViewModel.setCurrentProductType(sortType)
         }
     }
 

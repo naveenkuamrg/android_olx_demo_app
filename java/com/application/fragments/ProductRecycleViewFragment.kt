@@ -16,13 +16,13 @@ import com.application.callbacks.ProductRecycleViewModelCallback
 import com.application.databinding.FragmentProductRecycleViewBinding
 import com.application.model.ProductListItem.ProductItem
 import com.application.model.ProductType
-import com.application.viewmodels.ProductRecycleViewModelCheck
+import com.application.viewmodels.ProductRecycleViewModel
 
 class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_view),
     OnFilterItemClickListener, ProductRecycleViewModelCallback {
 
-    private val productRecycleViewModel: ProductRecycleViewModelCheck by viewModels {
-        ProductRecycleViewModelCheck.FACTORY
+    private val productRecycleViewModel: ProductRecycleViewModel by viewModels {
+        ProductRecycleViewModel.FACTORY
     }
     lateinit var callback: OnItemClickListener
     lateinit var binding: FragmentProductRecycleViewBinding

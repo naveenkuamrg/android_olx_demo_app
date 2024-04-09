@@ -9,13 +9,13 @@ import com.application.R
 import com.application.callbacks.OnItemClickListener
 import com.application.databinding.FragmentProductListBinding
 import com.application.helper.Utility
-import com.application.viewmodels.YoursActivityPageViewModel
+import com.application.viewmodels.ProductListViewModel
 
 class FavoriteProductListFragment: Fragment(R.layout.fragment_product_list), OnItemClickListener {
 
     lateinit var binding: FragmentProductListBinding
 
-     val viewmodel: YoursActivityPageViewModel by viewModels {YoursActivityPageViewModel.FACTORY}
+     private val productListViewModel: ProductListViewModel by viewModels {ProductListViewModel.FACTORY}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,11 +33,11 @@ class FavoriteProductListFragment: Fragment(R.layout.fragment_product_list), OnI
         binding = FragmentProductListBinding.bind(view)
         setToolbar()
         setObserve()
-        viewmodel.getFavoriteProductSummary(Utility.getLoginUserId(requireContext()))
+        productListViewModel.getFavoriteProductSummary(Utility.getLoginUserId(requireContext()))
     }
 
     private fun setObserve(){
-        viewmodel.data.observe(viewLifecycleOwner){
+        productListViewModel.data.observe(viewLifecycleOwner){
             val fragment = childFragmentManager.findFragmentByTag("recyclerView")
             Log.i("TAG",fragment.toString())
             if (fragment is ProductRecycleViewFragment) {
@@ -62,7 +62,7 @@ class FavoriteProductListFragment: Fragment(R.layout.fragment_product_list), OnI
                 arguments = Bundle().apply {
                     putLong(
                         "currentProductId",
-                        viewmodel.data.value!![position].id
+                        productListViewModel.data.value!![position].id
                     )
                     putBoolean("isCurrentUserProduct", false)
                 }

@@ -2,7 +2,6 @@ package com.application.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -14,13 +13,12 @@ import com.application.R
 import com.application.adapter.SearchAdapter
 import com.application.callbacks.HomeFragmentCallback
 import com.application.callbacks.OnFilterItemClickListener
-import com.application.callbacks.OnItemClickListener
 import com.application.callbacks.SortBottomSheetCallback
 import com.application.databinding.FragmentHomeBinding
 import com.application.helper.Utility
 import com.application.model.ProductSortType
 import com.application.model.ProductType
-import com.application.viewmodels.HomeViewModel
+import com.application.viewmodels.ProductListViewModel
 //import com.application.viewmodels.ProductRecycleViewModel
 import com.application.viewmodels.SearchProductViewModel
 import java.util.Locale
@@ -38,7 +36,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         SearchProductViewModel.FACTORY
     }
 
-    private val homeViewModel: HomeViewModel by activityViewModels { HomeViewModel.FACTORY }
+    private val productListViewModel: ProductListViewModel by activityViewModels { ProductListViewModel.FACTORY }
 
     var userId: Long = -1L
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,7 +48,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                 commit()
             }
 
-            homeViewModel.setCurrentProductType(ProductSortType.POSTED_DATE_DESC)
+            productListViewModel.setCurrentProductType(ProductSortType.POSTED_DATE_DESC)
 
         }
     }
@@ -82,7 +80,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                 arguments = Bundle().apply {
                     putLong(
                         "currentProductId",
-                        homeViewModel.data.value!![position - 1].id
+                        productListViewModel.data.value!![position - 1].id
                     )
                     putBoolean("isCurrentUserProduct", false)
                 }
@@ -135,7 +133,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
             adapter.submitData(it)
         }
 
-        homeViewModel.data.observe(viewLifecycleOwner) {
+        productListViewModel.data.observe(viewLifecycleOwner) {
 
             val fragment = childFragmentManager.findFragmentByTag("recyclerView")
             if (fragment is ProductRecycleViewFragment) {
@@ -143,7 +141,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
             }
 
         }
-        homeViewModel.isLoading.observe(viewLifecycleOwner) {
+        productListViewModel.isLoading.observe(viewLifecycleOwner) {
 
             if (!it) {
 
@@ -154,9 +152,9 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         }
 
 
-        homeViewModel.currentSortType.observe(viewLifecycleOwner) {
+        productListViewModel.currentSortType.observe(viewLifecycleOwner) {
             if (!isSortTypeUpdate) {
-                homeViewModel.getProductSummary(
+                productListViewModel.getProductSummary(
                     userId,
                     it
                 )
@@ -168,9 +166,9 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
 
     override fun onSortTypeSelected(sortType: ProductSortType) {
-        if (homeViewModel.currentSortType.value != sortType) {
+        if (productListViewModel.currentSortType.value != sortType) {
             isSortTypeUpdate = false
-            homeViewModel.setCurrentProductType(sortType)
+            productListViewModel.setCurrentProductType(sortType)
         }
     }
 

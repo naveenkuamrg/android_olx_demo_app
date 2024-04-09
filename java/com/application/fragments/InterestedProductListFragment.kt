@@ -1,7 +1,6 @@
 package com.application.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -9,13 +8,13 @@ import com.application.R
 import com.application.callbacks.OnItemClickListener
 import com.application.databinding.FragmentProductListBinding
 import com.application.helper.Utility
-import com.application.viewmodels.YoursActivityPageViewModel
+import com.application.viewmodels.ProductListViewModel
 
 class InterestedProductListFragment: Fragment(R.layout.fragment_product_list),OnItemClickListener {
 
     lateinit var binding: FragmentProductListBinding
 
-    val viewmodel: YoursActivityPageViewModel by viewModels {YoursActivityPageViewModel.FACTORY}
+    private val productListViewModel: ProductListViewModel by viewModels {ProductListViewModel.FACTORY}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,11 +31,11 @@ class InterestedProductListFragment: Fragment(R.layout.fragment_product_list),On
         binding = FragmentProductListBinding.bind(view)
         setToolbar()
         setObserve()
-        viewmodel.getInterestedProductSummary(Utility.getLoginUserId(requireContext()))
+        productListViewModel.getInterestedProductSummary(Utility.getLoginUserId(requireContext()))
     }
 
     private fun setObserve(){
-        viewmodel.data.observe(viewLifecycleOwner){
+        productListViewModel.data.observe(viewLifecycleOwner){
             val fragment = childFragmentManager.findFragmentByTag("recyclerView")
             if (fragment is ProductRecycleViewFragment) {
                 fragment.onSetData(it)
@@ -60,7 +59,7 @@ class InterestedProductListFragment: Fragment(R.layout.fragment_product_list),On
                 arguments = Bundle().apply {
                     putLong(
                         "currentProductId",
-                        viewmodel.data.value!![position].id
+                        productListViewModel.data.value!![position].id
                     )
                     putBoolean("isCurrentUserProduct", false)
                 }
