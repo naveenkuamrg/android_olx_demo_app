@@ -138,6 +138,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
     private fun setOnClickListenerToAddImageBtn() {
 
         binding.addImageButton.setOnClickListener {
+
             val f = BottomSheetDialogPhotoPicker()
             f.show(childFragmentManager, "bottomSheet")
         }

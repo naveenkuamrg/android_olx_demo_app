@@ -23,15 +23,11 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
     lateinit var binding: FragmentProductDetailsBinding
     private val isCurrentUserProduct: Boolean
         get() {
-            Log.i("TAG","isCurrentUserProduct ${po()}")
             return arguments?.getBoolean("isCurrentUserProduct",true) == true
         }
 
     private var userId: Long = -1
 
-    private  fun po(): Boolean{
-        return viewModel.product.value?.sellerId == Utility.getLoginUserId(requireContext())
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -42,6 +38,9 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.clearLiveData()
+        if(savedInstanceState == null){
+//            viewModel.clearException()
+        }
     }
 
 
@@ -54,8 +53,17 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
             userId = it.toLong()
         }
         super.onViewCreated(view, savedInstanceState)
+        val currentProductId = arguments?.getLong("currentProductId")
+        val notificationId = arguments?.getLong("notificationId")
 
-        viewModel.fetchProductDetails(arguments?.getLong("currentProductId")!!, userId)
+        if(currentProductId != null && currentProductId != 0L) {
+            Log.i("TAG","check currentProductId ")
+            viewModel.fetchProductDetailsUsingProductId(currentProductId, userId)
+        }
+        if(notificationId != null && notificationId != 0L){
+            Log.i("TAG","check notification")
+            viewModel.fetchProductDetailsUsingNotificationId(notificationId,userId)
+        }
 
         binding = FragmentProductDetailsBinding.bind(view)
         setObserve()
@@ -195,6 +203,14 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
                 binding.productDetailLayout.favouriteImg.setImageResource(
                     R.drawable.ic_favorite_outline
                 )
+            }
+        }
+
+        viewModel.exception.observe(viewLifecycleOwner){
+            if(it != null) {
+                binding.productDetailLayoutContainer.visibility = View.GONE
+                binding.errorText.text = it.message
+                binding.errorText.visibility = View.VISIBLE
             }
         }
 

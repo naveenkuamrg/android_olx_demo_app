@@ -1,10 +1,12 @@
 package com.application.repositories.impl
 
 import android.content.Context
+import android.util.Log
 import com.application.AppDatabase
 import com.application.dao.NotificationDao
 import com.application.dao.ProductDao
 import com.application.dao.ProfileDao
+import com.application.exceptions.ProductDataException
 import com.application.helper.ModelConverter
 import com.application.helper.NotificationContentBuilder
 import com.application.helper.Utility
@@ -19,6 +21,7 @@ import com.application.model.SearchProductResultItem
 import com.application.repositories.ProductImageRepository
 import com.application.repositories.ProductRepository
 import com.application.repositories.ProfileImageRepository
+import java.lang.Exception
 
 class ProductRepositoryImpl(val context: Context) : ProductRepository {
 
@@ -99,11 +102,27 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         }
     }
 
-    override suspend fun getProductDetails(productId: Long, userId: Long): Product {
+    override suspend fun getProductDetailsUsingProductId(productId: Long, userId: Long): Product {
 
-        return productDao.getProduct(productId, userId).apply {
+        return productDao.getProductUsingProductId(productId, userId).apply {
             images = (productImageRepository.getAllImageFromFile(productId.toString()))
         }
+    }
+
+    override suspend fun getProductDetailsUsingNotificationId(
+        notificationId: Long,
+        userId: Long
+    ): Product {
+        try {
+            return productDao.getProductUsingNotification(notificationId, userId).apply {
+                images = (productImageRepository.getAllImageFromFile(id.toString()))
+            }
+        }catch (e: Exception){
+            throw ProductDataException.ProductDataDeleteException()
+        }
+
+
+
     }
 
     override suspend fun removeProduct(product: Product): Boolean {
@@ -125,7 +144,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
             for (i in productInterestedProfile) {
                 notificationDao.upsertNotification(
                     ModelConverter.notificationBuilder(
-                        i.id, product.id,
+                        i.id, product.id,NotificationType.PRODUCT,
                         NotificationContentBuilder.build(
                             NotificationType.PRODUCT,
                             Utility.getLoginUserName(context),
@@ -145,7 +164,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         notificationDao.upsertNotification(
             ModelConverter.notificationBuilder(
                 product.sellerId,
-                product.id!!,
+                product.id!!,NotificationType.PROFILE,
                 NotificationContentBuilder.build(
                     NotificationType.PROFILE,
                     Utility.getLoginUserName(context),

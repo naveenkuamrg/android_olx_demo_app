@@ -20,7 +20,6 @@ import com.bumptech.glide.request.transition.Transition
 
 object ImageConverter {
 
-
     fun loadBitmapFromUri(
         context: Context,
         uri: Uri,

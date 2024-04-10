@@ -52,14 +52,14 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         viewModel.user.observe(
             viewLifecycleOwner
         ) { value ->
-            Log.i("TAG",value.name)
+            Log.i("TAG", value.name)
             val sharedPreferences = requireContext().getSharedPreferences(
                 "mySharePref",
                 AppCompatActivity.MODE_PRIVATE
             )
             sharedPreferences.edit().apply {
                 putString("userId", value.id.toString())
-                putString("userName",value.name)
+                putString("userName", value.name)
                 apply()
             }
             val fragmentTransaction = parentFragmentManager.beginTransaction()
@@ -68,21 +68,18 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         }
 
         viewModel.exceptions.observe(
-            viewLifecycleOwner, object : Observer<AuthenticationSignInException> {
-                override fun onChanged(value: AuthenticationSignInException) {
-                    when (value) {
-                        is AuthenticationSignInException.UserNotFoundAuthenticationException -> {
-                            binding.emailEdittextLayout.error = value.message
-                        }
-
-                        is AuthenticationSignInException.PasswordInvalidAuthenticationException -> {
-                            binding.passwordEdittextLayout.error = value.message
-                        }
-
-                    }
+            viewLifecycleOwner) { value ->
+            when (value) {
+                is AuthenticationSignInException.UserNotFoundAuthenticationException -> {
+                    binding.emailEdittextLayout.error = value.message
                 }
 
-            })
+                is AuthenticationSignInException.PasswordInvalidAuthenticationException -> {
+                    binding.passwordEdittextLayout.error = value.message
+                }
+
+            }
+        }
     }
 
 

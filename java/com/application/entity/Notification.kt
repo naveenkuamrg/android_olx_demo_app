@@ -22,7 +22,8 @@ data class Notification(
     val isRead: Boolean,
     val recipientId: Long,
     val productId: Long,
-    val content: String
+    val content: String,
+    val type: NotificationType
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0

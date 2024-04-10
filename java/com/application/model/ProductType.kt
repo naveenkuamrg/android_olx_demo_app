@@ -8,7 +8,8 @@ enum class ProductType {
     ELECTRONICS_AND_APPLIANCES,
     FURNITURE,
     FASHION,
-    BOOKS_SPORTS_AND_HOBBIES;
+    BOOKS_SPORTS_AND_HOBBIES,
+    SPORTS;
 
     companion object {
         fun stringToProductType(type: String): ProductType? {

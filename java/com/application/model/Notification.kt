@@ -7,7 +7,8 @@ data class Notification(
     val id : Long,
     val timestamp: Long,
     val isRead : Boolean,
-    val content: String
+    val content: String,
+    val type: NotificationType
 ){
     lateinit var image: Bitmap
 }

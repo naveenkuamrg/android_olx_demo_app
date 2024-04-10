@@ -10,9 +10,10 @@ import com.application.adapter.NotificationAdapter
 import com.application.callbacks.OnItemClickListener
 import com.application.databinding.FragmentNotificationBinding
 import com.application.helper.Utility
+import com.application.model.NotificationType
 import com.application.viewmodels.NotificationViewModel
 
-class NotificationFragment: Fragment(R.layout.fragment_notification),OnItemClickListener {
+class NotificationFragment : Fragment(R.layout.fragment_notification), OnItemClickListener {
 
     lateinit var binding: FragmentNotificationBinding
 
@@ -28,26 +29,44 @@ class NotificationFragment: Fragment(R.layout.fragment_notification),OnItemClick
         notificationViewModel.fetchNotification(Utility.getLoginUserId(requireContext()))
     }
 
-    private fun setToolbar(){
+    private fun setToolbar() {
         binding.toolbar.setNavigationIcon(R.drawable.ic_back)
         binding.toolbar.setNavigationOnClickListener {
             parentFragmentManager.popBackStack()
         }
     }
 
-    private fun setUpRecyclerView(){
+    private fun setUpRecyclerView() {
         val notificationRecyclerView = binding.notificationRecyclerView
         notificationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         notificationRecyclerView.adapter = NotificationAdapter(this)
     }
 
-    private fun setObserve(){
-        notificationViewModel.notifications.observe(viewLifecycleOwner){
+    private fun setObserve() {
+        notificationViewModel.notifications.observe(viewLifecycleOwner) {
             (binding.notificationRecyclerView.adapter as NotificationAdapter).submitData(it)
         }
     }
 
     override fun onItemClick(position: Int) {
-
+        parentFragmentManager.beginTransaction().apply {
+            addToBackStack("showProductDetailFragment")
+            replace(R.id.main_view_container, ProductDetailsFragment().apply {
+                arguments = Bundle().apply {
+                    putLong(
+                        "notificationId",
+                        notificationViewModel.notifications.value!![position].id
+                    )
+                    if (notificationViewModel.notifications.value!![position].type
+                        == NotificationType.PRODUCT
+                    ) {
+                        putBoolean("isCurrentUserProduct", false)
+                    } else {
+                        putBoolean("isCurrentUserProduct", true)
+                    }
+                }
+            })
+            commit()
+        }
     }
 }

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="120dp"
     android:padding="16dp"
@@ -15,57 +17,84 @@
         android:layout_marginBottom="11dp"
         android:textSize="8pt" />
 
-    <HorizontalScrollView
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="none">
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="52dp">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/vehicles"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_vehicle"
+            app:layout_constraintEnd_toStartOf="@+id/mobiles"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/vehicles"
-                android:text="Vehicles"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp" />
+        <ImageView
+            android:id="@+id/mobiles"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_mobile"
+            app:layout_constraintEnd_toStartOf="@+id/electronics"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/vehicles"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/mobiles"
-                android:text="Mobiles"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp" />
+        <ImageView
+            android:id="@+id/electronics"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_electronics"
+            app:layout_constraintEnd_toStartOf="@+id/furniture"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/mobiles"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/electronics"
-                android:text="Electronics and \n Appliances"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp" />
+        <ImageView
+            android:id="@+id/furniture"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_furniture"
+            app:layout_constraintEnd_toStartOf="@+id/books"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/electronics"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/furniture"
-                android:text="Furniture"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp" />
+        <ImageView
+            android:id="@+id/fashion"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_fashion"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/sport"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/fashion"
-                android:text="Fashion"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp" />
+        <ImageView
+            android:id="@+id/books"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_books"
+            app:layout_constraintEnd_toStartOf="@+id/sport"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/furniture"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/books"
-                android:text="Books and Sports"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp" />
-        </LinearLayout>
-    </HorizontalScrollView>
+        <ImageView
+            android:id="@+id/sport"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_ball"
+            app:layout_constraintEnd_toStartOf="@+id/fashion"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/books"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </LinearLayout>

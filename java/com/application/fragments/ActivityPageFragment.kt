@@ -17,7 +17,7 @@ class ActivityPageFragment: Fragment(R.layout.fragment_activity) {
 
     private fun setupView(){
        val favouriteListNavigator = binding.favourite
-        favouriteListNavigator.imageFilterView.setImageResource(R.drawable.ic_favorite_fill)
+        favouriteListNavigator.imageFilterView.setImageResource(R.drawable.ic_favorite_outline)
         favouriteListNavigator.textLabel.text = "Favourite"
         favouriteListNavigator.navigator.setOnClickListener {
             parentFragmentManager.beginTransaction().apply {

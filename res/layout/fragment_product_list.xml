@@ -8,6 +8,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout7"
         android:layout_width="match_parent"
+        android:background="@color/md_theme_surfaceContainer"
         android:layout_height="?attr/actionBarSize"
         app:layout_constraintTop_toTopOf="parent">
 

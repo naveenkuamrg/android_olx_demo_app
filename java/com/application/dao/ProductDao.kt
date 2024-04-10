@@ -8,11 +8,12 @@ import androidx.room.Upsert
 import com.application.entity.ProductDetails
 import com.application.entity.WishList
 import com.application.model.AvailabilityStatus
+import com.application.model.Notification
 import com.application.model.Product
 import com.application.model.ProductListItem.ProductItem
-import com.application.model.ProductListItem
 import com.application.model.ProductType
 import com.application.model.SearchProductResultItem
+
 
 @Dao
 interface ProductDao {
@@ -40,7 +41,17 @@ interface ProductDao {
                 " left join (select product_id as isInterested from interested_buyers where user_id Like :userId and product_id Like :productId) as isInterested " +
                 "left join (select product_id as isWishList from wish_list where user_id Like :userId and product_id Like :productId) as isWishList where product_id Like :productId "
     )
-    fun getProduct(productId: Long, userId: Long): Product
+    fun getProductUsingProductId(productId: Long, userId: Long): Product
+
+//    @Query("select id,title,price,postedDate,description,availabilityStatus,location,productType,userId as sellerId ,isInterested,case when wish_list.user_id is null then 0 else 1 end as isWishList from (" +
+//            "select id,title,price,postedDate,description,availabilityStatus,location,productType,userId,case when interested_buyers.user_id is null then 0 else 1 end as isInterested from (" +
+//            "select product_details.product_id as id ,title,price,postedDate,description,availabilityStatus,location,productType,user_id as userId from notification left join product_details on notification.productId = product_details.product_id where notification.id LIKE :notificationId" +
+//            ") as product left join interested_buyers on id = interested_buyers.product_id where user_id LIKE :userId" +
+//            ") as product left join wish_list on id = wish_list.product_id where wish_list.user_id LIKE :userId ")
+//    fun getProductUsingNotification(notificationId: Long,userId: Long): Product
+
+    @Query("select product_details.product_id as id,title,price,postedDate,description,availabilityStatus,location,productType,product_details.user_id as sellerId,isInterested,case when wish_list.product_id is null then 0 else 1 end as isWishList   from (select product_details.*,case when interested_buyers.product_id is null then 0 else 1 end as isInterested from (select * from product_details where product_id LIKE (select productId from notification where id LIKE :notificationId)) as product_details left join (select * from interested_buyers where user_id LIKE :userId ) as interested_buyers on product_details.product_id = interested_buyers.product_id) as product_details left join (select * from wish_list where user_id LIKE :userId) as wish_list on product_details.product_id = wish_list.product_id ")
+    fun getProductUsingNotification(notificationId: Long,userId: Long):Product
 
     @Delete
     fun deleteProduct(productDetails: ProductDetails): Int

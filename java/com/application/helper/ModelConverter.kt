@@ -4,6 +4,7 @@ import com.application.entity.Notification
 import com.application.entity.ProductDetails
 import com.application.entity.User
 import com.application.entity.WishList
+import com.application.model.NotificationType
 import com.application.model.Product
 import com.application.model.Profile
 import java.util.Date
@@ -47,6 +48,7 @@ object ModelConverter {
     fun notificationBuilder(
         recipientId: Long,
         productId: Long,
+        type: NotificationType,
         content: String
     ): Notification {
         return Notification(
@@ -54,7 +56,8 @@ object ModelConverter {
             false,
             recipientId,
             productId,
-            content
+            content,
+            type
         )
     }
 
@@ -68,7 +71,8 @@ object ModelConverter {
             notification.id,
             notification.timestamp,
             notification.isRead,
-            notification.content
+            notification.content,
+            notification.type
         )
     }
 

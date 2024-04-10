@@ -1,11 +1,13 @@
 package com.application.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.application.exceptions.ProductDataException
 import com.application.model.AvailabilityStatus
 import com.application.model.Product
 import com.application.model.Profile
@@ -13,6 +15,8 @@ import com.application.repositories.ProductRepository
 import com.application.repositories.impl.ProductRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.lang.Exception
 
 class ProductDetailViewModel(private val productRepository: ProductRepository) : ViewModel() {
 
@@ -34,18 +38,51 @@ class ProductDetailViewModel(private val productRepository: ProductRepository) :
     private val _isWishListIsUpdate: MutableLiveData<Boolean?> = MutableLiveData()
     val isWishListIsUpdate: LiveData<Boolean?> = _isWishListIsUpdate
 
+    private val _exception: MutableLiveData<Exception?> = MutableLiveData()
+    val exception: MutableLiveData<Exception?> = _exception
 
-    fun fetchProductDetails(productId: Long, userId: Long) {
-        if(productId != -1L) {
+
+    fun fetchProductDetailsUsingProductId(productId: Long, userId: Long) {
+        if (productId != -1L) {
             _isLoading.value = true
             viewModelScope.launch(Dispatchers.Default) {
-                _product.postValue(productRepository.getProductDetails(productId, userId))
+                _product.postValue(
+                    productRepository.getProductDetailsUsingProductId(
+                        productId,
+                        userId
+                    )
+                )
                 _isLoading.postValue(false)
             }
         }
     }
 
-    fun fetchProfileList(productId: Long){
+    fun fetchProductDetailsUsingNotificationId(notificationId: Long, userId: Long) {
+        if (notificationId != -1L) {
+            _isLoading.value = true
+            viewModelScope.launch(Dispatchers.Default) {
+                try {
+                    val product = productRepository.getProductDetailsUsingNotificationId(
+                        notificationId,
+                        userId
+                    )
+                    _product.postValue(
+                        product
+                    )
+                } catch (e: ProductDataException) {
+                    withContext(Dispatchers.Main) {
+                        _exception.value = e
+                    }
+                } finally {
+                    _isLoading.postValue(false)
+                }
+
+            }
+        }
+
+    }
+
+    fun fetchProfileList(productId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             _profileList.postValue(productRepository.getInterestedProfile(productId))
         }
@@ -80,6 +117,7 @@ class ProductDetailViewModel(private val productRepository: ProductRepository) :
         _isDelete.value = null
         _isLoading.value = null
         _isInterestedChangeIsUpdate.value = null
+        _exception.value = null
     }
 
     fun updateMarkAsSold() {
@@ -93,7 +131,7 @@ class ProductDetailViewModel(private val productRepository: ProductRepository) :
             }
             _isLoading.postValue(true)
             _product.postValue(
-                productRepository.getProductDetails(
+                productRepository.getProductDetailsUsingProductId(
                     product.value?.id!!,
                     product.value?.sellerId!!
                 )
@@ -102,8 +140,8 @@ class ProductDetailViewModel(private val productRepository: ProductRepository) :
         }
     }
 
-    fun updateIsInterested(userId: Long){
-        _isWishListIsUpdate.value  = false
+    fun updateIsInterested(userId: Long) {
+        _isWishListIsUpdate.value = false
         product.value?.isWishList = !product.value?.isWishList!!
         viewModelScope.launch(Dispatchers.Default) {
             productRepository.updateIsFavorite(product.value!!, product.value?.isWishList!!, userId)
@@ -111,6 +149,7 @@ class ProductDetailViewModel(private val productRepository: ProductRepository) :
         }
 
     }
+
     companion object {
 
         @Suppress("UNCHECKED_CAST")
