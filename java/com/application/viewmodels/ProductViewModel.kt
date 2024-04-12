@@ -43,6 +43,7 @@ class ProductDetailViewModel(private val productRepository: ProductRepository) :
 
 
     fun fetchProductDetailsUsingProductId(productId: Long, userId: Long) {
+        Log.i("TAG","navea")
         if (productId != -1L) {
             _isLoading.value = true
             viewModelScope.launch(Dispatchers.Default) {
