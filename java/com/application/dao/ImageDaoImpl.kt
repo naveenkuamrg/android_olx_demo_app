@@ -68,13 +68,13 @@ class ImageDaoImpl(
     }
 
 
-    override suspend fun saveImage(bitmap: Bitmap, path: String, name: String): String {
+    override suspend fun saveImage(bitmap: Bitmap?, path: String, name: String): String {
         val file = File(context.filesDir, path)
         if (!file.exists()) {
             file.mkdirs()
         }
         val outputStream = FileOutputStream(File(file, "${name}.jpeg"))
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream)
+        bitmap?.compress(Bitmap.CompressFormat.JPEG, 99, outputStream)
         withContext(Dispatchers.IO) {
             outputStream.flush()
             outputStream.close()

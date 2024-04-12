@@ -2,32 +2,35 @@ package com.application.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
+import android.view.Gravity
 import android.view.View
+import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewpager2.widget.ViewPager2
 import com.application.R
 import com.application.adapter.ImageViewAdapter
 import com.application.adapter.ProfileSummaryAdapter
 import com.application.databinding.FragmentProductDetailsBinding
 import com.application.helper.Utility
 import com.application.model.AvailabilityStatus
-import com.application.viewmodels.ProductDetailViewModel
+import com.application.viewmodels.ProductViewModel
 
 class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
-    val viewModel: ProductDetailViewModel by activityViewModels { ProductDetailViewModel.FACTORY }
+    val viewModel: ProductViewModel by activityViewModels { ProductViewModel.FACTORY }
 
     lateinit var binding: FragmentProductDetailsBinding
     private val isCurrentUserProduct: Boolean
         get() {
-            return arguments?.getBoolean("isCurrentUserProduct",true) == true
+            return arguments?.getBoolean("isCurrentUserProduct", true) == true
         }
 
     private var userId: Long = -1
 
+    private lateinit var pageChangeListener: ViewPager2.OnPageChangeCallback
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -37,34 +40,25 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.clearLiveData()
-        if(savedInstanceState == null){
-//            viewModel.clearException()
+        if (savedInstanceState == null) {
+            viewModel.clearLiveData()
+            viewModel.clearProduct()
+            val currentProductId = arguments?.getLong("currentProductId")
+            val notificationId = arguments?.getLong("notificationId")
+            if (currentProductId != null && currentProductId != 0L) {
+                viewModel.fetchProductDetailsUsingProductId(currentProductId, userId)
+            }
+            if (notificationId != null && notificationId != 0L) {
+                viewModel.fetchProductDetailsUsingNotificationId(notificationId, userId)
+            }
         }
     }
 
 
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        var userId = 0L
-        requireContext().getSharedPreferences(
-            "mySharePref",
-            AppCompatActivity.MODE_PRIVATE
-        ).getString("userId", "-1")?.let {
-            userId = it.toLong()
-        }
         super.onViewCreated(view, savedInstanceState)
-        val currentProductId = arguments?.getLong("currentProductId")
-        val notificationId = arguments?.getLong("notificationId")
-
-        if(currentProductId != null && currentProductId != 0L) {
-            Log.i("TAG","check currentProductId ")
-            viewModel.fetchProductDetailsUsingProductId(currentProductId, userId)
-        }
-        if(notificationId != null && notificationId != 0L){
-            Log.i("TAG","check notification")
-            viewModel.fetchProductDetailsUsingNotificationId(notificationId,userId)
-        }
-
         binding = FragmentProductDetailsBinding.bind(view)
         setObserve()
         setUpToolbar()
@@ -86,6 +80,7 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
             ) {
                 binding.productDetailLayout.buttonContainer.visibility = View.GONE
                 binding.productDetailLayout.profileRecyclerViewContainer.visibility = View.GONE
+                binding.toolbar.menu.removeItem(R.id.edit)
 
             } else {
                 binding.productDetailLayout.buttonContainer.visibility = View.VISIBLE
@@ -147,9 +142,12 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
                 }
             }
             binding.productDetailLayout.viewModel = viewModel
+
+            setUpIndicatorForViewPager(it?.images?.size ?: -1)
+
             binding.productDetailLayout.viewPager.adapter =
                 (viewModel.product.value?.images)?.toMutableList()
-                    ?.let { it1 -> ImageViewAdapter(it1) }
+                    ?.let { it1 -> ImageViewAdapter(it1)}
             setView()
             updateButtonUI()
         }
@@ -192,7 +190,7 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
             binding.productDetailLayout.profileRecyclerView.adapter = adapter
         }
 
-        viewModel.isWishListIsUpdate.observe(viewLifecycleOwner){
+        viewModel.isWishListIsUpdate.observe(viewLifecycleOwner) {
             if (viewModel.product.value?.isWishList == true) {
                 binding.productDetailLayout.favouriteImg.setImageResource(
                     R.drawable.ic_favorite_fill
@@ -206,8 +204,8 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
             }
         }
 
-        viewModel.exception.observe(viewLifecycleOwner){
-            if(it != null) {
+        viewModel.exception.observe(viewLifecycleOwner) {
+            if (it != null) {
                 binding.productDetailLayoutContainer.visibility = View.GONE
                 binding.errorText.text = it.message
                 binding.errorText.visibility = View.VISIBLE
@@ -280,5 +278,52 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
         }
     }
 
+    private fun setUpIndicatorForViewPager(imageSize: Int) {
+
+        if (imageSize != -1) {
+            val slideDot = binding.productDetailLayout.indicator
+            slideDot.removeAllViews()
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(8, 0, 8, 0)
+                gravity = Gravity.CENTER
+            }
+
+            val dotsImage = Array(imageSize) { ImageView(requireContext()) }
+            dotsImage.forEach { img ->
+                img.setImageResource(
+                    R.drawable.non_active_dot
+                )
+                slideDot.addView(img, params)
+            }
+            pageChangeListener = object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    dotsImage.mapIndexed { index, imageView ->
+                        if (position == index) {
+                            imageView.setImageResource(
+                                R.drawable.active_dot
+                            )
+                        } else {
+                            imageView.setImageResource(R.drawable.non_active_dot)
+                        }
+                    }
+                    super.onPageSelected(position)
+                }
+            }
+            binding.productDetailLayout.viewPager.registerOnPageChangeCallback(
+                pageChangeListener
+            )
+
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        if (::pageChangeListener.isInitialized) {
+            binding.productDetailLayout.viewPager.unregisterOnPageChangeCallback(pageChangeListener)
+        }
+    }
 
 }

@@ -43,14 +43,14 @@ interface ProductDao {
     )
     fun getProductUsingProductId(productId: Long, userId: Long): Product
 
-//    @Query("select id,title,price,postedDate,description,availabilityStatus,location,productType,userId as sellerId ,isInterested,case when wish_list.user_id is null then 0 else 1 end as isWishList from (" +
-//            "select id,title,price,postedDate,description,availabilityStatus,location,productType,userId,case when interested_buyers.user_id is null then 0 else 1 end as isInterested from (" +
-//            "select product_details.product_id as id ,title,price,postedDate,description,availabilityStatus,location,productType,user_id as userId from notification left join product_details on notification.productId = product_details.product_id where notification.id LIKE :notificationId" +
-//            ") as product left join interested_buyers on id = interested_buyers.product_id where user_id LIKE :userId" +
-//            ") as product left join wish_list on id = wish_list.product_id where wish_list.user_id LIKE :userId ")
-//    fun getProductUsingNotification(notificationId: Long,userId: Long): Product
-
-    @Query("select product_details.product_id as id,title,price,postedDate,description,availabilityStatus,location,productType,product_details.user_id as sellerId,isInterested,case when wish_list.product_id is null then 0 else 1 end as isWishList   from (select product_details.*,case when interested_buyers.product_id is null then 0 else 1 end as isInterested from (select * from product_details where product_id LIKE (select productId from notification where id LIKE :notificationId)) as product_details left join (select * from interested_buyers where user_id LIKE :userId ) as interested_buyers on product_details.product_id = interested_buyers.product_id) as product_details left join (select * from wish_list where user_id LIKE :userId) as wish_list on product_details.product_id = wish_list.product_id ")
+    @Query("select product_details.product_id as id,title,price,postedDate,description,availabilityStatus,location,productType,product_details.user_id " +
+            "as sellerId,isInterested,case when wish_list.product_id is null then 0 else 1 end " +
+            "as isWishList from (select product_details.*,case when interested_buyers.product_id is null then 0 else 1 end " +
+            "as isInterested from (select * from product_details where product_id LIKE (select productId from notification where id LIKE :notificationId)) " +
+            "as product_details left join (select * from interested_buyers where user_id LIKE :userId )" +
+            "as interested_buyers on product_details.product_id = interested_buyers.product_id) " +
+            "as product_details left join (select * from wish_list where user_id LIKE :userId) " +
+            "as wish_list on product_details.product_id = wish_list.product_id ")
     fun getProductUsingNotification(notificationId: Long,userId: Long):Product
 
     @Delete
@@ -93,12 +93,10 @@ interface ProductDao {
     @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' and productType LIKE :type ORDER BY price DESC ")
     fun getBuyProductSummaryOrderByPriceDESCWithProductType(userId: Long,type: ProductType): List<ProductItem>
 
-    @Query("select product_details.product_id as id ,title,postedDate,location,price from wish_list left join product_details on wish_list.product_id == product_details.product_id where wish_list.user_id LIKE :userId")
+    @Query("select product_details.product_id as id ,title,postedDate,location,price from wish_list left join product_details on wish_list.product_id == product_details.product_id where wish_list.user_id LIKE :userId AND availabilityStatus LIKE 'AVAILABLE'")
     fun getFavouriteProductSummary(userId: Long): List<ProductItem>
 
-    @Query("select product_details.product_id as id ,title,postedDate,location,price from interested_buyers left join product_details on interested_buyers.product_id == product_details.product_id where interested_buyers.user_id LIKE :userId")
+    @Query("select product_details.product_id as id ,title,postedDate,location,price from interested_buyers left join product_details on interested_buyers.product_id == product_details.product_id where interested_buyers.user_id LIKE :userId AND availabilityStatus LIKE 'AVAILABLE'")
     fun getInterestedProductSummary(userId: Long): List<ProductItem>
-
-
 
 }

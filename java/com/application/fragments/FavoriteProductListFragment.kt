@@ -41,7 +41,7 @@ class FavoriteProductListFragment: Fragment(R.layout.fragment_product_list), OnI
             val fragment = childFragmentManager.findFragmentByTag("recyclerView")
             Log.i("TAG",fragment.toString())
             if (fragment is ProductRecycleViewFragment) {
-                fragment.onSetData(it)
+//                fragment.onSetData(it)
             }
         }
     }
@@ -60,10 +60,10 @@ class FavoriteProductListFragment: Fragment(R.layout.fragment_product_list), OnI
             addToBackStack("showProductDetailFragment")
             replace(R.id.main_view_container, ProductDetailsFragment().apply {
                 arguments = Bundle().apply {
-                    putLong(
-                        "currentProductId",
-                        productListViewModel.data.value!![position].id
-                    )
+//                    putLong(
+//                        "currentProductId",
+//                        productListViewModel.data.value!![position].id
+//                    )
                     putBoolean("isCurrentUserProduct", false)
                 }
             })

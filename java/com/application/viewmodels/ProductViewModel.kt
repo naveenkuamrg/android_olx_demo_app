@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.lang.Exception
 
-class ProductDetailViewModel(private val productRepository: ProductRepository) : ViewModel() {
+class ProductViewModel(private val productRepository: ProductRepository) : ViewModel() {
 
     private val _isLoading: MutableLiveData<Boolean?> = MutableLiveData()
     val isLoading: LiveData<Boolean?> = _isLoading
@@ -160,7 +160,7 @@ class ProductDetailViewModel(private val productRepository: ProductRepository) :
 
 
 
-                return ProductDetailViewModel(
+                return ProductViewModel(
                     ProductRepositoryImpl(application!!.applicationContext)
                 ) as T
             }

@@ -9,7 +9,7 @@ import com.application.repositories.ProductImageRepository
 class ProductImageRepositoryImpl(context: Context): ProductImageRepository {
 
     private val imageDAO: ImageDao = ImageDaoImpl(context)
-    override suspend fun saveImages(id: Long, images: List<Bitmap>) {
+    override suspend fun saveImages(id: Long, images: List<Bitmap?>) {
         for ((index,image) in images.withIndex()){
             imageDAO.saveImage(image,id.toString(),index.toString())
         }

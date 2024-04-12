@@ -10,6 +10,7 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
 import com.bumptech.glide.request.Request
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
@@ -34,6 +35,7 @@ object ImageConverter {
                 RequestOptions()
                     .override(targetWidth, targetHeight) // Set target width and height
                     .diskCacheStrategy(DiskCacheStrategy.NONE) // Disable disk caching
+
             )
             .into(object : CustomTarget<Bitmap>() {
 
@@ -42,6 +44,7 @@ object ImageConverter {
                 }
 
                 override fun onLoadCleared(placeholder: Drawable?) {
+
                 }
 
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {

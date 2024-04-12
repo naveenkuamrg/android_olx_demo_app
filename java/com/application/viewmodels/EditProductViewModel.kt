@@ -56,7 +56,6 @@ class EditProductViewModel(private val productRepository: ProductRepository) : V
                     }
                 )
             )
-
         }
         return true
     }
@@ -79,11 +78,7 @@ class EditProductViewModel(private val productRepository: ProductRepository) : V
         _images.value = product.images.toMutableList()
     }
 
-    fun clearImageList() {
-        _images.value = mutableListOf()
-        _product.value = null
-        _isUpload.value = null 
-    }
+
 
 
     companion object {

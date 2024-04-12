@@ -10,7 +10,7 @@
 
         <variable
             name="viewModel"
-            type="com.application.viewmodels.ProductDetailViewModel" />
+            type="com.application.viewmodels.ProductViewModel" />
     </data>
     <LinearLayout
         android:layout_width="match_parent"
@@ -39,6 +39,12 @@
                 android:clickable="true"
                 android:padding="2dp"
                 android:src="@{viewModel.product.isWishList() ? @drawable/ic_favorite_fill : @drawable/ic_favorite_outline }" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:id="@+id/indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|bottom"/>
         </FrameLayout>
 
     <androidx.core.widget.NestedScrollView

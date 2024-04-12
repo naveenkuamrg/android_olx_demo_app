@@ -7,7 +7,7 @@ import com.application.entity.Notification
 
 @Dao
 interface NotificationDao {
-    @Query("select * from notification where recipientId LIKE :userId")
+    @Query("select * from notification where recipientId LIKE :userId order by timestamp DESC")
     fun getNotification(userId: Long): List<Notification>
 
     @Upsert

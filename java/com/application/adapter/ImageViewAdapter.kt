@@ -9,7 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.application.R
 import com.application.callbacks.ImageAdapterListener
 
-class ImageViewAdapter(private val data: MutableList<Bitmap>) :
+
+class ImageViewAdapter(var data: MutableList<Bitmap>) :
     RecyclerView.Adapter<ImageViewAdapter.ImageViewHolder>() {
 
     var callBack: ImageAdapterListener? = null
@@ -17,6 +18,7 @@ class ImageViewAdapter(private val data: MutableList<Bitmap>) :
     class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val image: ImageView = itemView.findViewById(R.id.product_image)
         val deleteImageView: ImageView = itemView.findViewById(R.id.delete)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
@@ -30,6 +32,8 @@ class ImageViewAdapter(private val data: MutableList<Bitmap>) :
     override fun getItemCount(): Int {
         return data.size
     }
+
+
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
         holder.image.setImageBitmap(data[position])

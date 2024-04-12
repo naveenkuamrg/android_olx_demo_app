@@ -20,9 +20,9 @@
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                app:titleTextColor="@color/md_theme_primary"
                 android:layout_height="match_parent"
-                app:titleCentered="true" />
+                app:titleCentered="true"
+                app:titleTextColor="@color/md_theme_primary" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.core.widget.NestedScrollView
@@ -38,15 +38,30 @@
                 android:layout_margin="20dp"
                 android:orientation="vertical">
 
-                <androidx.viewpager2.widget.ViewPager2
-                    android:id="@+id/view_pager"
-                    style="@style/Widget.Material3.Button.TextButton"
+                <FrameLayout
+                    android:id="@+id/view_pager_container"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_insert_image"
-                    android:visibility="gone" />
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="10dp">
+
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/view_pager"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_marginBottom="10dp"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_insert_image"
+                        android:visibility="gone" />
+
+                    <LinearLayout
+                        android:id="@+id/indicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_gravity="center|bottom"/>
+                </FrameLayout>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/add_image_button"
@@ -169,11 +184,12 @@
                         android:maxLines="1"
                         android:scrollbars="vertical" />
                 </com.google.android.material.textfield.TextInputLayout>
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/postBtn"
                     android:layout_width="wrap_content"
-                    android:layout_gravity="center"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     android:text="Post" />

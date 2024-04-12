@@ -1,7 +1,11 @@
 package com.application.repositories.impl
 
 import android.content.Context
-import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.liveData
 import com.application.AppDatabase
 import com.application.dao.NotificationDao
 import com.application.dao.ProductDao
@@ -45,7 +49,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
     override suspend fun getProductSummaryDetailsForSellZone(userId: Long): List<ProductItem> {
         val result = productDao.getPostProductSummary(userId)
         setImage(result)
-        return result
+        return  result
     }
 
     override suspend fun getProductSummaryDetailsForBuyZone(
@@ -103,9 +107,8 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
     }
 
     override suspend fun getProductDetailsUsingProductId(productId: Long, userId: Long): Product {
-
         return productDao.getProductUsingProductId(productId, userId).apply {
-            images = (productImageRepository.getAllImageFromFile(productId.toString()))
+            images = productImageRepository.getAllImageFromFile(productId.toString())
         }
     }
 

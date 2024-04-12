@@ -2,13 +2,19 @@ package com.application.fragments
 
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.os.SystemClock
+import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
+import androidx.viewpager2.widget.ViewPager2
 import com.application.R
 import com.application.adapter.ImageViewAdapter
 import com.application.callbacks.ImageAdapterListener
@@ -18,19 +24,26 @@ import com.application.helper.StringConverter
 import com.application.helper.Utility
 import com.application.model.ProductType
 import com.application.viewmodels.EditProductViewModel
-import com.application.viewmodels.ProductDetailViewModel
+import com.application.viewmodels.ProductViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 
 class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapterListener,
     PhotoPickerBottomSheet {
+    var isScreenRotated = false
 
+    val adapter = ImageViewAdapter(mutableListOf()).apply {
+        callBack = this@EditProductFragment
+    }
     val productId: Long?
         get() {
             return arguments?.getLong(PRODUCT_ID_KEY)
         }
+    private lateinit var pageChangeListener: ViewPager2.OnPageChangeCallback
 
     private lateinit var binding: FragmentEditProductBinding
-    private val productDetailViewModel: ProductDetailViewModel by activityViewModels {
-        ProductDetailViewModel.FACTORY
+    private val productViewModel: ProductViewModel by activityViewModels {
+        ProductViewModel.FACTORY
     }
     private val editProductViewModel: EditProductViewModel by viewModels {
         EditProductViewModel.FACTORY
@@ -38,8 +51,11 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (savedInstanceState != null) {
+            isScreenRotated = true
+        }
         if (productId == -1L) {
-            productDetailViewModel.clearProduct()
+            productViewModel.clearProduct()
         }
 
     }
@@ -49,13 +65,13 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         binding = FragmentEditProductBinding.bind(view)
 
         if (savedInstanceState == null) {
-            productDetailViewModel.product.value?.let {
+            productViewModel.product.value?.let {
                 editProductViewModel.setProduct(it)
                 binding.postBtn.text = "Re-post"
                 binding.toolbar.title = "Edit product"
             }
         }
-        if (productDetailViewModel.product.value == null) {
+        if (productViewModel.product.value == null) {
             binding.toolbar.title = "Add product"
         }
         if (savedInstanceState == null) {
@@ -69,7 +85,7 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
     }
 
     private fun setObserveForUI() {
-        productDetailViewModel.product.observe(viewLifecycleOwner) {
+        productViewModel.product.observe(viewLifecycleOwner) {
             if (it != null) {
                 binding.titleEditText.text = StringConverter.toEditable(it.title)
                 binding.descriptionEditText.text = StringConverter.toEditable(it.description)
@@ -90,6 +106,53 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         }
     }
 
+    private fun setUpIndicatorForViewPager(imageSize: Int) {
+
+        if (imageSize != -1) {
+            val slideDot = binding.indicator
+            slideDot.removeAllViews()
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(8, 0, 8, 0)
+                gravity = Gravity.CENTER
+            }
+
+            val dotsImage = Array(imageSize) { ImageView(requireContext()) }
+            dotsImage.forEach { img ->
+                img.setImageResource(
+                    R.drawable.non_active_dot
+                )
+                slideDot.addView(img, params)
+            }
+            if(dotsImage.isNotEmpty()){
+                if(binding.viewPager.currentItem < dotsImage.size) {
+                    dotsImage[binding.viewPager.currentItem].setImageResource(R.drawable.active_dot)
+                }else{
+                    dotsImage[binding.viewPager.currentItem-1].setImageResource(R.drawable.active_dot)
+                }
+            }
+            pageChangeListener = object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    dotsImage.mapIndexed { index, imageView ->
+                        if (position == index) {
+                            imageView.setImageResource(
+                                R.drawable.active_dot
+                            )
+                        } else {
+                            imageView.setImageResource(R.drawable.non_active_dot)
+                        }
+                    }
+                    super.onPageSelected(position)
+                }
+            }
+            binding.viewPager.registerOnPageChangeCallback(
+                pageChangeListener
+            )
+        }
+    }
+
     private fun setCategoriesButton() {
         binding.categoriesDropdown.setAdapter(
             ArrayAdapter(
@@ -100,8 +163,8 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
 
     private fun setOnClickListenerForAddImageButton() {
         binding.addImageButton.setOnClickListener {
-           val bottomSheet = BottomSheetDialogPhotoPicker()
-            bottomSheet.show(childFragmentManager,"bottomSheet")
+            val bottomSheet = BottomSheetDialogPhotoPicker()
+            bottomSheet.show(childFragmentManager, "bottomSheet")
         }
     }
 
@@ -160,19 +223,15 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
             }
 
             if (isValid) {
-                requireContext().getSharedPreferences(
-                    "mySharePref",
-                    AppCompatActivity.MODE_PRIVATE
-                ).getString("userId", "-1")?.let { userId ->
-                    editProductViewModel.postProduct(
-                        title,
-                        description,
-                        price.toDouble(),
-                        category,
-                        location,
-                        userId.toLong()
-                    )
-                }
+                editProductViewModel.postProduct(
+                    title,
+                    description,
+                    price.toDouble(),
+                    category,
+                    location,
+                    Utility.getLoginUserId(requireContext())
+                )
+
             }
         }
     }
@@ -181,6 +240,12 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         // Check if post is uploaded successfully
         editProductViewModel.isUpload.observe(viewLifecycleOwner) { isUploaded ->
             if (isUploaded == true) {
+                //Temp Change Join Product Details ViewModel and Product EditViewModel
+                productViewModel.fetchProductDetailsUsingProductId(
+                    productId!!,
+                    Utility.getLoginUserId(requireContext())
+                )
+                //
                 parentFragmentManager.popBackStack()
                 Toast.makeText(
                     requireContext(),
@@ -189,7 +254,7 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
                 ).show()
             }
 
-            if(isUploaded == false){
+            if (isUploaded == false) {
                 Toast.makeText(
                     requireContext(),
                     "Unable to ${binding.postBtn.text}",
@@ -198,15 +263,22 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
             }
         }
 
-        // Add image
+        binding.viewPager.adapter = adapter
+
         editProductViewModel.images.observe(viewLifecycleOwner) { images ->
-            binding.viewPager.adapter = ImageViewAdapter(images).apply {
-                callBack = this@EditProductFragment
+            val _images = mutableListOf<Bitmap>()
+            images.forEach {
+                _images.add(it.copy(it.config,true))
             }
+            adapter.data = _images
+            adapter.notifyDataSetChanged()
+            setUpIndicatorForViewPager(images.size)
             binding.viewPager.visibility = if (images.isNotEmpty()) View.VISIBLE else View.GONE
             binding.addImageButton.visibility = if (images.size >= 5) View.GONE else View.VISIBLE
         }
     }
+
+
 
     override fun onRemoveButtonClick(position: Int) {
         editProductViewModel.removeImage(position)
@@ -219,6 +291,11 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
 
     override fun addBitmap(bitmap: Bitmap) {
         editProductViewModel.updateImage(bitmap)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
     }
 
 
