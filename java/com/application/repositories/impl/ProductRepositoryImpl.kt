@@ -1,11 +1,14 @@
 package com.application.repositories.impl
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.map
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.liveData
+import androidx.paging.map
 import com.application.AppDatabase
 import com.application.dao.NotificationDao
 import com.application.dao.ProductDao
@@ -46,10 +49,22 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         return true
     }
 
-    override suspend fun getProductSummaryDetailsForSellZone(userId: Long): List<ProductItem> {
-        val result = productDao.getPostProductSummary(userId)
-        setImage(result)
-        return  result
+    override  fun getProductSummaryDetailsForSellZone():  LiveData<PagingData<ProductItem>>{
+        val result = productDao.getPostProductSummary(Utility.getLoginUserId(context))
+        return Pager(
+            PagingConfig(
+                pageSize = 8,
+                enablePlaceholders = false,
+                prefetchDistance = 2
+            )
+        ){
+            result
+        }.liveData.map{pagingData ->
+            pagingData.map {
+                setImg(it)
+                return@map it
+            }
+        }
     }
 
     override suspend fun getProductSummaryDetailsForBuyZone(
@@ -227,5 +242,11 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
                     product.id.toString()
                 )
         }
+    }
+
+    private suspend fun setImg(product: ProductItem){
+        product.image =  productImageRepository.getMainImage(
+            product.id.toString()
+        )
     }
 }

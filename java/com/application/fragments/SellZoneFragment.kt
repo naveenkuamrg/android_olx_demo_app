@@ -2,6 +2,7 @@ package com.application.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -14,6 +15,7 @@ import com.application.viewmodels.ProductListViewModel
 
 class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), OnItemClickListener {
     lateinit var binding: FragmentSellZoneBinding
+
 
     private val productListViewModel: ProductListViewModel by viewModels { ProductListViewModel.FACTORY }
 
@@ -28,7 +30,7 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), OnItemClickListe
             childFragmentManager.beginTransaction().apply {
                 add(
                     R.id.fragment_container_view_tag,
-                    ProductRecycleViewFragment(),
+                    ProductRecycleViewFragment1(),
                     "recyclerView"
                 )
                 commit()
@@ -48,9 +50,7 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), OnItemClickListe
         callBack = parentFragment as ProductViewCallback
         setOnClickListenerAddProduct()
         setObserve()
-        productListViewModel.getProductSummary(
-            userId
-        )
+
     }
 
     private fun setOnClickListenerAddProduct() {
@@ -64,9 +64,10 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), OnItemClickListe
     }
 
     private fun setObserve() {
-        productListViewModel.data.observe(viewLifecycleOwner) {
+        productListViewModel.data1.observe(viewLifecycleOwner) {
+            Log.i("TAG","productListViewModel observe")
             val fragment = childFragmentManager.findFragmentByTag("recyclerView")
-            if (fragment is ProductRecycleViewFragment) {
+            if (fragment is ProductRecycleViewFragment1) {
                 fragment.onSetData(it)
             }
         }

@@ -1,5 +1,7 @@
 package com.application.repositories
 
+import androidx.lifecycle.LiveData
+import androidx.paging.PagingData
 import com.application.model.AvailabilityStatus
 import com.application.model.Notification
 import com.application.model.Product
@@ -12,7 +14,7 @@ import com.application.model.ProductType
 interface ProductRepository {
     suspend fun insertProduct(product: Product): Boolean
 
-    suspend fun getProductSummaryDetailsForSellZone(userId: Long): List<ProductItem>
+     fun getProductSummaryDetailsForSellZone(): LiveData<PagingData<ProductItem>>
 
     suspend fun getProductSummaryDetailsForBuyZone(userId: Long,type: ProductType,sort: ProductSortType): List<ProductItem>
 

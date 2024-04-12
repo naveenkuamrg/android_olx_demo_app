@@ -1,5 +1,6 @@
 package com.application.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -20,8 +21,8 @@ interface ProductDao {
     @Upsert
     fun upsertProductDetails(product: ProductDetails): Long
 
-    @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id LIKE :userId ")
-    fun getPostProductSummary(userId: Long): List<ProductItem>
+    @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id LIKE :userId order by postedDate collate nocase DESC")
+    fun getPostProductSummary(userId: Long): PagingSource<Int, ProductItem>
 
     @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' ORDER BY postedDate DESC ")
     fun getBuyProductSummaryOrderByPostedDateDESC(userId: Long): List<ProductItem>
