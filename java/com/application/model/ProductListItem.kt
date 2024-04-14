@@ -19,7 +19,7 @@ sealed class ProductListItem {
         var image: Bitmap? = null
     }
 
-     object Header: ProductListItem(){
+     class Header: ProductListItem(){
         override var id = Long.MIN_VALUE
     }
 

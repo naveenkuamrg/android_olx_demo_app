@@ -7,7 +7,6 @@ import androidx.fragment.app.viewModels
 import com.application.R
 import com.application.callbacks.OnItemClickListener
 import com.application.databinding.FragmentProductListBinding
-import com.application.helper.Utility
 import com.application.viewmodels.ProductListViewModel
 
 class InterestedProductListFragment: Fragment(R.layout.fragment_product_list),OnItemClickListener {
@@ -31,14 +30,14 @@ class InterestedProductListFragment: Fragment(R.layout.fragment_product_list),On
         binding = FragmentProductListBinding.bind(view)
         setToolbar()
         setObserve()
-        productListViewModel.getInterestedProductSummary(Utility.getLoginUserId(requireContext()))
     }
 
     private fun setObserve(){
-        productListViewModel.data.observe(viewLifecycleOwner){
-            val fragment = childFragmentManager.findFragmentByTag("recyclerView")
-            if (fragment is ProductRecycleViewFragment) {
-                fragment.onSetData(it)
+        productListViewModel.interestedProductList.observe(viewLifecycleOwner){
+
+                val fragment = childFragmentManager.findFragmentByTag("recyclerView")
+                if (fragment is ProductRecycleViewFragment) {
+                    fragment.onSetData(it)
             }
         }
     }
@@ -59,7 +58,7 @@ class InterestedProductListFragment: Fragment(R.layout.fragment_product_list),On
                 arguments = Bundle().apply {
                     putLong(
                         "currentProductId",
-                        productListViewModel.data.value!![position].id
+                        position.toLong()
                     )
                     putBoolean("isCurrentUserProduct", false)
                 }

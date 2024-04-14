@@ -1,10 +1,7 @@
 package com.application.fragments
 
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.application.R
@@ -19,7 +16,6 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), OnItemClickListe
 
     private val productListViewModel: ProductListViewModel by viewModels { ProductListViewModel.FACTORY }
 
-    var userId: Long = -1L
 
     private lateinit var callBack: ProductViewCallback
 
@@ -30,7 +26,7 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), OnItemClickListe
             childFragmentManager.beginTransaction().apply {
                 add(
                     R.id.fragment_container_view_tag,
-                    ProductRecycleViewFragment1(),
+                    ProductRecycleViewFragment.getInstance(false),
                     "recyclerView"
                 )
                 commit()
@@ -38,11 +34,6 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), OnItemClickListe
         }
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        userId = context.getSharedPreferences("mySharePref", AppCompatActivity.MODE_PRIVATE)
-            .getString("userId", "-1L")!!.toLong()
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -60,14 +51,13 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), OnItemClickListe
     }
 
     override fun onItemClick(position: Int) {
-        callBack.onShowProductDetailsPage(productListViewModel.data.value!![position].id)
+        callBack.onShowProductDetailsPage(position.toLong())
     }
 
     private fun setObserve() {
-        productListViewModel.data1.observe(viewLifecycleOwner) {
-            Log.i("TAG","productListViewModel observe")
+        productListViewModel.sellProductList.observe(viewLifecycleOwner) {
             val fragment = childFragmentManager.findFragmentByTag("recyclerView")
-            if (fragment is ProductRecycleViewFragment1) {
+            if (fragment is ProductRecycleViewFragment) {
                 fragment.onSetData(it)
             }
         }

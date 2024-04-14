@@ -5,27 +5,40 @@ import androidx.paging.PagingData
 import com.application.model.AvailabilityStatus
 import com.application.model.Notification
 import com.application.model.Product
+import com.application.model.ProductListItem
 import com.application.model.ProductListItem.ProductItem
 import com.application.model.Profile
 import com.application.model.SearchProductResultItem
 import com.application.model.ProductSortType
 import com.application.model.ProductType
+import kotlinx.coroutines.flow.Flow
 
 interface ProductRepository {
     suspend fun insertProduct(product: Product): Boolean
 
-     fun getProductSummaryDetailsForSellZone(): LiveData<PagingData<ProductItem>>
+    fun getProductSummaryDetailsForSellZone(): Flow<PagingData<ProductListItem>>
 
-    suspend fun getProductSummaryDetailsForBuyZone(userId: Long,type: ProductType,sort: ProductSortType): List<ProductItem>
 
-    suspend fun getProductSummaryDetailsForBuyZone(
-        userId: Long,
-        sort: ProductSortType
-    ): List<ProductItem>
+    fun getProductSummaryDetailsForBuyZonePostedDateASC(type: ProductType):
+            Flow<PagingData<ProductListItem>>
+
+    fun getProductSummaryDetailsForBuyZonePostedDateDESC(type: ProductType): Flow<PagingData<ProductListItem>>
+
+    fun getProductSummaryDetailsForBuyZonePriceDESC(type: ProductType): Flow<PagingData<ProductListItem>>
+
+    fun getProductSummaryDetailsForBuyZonePriceASC(type: ProductType): Flow<PagingData<ProductListItem>>
+    fun getProductSummaryDetailsForBuyZonePostedDateASC(): Flow<PagingData<ProductListItem>>
+
+    fun getProductSummaryDetailsForBuyZonePostedDateDESC(): Flow<PagingData<ProductListItem>>
+
+    fun getProductSummaryDetailsForBuyZonePriceDESC(): Flow<PagingData<ProductListItem>>
+
+    fun getProductSummaryDetailsForBuyZonePriceASC(): Flow<PagingData<ProductListItem>>
+
 
     suspend fun getProductDetailsUsingProductId(productId: Long, userId: Long): Product
 
-    suspend fun getProductDetailsUsingNotificationId(notificationId: Long,userId: Long): Product
+    suspend fun getProductDetailsUsingNotificationId(notificationId: Long, userId: Long): Product
 
     suspend fun removeProduct(product: Product): Boolean
 
@@ -45,11 +58,11 @@ interface ProductRepository {
 
     suspend fun getSearchProduct(searchTerm: String, userId: Long): List<SearchProductResultItem>
 
-    suspend fun updateIsFavorite(product: Product,isFavorite: Boolean,userId: Long)
+    suspend fun updateIsFavorite(product: Product, isFavorite: Boolean, userId: Long)
 
 
-    suspend fun getFavouriteProductList(userId: Long): List<ProductItem>
+    fun getFavouriteProductList(): Flow<PagingData<ProductListItem>>
 
-    suspend fun getInterestedProductList(userId: Long): List<ProductItem>
+    fun getInterestedProductList(): Flow<PagingData<ProductListItem>>
 
 }

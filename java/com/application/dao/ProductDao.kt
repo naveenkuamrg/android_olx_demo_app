@@ -21,20 +21,20 @@ interface ProductDao {
     @Upsert
     fun upsertProductDetails(product: ProductDetails): Long
 
-    @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id LIKE :userId order by postedDate collate nocase DESC")
+    @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id LIKE :userId order by postedDate DESC ")
     fun getPostProductSummary(userId: Long): PagingSource<Int, ProductItem>
 
     @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' ORDER BY postedDate DESC ")
-    fun getBuyProductSummaryOrderByPostedDateDESC(userId: Long): List<ProductItem>
+    fun getBuyProductSummaryOrderByPostedDateDESC(userId: Long): PagingSource<Int, ProductItem>
 
     @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' ORDER BY postedDate ASC ")
-    fun getBuyProductSummaryOrderByPostedDateASC(userId: Long): List<ProductItem>
+    fun getBuyProductSummaryOrderByPostedDateASC(userId: Long): PagingSource<Int, ProductItem>
 
     @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' ORDER BY price DESC ")
-    fun getBuyProductSummaryOrderByPriceDESC(userId: Long): List<ProductItem>
+    fun getBuyProductSummaryOrderByPriceDESC(userId: Long): PagingSource<Int, ProductItem>
 
     @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' ORDER BY price ASC ")
-    fun getBuyProductSummaryOrderByPriceASC(userId: Long): List<ProductItem>
+    fun getBuyProductSummaryOrderByPriceASC(userId: Long): PagingSource<Int, ProductItem>
 
     @Query(
         "select product_id as id ,title,price,postedDate,description,availabilityStatus,location,productType,user_id as sellerId," +
@@ -83,21 +83,21 @@ interface ProductDao {
     fun removeIsWishList(data: WishList)
 
     @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' and productType LIKE :type ORDER BY price ASC ")
-    fun getBuyProductSummaryOrderByPriceASCWithProductType(userId: Long,type: ProductType): List<ProductItem>
+    fun getBuyProductSummaryOrderByPriceASCWithProductType(userId: Long,type: ProductType): PagingSource<Int, ProductItem>
 
     @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' and productType LIKE :type ORDER BY postedDate DESC ")
-    fun getBuyProductSummaryOrderByPostedDateDESCWithProductType(userId: Long,type: ProductType): List<ProductItem>
+    fun getBuyProductSummaryOrderByPostedDateDESCWithProductType(userId: Long,type: ProductType): PagingSource<Int, ProductItem>
 
     @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' and productType LIKE :type ORDER BY postedDate ASC ")
-    fun getBuyProductSummaryOrderByPostedDateASCWithProductType(userId: Long,type: ProductType): List<ProductItem>
+    fun getBuyProductSummaryOrderByPostedDateASCWithProductType(userId: Long,type: ProductType): PagingSource<Int, ProductItem>
 
     @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' and productType LIKE :type ORDER BY price DESC ")
-    fun getBuyProductSummaryOrderByPriceDESCWithProductType(userId: Long,type: ProductType): List<ProductItem>
+    fun getBuyProductSummaryOrderByPriceDESCWithProductType(userId: Long,type: ProductType): PagingSource<Int, ProductItem>
 
     @Query("select product_details.product_id as id ,title,postedDate,location,price from wish_list left join product_details on wish_list.product_id == product_details.product_id where wish_list.user_id LIKE :userId AND availabilityStatus LIKE 'AVAILABLE'")
-    fun getFavouriteProductSummary(userId: Long): List<ProductItem>
+    fun getFavouriteProductSummary(userId: Long): PagingSource<Int, ProductItem>
 
     @Query("select product_details.product_id as id ,title,postedDate,location,price from interested_buyers left join product_details on interested_buyers.product_id == product_details.product_id where interested_buyers.user_id LIKE :userId AND availabilityStatus LIKE 'AVAILABLE'")
-    fun getInterestedProductSummary(userId: Long): List<ProductItem>
+    fun getInterestedProductSummary(userId: Long): PagingSource<Int, ProductItem>
 
 }

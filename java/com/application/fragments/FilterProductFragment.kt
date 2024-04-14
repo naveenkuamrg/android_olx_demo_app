@@ -5,17 +5,20 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.paging.PagingData
 import com.application.R
 import com.application.callbacks.OnItemClickListener
+import com.application.callbacks.ProductRecycleViewModelCallback
 import com.application.callbacks.SortBottomSheetCallback
 import com.application.databinding.FragmentFilterProductsBinding
 import com.application.helper.Utility
+import com.application.model.ProductListItem
 import com.application.model.ProductSortType
 import com.application.model.ProductType
 import com.application.viewmodels.ProductListViewModel
 
 class FilterProductFragment : Fragment(R.layout.fragment_filter_products), OnItemClickListener,
-SortBottomSheetCallback{
+    SortBottomSheetCallback {
 
     lateinit var binding: FragmentFilterProductsBinding
 
@@ -43,10 +46,14 @@ SortBottomSheetCallback{
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
             childFragmentManager.beginTransaction().apply {
-                replace(R.id.product_recycle_view, ProductRecycleViewFragment(), "recyclerView")
+                replace(
+                    R.id.product_recycle_view,
+                    ProductRecycleViewFragment.getInstance(false),
+                    "recyclerView"
+                )
                 commit()
             }
-            productListViewModel.setCurrentProductType(ProductSortType.POSTED_DATE_DESC)
+            getFilterType?.let { productListViewModel.getProductSummary(it) }
         }
     }
 
@@ -80,25 +87,39 @@ SortBottomSheetCallback{
 
 
     private fun setObserve() {
-        productListViewModel.data.observe(viewLifecycleOwner) {
+            productListViewModel.currentSortType.observe(viewLifecycleOwner) {sort->
+                val fragment = childFragmentManager.findFragmentByTag("recyclerView")
+                if (fragment is ProductRecycleViewModelCallback) {
+                    fragment.reassignedAdapter()
+                }
+                when (sort) {
+                    ProductSortType.POSTED_DATE_DESC -> {
+                        productListViewModel.productListPostedDateDESC.observe(viewLifecycleOwner)
+                        { pagingData -> setDataToAdapter(pagingData) }
+                    }
 
-            val fragment = childFragmentManager.findFragmentByTag("recyclerView")
-            if (fragment is ProductRecycleViewFragment) {
-                fragment.onSetData(it)
+                    ProductSortType.POSTED_DATE_ASC -> {
+                        productListViewModel.productListPostedDateASC.observe(viewLifecycleOwner)
+                        {pagingData -> setDataToAdapter(pagingData) }
+                    }
+
+                    ProductSortType.PRICE_ASC -> {
+                        productListViewModel.productListPricesASC.observe(viewLifecycleOwner)
+                        {pagingData -> setDataToAdapter(pagingData) }
+                    }
+
+                    ProductSortType.PRICE_DESC -> {
+                        productListViewModel.productListPricesDESC.observe(viewLifecycleOwner)
+                        {pagingData -> setDataToAdapter(pagingData) }
+                    }
+                }
             }
+    }
 
-        }
-
-        productListViewModel.currentSortType.observe(viewLifecycleOwner) {
-            val filterType = getFilterType
-            if (!isSortTypeUpdate && filterType != null) {
-                productListViewModel.getProductSummary(
-                    userId,
-                    it,
-                    filterType
-                )
-                isSortTypeUpdate = true
-            }
+    private fun setDataToAdapter(data: PagingData<ProductListItem>) {
+        val fragment = childFragmentManager.findFragmentByTag("recyclerView")
+        if (fragment is ProductRecycleViewModelCallback) {
+            fragment.onSetData(data)
         }
     }
 
@@ -110,7 +131,7 @@ SortBottomSheetCallback{
                 arguments = Bundle().apply {
                     putLong(
                         "currentProductId",
-                        productListViewModel.data.value!![position].id
+                        position.toLong()
                     )
                     putBoolean("isCurrentUserProduct", false)
                 }

@@ -3,17 +3,17 @@ package com.application.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.application.R
 import com.application.callbacks.OnFilterItemClickListener
-import com.application.callbacks.OnItemClickListener
 import com.application.model.ProductListItem
 import com.application.model.ProductType
 
-class ProductSummaryAdapterWithFilter(callback: OnFilterItemClickListener) : ProductSummaryAdapter(
-    callback
-) {
+class ProductSummaryAdapterWithFilter(
+    private val itemClickListener: OnFilterItemClickListener,
+    itemClick: (ProductListItem.ProductItem) -> Unit
+) : ProductSummaryAdapter(itemClick) {
 
     class FilterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val vehicles = itemView.findViewById<View>(R.id.vehicles)
@@ -33,7 +33,8 @@ class ProductSummaryAdapterWithFilter(callback: OnFilterItemClickListener) : Pro
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         if (viewType == 1) {
             val itemView = LayoutInflater.from(parent.context)
                 .inflate(R.layout.product_item_header, parent, false)
@@ -43,8 +44,8 @@ class ProductSummaryAdapterWithFilter(callback: OnFilterItemClickListener) : Pro
 
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if(holder is FilterViewHolder && itemClickListener is OnFilterItemClickListener){
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        if (holder is FilterViewHolder) {
             holder.vehicles.setOnClickListener {
                 itemClickListener.onFilterItemClick(ProductType.VEHICLES)
             }
@@ -66,14 +67,10 @@ class ProductSummaryAdapterWithFilter(callback: OnFilterItemClickListener) : Pro
             holder.sport.setOnClickListener {
                 itemClickListener.onFilterItemClick(ProductType.SPORTS)
             }
-        }else {
-            super.onBindViewHolder(holder, position)
+        } else {
+            super.onBindViewHolder(holder, position )
         }
     }
 
-    override fun submitData(dataResponse: List<ProductListItem>) {
-        val items = listOf(ProductListItem.Header) + dataResponse
-        super.submitData(items)
-    }
 
 }

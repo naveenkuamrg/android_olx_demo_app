@@ -2,25 +2,29 @@ package com.application.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.paging.PagingData
 import com.application.R
 import com.application.callbacks.SearchbarCallback
 import com.application.callbacks.OnFilterItemClickListener
+import com.application.callbacks.ProductRecycleViewModelCallback
 import com.application.callbacks.SortBottomSheetCallback
 import com.application.databinding.FragmentHomeBinding
 import com.application.helper.Utility
+import com.application.model.ProductListItem
 import com.application.model.ProductSortType
 import com.application.model.ProductType
 import com.application.viewmodels.ProductListViewModel
+
 //import com.application.viewmodels.ProductRecycleViewModel
-import com.application.viewmodels.SearchProductViewModel
 
 class HomeFragment : Fragment(R.layout.fragment_home),
-    SortBottomSheetCallback,OnFilterItemClickListener {
+    SortBottomSheetCallback, OnFilterItemClickListener {
 
     lateinit var binding: FragmentHomeBinding
 
@@ -28,7 +32,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
     private var isSortTypeUpdate = false
 
-    private val productListViewModel: ProductListViewModel by activityViewModels { ProductListViewModel.FACTORY }
+    private val productListViewModel: ProductListViewModel by viewModels { ProductListViewModel.FACTORY }
 
     var userId: Long = -1L
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,10 +40,13 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         callback = parentFragment as SearchbarCallback
         if (savedInstanceState == null) {
             childFragmentManager.beginTransaction().apply {
-                replace(R.id.product_recycle_view, ProductRecycleViewFragment(), "recyclerView")
+                replace(
+                    R.id.product_recycle_view,
+                    ProductRecycleViewFragment.getInstance(true),
+                    "recyclerView"
+                )
                 commit()
             }
-
             productListViewModel.setCurrentProductType(ProductSortType.POSTED_DATE_DESC)
 
         }
@@ -55,7 +62,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
     override fun onFilterItemClick(productType: ProductType) {
         parentFragment?.parentFragmentManager?.beginTransaction()?.apply {
-            replace(R.id.main_view_container,FilterProductFragment.getInstant(productType))
+            replace(R.id.main_view_container, FilterProductFragment.getInstant(productType))
             addToBackStack("Filter")
             commit()
         }
@@ -72,7 +79,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                 arguments = Bundle().apply {
                     putLong(
                         "currentProductId",
-                        productListViewModel.data.value!![position - 1].id
+                        position.toLong()
                     )
                     putBoolean("isCurrentUserProduct", false)
                 }
@@ -110,26 +117,40 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     }
 
     private fun setObserve() {
-        productListViewModel.data.observe(viewLifecycleOwner) {
-
+        productListViewModel.currentSortType.observe(viewLifecycleOwner) { sort ->
             val fragment = childFragmentManager.findFragmentByTag("recyclerView")
-            if (fragment is ProductRecycleViewFragment) {
-                fragment.onSetData(it)
+            if (fragment is ProductRecycleViewModelCallback) {
+                fragment.reassignedAdapter()
             }
+            when (sort) {
+                ProductSortType.POSTED_DATE_DESC -> {
+                    productListViewModel.productListPostedDateDESC.observe(viewLifecycleOwner)
+                    { pagingData -> setDataToAdapter(pagingData) }
+                }
 
-        }
+                ProductSortType.POSTED_DATE_ASC -> {
+                    productListViewModel.productListPostedDateASC.observe(viewLifecycleOwner)
+                    { pagingData -> setDataToAdapter(pagingData) }
+                }
 
+                ProductSortType.PRICE_ASC -> {
+                    productListViewModel.productListPricesASC.observe(viewLifecycleOwner)
+                    { pagingData -> setDataToAdapter(pagingData) }
+                }
 
-        productListViewModel.currentSortType.observe(viewLifecycleOwner) {
-            if (!isSortTypeUpdate) {
-                productListViewModel.getProductSummary(
-                    userId,
-                    it
-                )
-                isSortTypeUpdate = true
+                ProductSortType.PRICE_DESC -> {
+                    productListViewModel.productListPricesDESC.observe(viewLifecycleOwner)
+                    { pagingData -> setDataToAdapter(pagingData) }
+                }
             }
         }
+    }
 
+    private fun setDataToAdapter(data: PagingData<ProductListItem>) {
+        val fragment = childFragmentManager.findFragmentByTag("recyclerView")
+        if (fragment is ProductRecycleViewModelCallback) {
+            fragment.onSetData(data)
+        }
     }
 
 

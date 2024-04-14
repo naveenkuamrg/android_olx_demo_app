@@ -1,27 +1,25 @@
 package com.application.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.application.R
 import com.application.callbacks.OnItemClickListener
 import com.application.databinding.FragmentProductListBinding
-import com.application.helper.Utility
 import com.application.viewmodels.ProductListViewModel
 
-class FavoriteProductListFragment: Fragment(R.layout.fragment_product_list), OnItemClickListener {
+class FavoriteProductListFragment : Fragment(R.layout.fragment_product_list), OnItemClickListener {
 
     lateinit var binding: FragmentProductListBinding
 
-     private val productListViewModel: ProductListViewModel by viewModels {ProductListViewModel.FACTORY}
+    private val productListViewModel: ProductListViewModel by viewModels { ProductListViewModel.FACTORY }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(savedInstanceState == null){
+        if (savedInstanceState == null) {
             childFragmentManager.beginTransaction().apply {
-                replace(R.id.recycler_view_container,ProductRecycleViewFragment(),"recyclerView")
+                replace(R.id.recycler_view_container, ProductRecycleViewFragment(), "recyclerView")
                 commit()
             }
 
@@ -33,20 +31,19 @@ class FavoriteProductListFragment: Fragment(R.layout.fragment_product_list), OnI
         binding = FragmentProductListBinding.bind(view)
         setToolbar()
         setObserve()
-        productListViewModel.getFavoriteProductSummary(Utility.getLoginUserId(requireContext()))
     }
 
-    private fun setObserve(){
-        productListViewModel.data.observe(viewLifecycleOwner){
-            val fragment = childFragmentManager.findFragmentByTag("recyclerView")
-            Log.i("TAG",fragment.toString())
-            if (fragment is ProductRecycleViewFragment) {
-//                fragment.onSetData(it)
-            }
+    private fun setObserve() {
+        productListViewModel.favoriteProductList.observe(viewLifecycleOwner) {
+                val fragment = childFragmentManager.findFragmentByTag("recyclerView")
+                if (fragment is ProductRecycleViewFragment) {
+                    fragment.onSetData(it)
+                }
         }
+
     }
 
-    private fun setToolbar(){
+    private fun setToolbar() {
         val toolbar = binding.toolbar
         toolbar.title = "Favourite"
         toolbar.setNavigationIcon(R.drawable.ic_back)
