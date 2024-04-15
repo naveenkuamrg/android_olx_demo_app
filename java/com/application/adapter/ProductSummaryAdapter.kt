@@ -13,7 +13,7 @@ import com.application.R
 import com.application.model.ProductListItem
 import com.application.model.ProductListItem.ProductItem
 
- open class ProductSummaryAdapter(val itemClick:(ProductItem)->Unit) :
+ open class ProductSummaryAdapter(val onItemClickListener:(ProductItem)->Unit) :
     PagingDataAdapter<ProductListItem,
             ViewHolder>(object: DiffUtil.ItemCallback<ProductListItem>(){
         override fun areItemsTheSame(oldItem: ProductListItem, newItem: ProductListItem): Boolean {
@@ -39,7 +39,7 @@ import com.application.model.ProductListItem.ProductItem
              holder.price.text = item.price
              holder.imageView.setImageBitmap(item.image)
              holder.itemView.setOnClickListener {
-                     itemClick(item)
+                     onItemClickListener(item)
              }
          }
      }

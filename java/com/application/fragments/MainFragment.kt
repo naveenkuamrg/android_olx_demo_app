@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.R
 import com.application.adapter.SearchAdapter
 import com.application.callbacks.SearchbarCallback
-import com.application.callbacks.OnItemClickListener
 import com.application.callbacks.ProductViewCallback
 import com.application.callbacks.ProfileFragmentCallback
 import com.application.databinding.FragmentMainBinding
@@ -21,7 +20,7 @@ import com.google.android.material.search.SearchBar
 import java.util.Locale
 
 class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
-    ProductViewCallback, SearchbarCallback, OnItemClickListener {
+    ProductViewCallback, SearchbarCallback {
     lateinit var binding: FragmentMainBinding
 
     private val searchProductViewModel: SearchProductViewModel by viewModels {
@@ -196,26 +195,21 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
             searchProductViewModel.search(searchTerm,Utility.getLoginUserId(requireContext()))
         }
         val searchRecyclerView = binding.searchResult
-        searchRecyclerView.adapter = SearchAdapter(this)
+        searchRecyclerView.adapter = SearchAdapter{
+            parentFragmentManager.beginTransaction().apply {
+                addToBackStack("showProductDetailFragment")
+                replace(R.id.main_view_container, ProductDetailsFragment().apply {
+                    arguments = Bundle().apply {
+                        putLong("currentProductId", it)
+                        putBoolean("isCurrentUserProduct",false)
+                    }
+                })
+                commit()
+            }
+        }
         searchRecyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 
-
-    override fun onItemClick(position: Int) {
-        parentFragmentManager.beginTransaction().apply {
-            addToBackStack("showProductDetailFragment")
-            replace(R.id.main_view_container, ProductDetailsFragment().apply {
-                arguments = Bundle().apply {
-                    putLong(
-                        "currentProductId",
-                        searchProductViewModel.searchResult.value!![position].id
-                    )
-                    putBoolean("isCurrentUserProduct", false)
-                }
-            })
-            commit()
-        }
-    }
 
 
 }

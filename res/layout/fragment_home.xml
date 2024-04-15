@@ -15,6 +15,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+    <include
+        android:id="@+id/no_data"
+        layout="@layout/no_data"/>
 
 <!--    <androidx.recyclerview.widget.RecyclerView-->
 <!--        android:id="@+id/product_summary_recycler_view"-->

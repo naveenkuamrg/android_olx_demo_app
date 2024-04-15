@@ -186,10 +186,11 @@
             </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_marginTop="10dp"
+                android:background="@color/md_theme_surfaceContainer"
                 android:id="@+id/profile_recycler_view_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintHeight_max="170dp">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/textView"
@@ -198,12 +199,19 @@
                     android:text="Interested Profile"
                     android:textColor="@color/md_theme_primary"
                     app:layout_constraintTop_toTopOf="parent" />
+                <include android:id="@+id/no_data"
+                    layout="@layout/no_data"
+                    android:layout_height="170dp"
+                    android:layout_width="match_parent"/>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/profile_recycler_view"
+                    app:layout_constraintHeight_max="170dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:maxHeight="57dp"
+                    android:minHeight="57dp"
+                    android:maxHeight="17dp"
+                    app:layout_constrainedHeight="true"
                     android:nestedScrollingEnabled="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView" />
@@ -212,6 +220,7 @@
             <FrameLayout
                 android:id="@+id/button_container"
                 android:layout_width="match_parent"
+                android:layout_marginTop="13dp"
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.button.MaterialButton

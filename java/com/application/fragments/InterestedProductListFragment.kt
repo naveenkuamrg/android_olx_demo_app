@@ -5,11 +5,11 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.application.R
-import com.application.callbacks.OnItemClickListener
+import com.application.callbacks.ProductRecyclerFragmentCallback
 import com.application.databinding.FragmentProductListBinding
 import com.application.viewmodels.ProductListViewModel
 
-class InterestedProductListFragment: Fragment(R.layout.fragment_product_list),OnItemClickListener {
+class InterestedProductListFragment: Fragment(R.layout.fragment_product_list),ProductRecyclerFragmentCallback {
 
     lateinit var binding: FragmentProductListBinding
 
@@ -28,6 +28,7 @@ class InterestedProductListFragment: Fragment(R.layout.fragment_product_list),On
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentProductListBinding.bind(view)
+        binding.noData.errorText.text = "Your's interested product is empty"
         setToolbar()
         setObserve()
     }
@@ -51,19 +52,27 @@ class InterestedProductListFragment: Fragment(R.layout.fragment_product_list),On
         }
     }
 
-    override fun onItemClick(position: Int) {
+    override fun onProductSummaryClick(productId: Long) {
         parentFragmentManager.beginTransaction().apply {
             addToBackStack("showProductDetailFragment")
             replace(R.id.main_view_container, ProductDetailsFragment().apply {
                 arguments = Bundle().apply {
                     putLong(
                         "currentProductId",
-                        position.toLong()
+                        productId
                     )
                     putBoolean("isCurrentUserProduct", false)
                 }
             })
             commit()
+        }
+    }
+
+    override fun isListEmpty(isEmpty: Boolean) {
+        if(isEmpty){
+            binding.noData.noDataLayout.visibility = View.VISIBLE
+        }else{
+            binding.noData.noDataLayout.visibility = View.GONE
         }
     }
 

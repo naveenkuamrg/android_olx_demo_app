@@ -43,7 +43,6 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
 
 
     fun fetchProductDetailsUsingProductId(productId: Long, userId: Long) {
-        Log.i("TAG","navea")
         if (productId != -1L) {
             _isLoading.value = true
             viewModelScope.launch(Dispatchers.Default) {
@@ -119,6 +118,7 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
         _isLoading.value = null
         _isInterestedChangeIsUpdate.value = null
         _exception.value = null
+        _profileList.value = mutableListOf()
     }
 
     fun updateMarkAsSold() {

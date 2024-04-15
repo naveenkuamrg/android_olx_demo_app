@@ -8,13 +8,17 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.paging.PagingData
+import androidx.paging.TerminalSeparatorType
 import androidx.paging.cachedIn
+import androidx.paging.insertHeaderItem
 import com.application.model.ProductListItem
 import com.application.model.ProductSortType
 import com.application.model.ProductType
 import com.application.repositories.ProductRepository
 import com.application.repositories.impl.ProductRepositoryImpl
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class ProductListViewModel(private val productRepository: ProductRepository) : ViewModel() {
 
@@ -23,49 +27,58 @@ class ProductListViewModel(private val productRepository: ProductRepository) : V
         MutableLiveData(ProductSortType.POSTED_DATE_DESC)
     var currentSortType: LiveData<ProductSortType> = _currentSortType
 
-
     val sellProductList: LiveData<PagingData<ProductListItem>> =
-        productRepository.getProductSummaryDetailsForSellZone().asLiveData(Dispatchers.IO)
+        productRepository.getProductSummaryDetailsForSellZone().asLiveData()
             .cachedIn(viewModelScope)
     val favoriteProductList: LiveData<PagingData<ProductListItem>> =
-        productRepository.getFavouriteProductList().asLiveData(Dispatchers.IO)
+        productRepository.getFavouriteProductList().asLiveData()
+            .cachedIn(viewModelScope)
 
     val interestedProductList: LiveData<PagingData<ProductListItem>> =
-        productRepository.getInterestedProductList().asLiveData(Dispatchers.IO)
+        productRepository.getInterestedProductList().asLiveData()
+            .cachedIn(viewModelScope)
 
-    var productListPostedDateASC: LiveData<PagingData<ProductListItem>> =
+    var productListPostedDateASC: LiveData<PagingData<ProductListItem>> = setHeader(
         productRepository.getProductSummaryDetailsForBuyZonePostedDateASC()
-            .asLiveData(Dispatchers.IO).cachedIn(viewModelScope)
+    )
 
-     var productListPostedDateDESC: LiveData<PagingData<ProductListItem>> =
+    var productListPostedDateDESC: LiveData<PagingData<ProductListItem>> = setHeader(
         productRepository.getProductSummaryDetailsForBuyZonePostedDateDESC()
-            .asLiveData(Dispatchers.IO).cachedIn(viewModelScope)
+    )
 
-     var productListPricesASC: LiveData<PagingData<ProductListItem>> =
+    var productListPricesASC: LiveData<PagingData<ProductListItem>> = setHeader(
         productRepository.getProductSummaryDetailsForBuyZonePriceASC()
-            .asLiveData(Dispatchers.IO).cachedIn(viewModelScope)
+    )
 
-     var productListPricesDESC: LiveData<PagingData<ProductListItem>> =
+    var productListPricesDESC: LiveData<PagingData<ProductListItem>> = setHeader(
         productRepository.getProductSummaryDetailsForBuyZonePriceDESC()
-            .asLiveData(Dispatchers.IO).cachedIn(viewModelScope)
+    )
+
 
     fun setCurrentProductType(type: ProductSortType) {
         _currentSortType.value = type
     }
 
+    private fun setHeader(pagingData: Flow<PagingData<ProductListItem>>):
+            LiveData<PagingData<ProductListItem>> {
+        return pagingData.map {
+            it.insertHeaderItem(TerminalSeparatorType.FULLY_COMPLETE, ProductListItem.Header())
+        }.asLiveData().cachedIn(viewModelScope)
+    }
+
     fun getProductSummary(type: ProductType) {
         productListPostedDateASC =
             productRepository.getProductSummaryDetailsForBuyZonePostedDateASC(type)
-                .asLiveData(Dispatchers.IO).cachedIn(viewModelScope)
+                .asLiveData().cachedIn(viewModelScope)
         productListPostedDateDESC =
             productRepository.getProductSummaryDetailsForBuyZonePostedDateDESC(type)
-                .asLiveData(Dispatchers.IO).cachedIn(viewModelScope)
+                .asLiveData().cachedIn(viewModelScope)
         productListPricesASC =
             productRepository.getProductSummaryDetailsForBuyZonePriceASC(type)
-                .asLiveData(Dispatchers.IO).cachedIn(viewModelScope)
+                .asLiveData().cachedIn(viewModelScope)
         productListPricesDESC =
             productRepository.getProductSummaryDetailsForBuyZonePriceDESC(type)
-                .asLiveData(Dispatchers.IO).cachedIn(viewModelScope)
+                .asLiveData().cachedIn(viewModelScope)
     }
 
 

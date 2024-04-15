@@ -11,8 +11,9 @@ import androidx.fragment.app.viewModels
 import androidx.paging.PagingData
 import com.application.R
 import com.application.callbacks.SearchbarCallback
-import com.application.callbacks.OnFilterItemClickListener
+import com.application.callbacks.ProductRecyclerFragmentCallback
 import com.application.callbacks.ProductRecycleViewModelCallback
+import com.application.callbacks.ProductRecyclerFragmentWithFilterCallback
 import com.application.callbacks.SortBottomSheetCallback
 import com.application.databinding.FragmentHomeBinding
 import com.application.helper.Utility
@@ -21,10 +22,9 @@ import com.application.model.ProductSortType
 import com.application.model.ProductType
 import com.application.viewmodels.ProductListViewModel
 
-//import com.application.viewmodels.ProductRecycleViewModel
 
 class HomeFragment : Fragment(R.layout.fragment_home),
-    SortBottomSheetCallback, OnFilterItemClickListener {
+    SortBottomSheetCallback, ProductRecyclerFragmentWithFilterCallback {
 
     lateinit var binding: FragmentHomeBinding
 
@@ -56,6 +56,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentHomeBinding.bind(view)
+        binding.noData.errorText.text = "Sorry,Stock Out"
         setUpSearchBar()
         setObserve()
     }
@@ -68,7 +69,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         }
     }
 
-    override fun onItemClick(position: Int) {
+    override fun onProductSummaryClick(productId: Long) {
         parentFragment?.parentFragmentManager?.popBackStackImmediate(
             "showProductDetailFragment",
             FragmentManager.POP_BACK_STACK_INCLUSIVE
@@ -79,7 +80,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                 arguments = Bundle().apply {
                     putLong(
                         "currentProductId",
-                        position.toLong()
+                        productId
                     )
                     putBoolean("isCurrentUserProduct", false)
                 }
@@ -158,6 +159,14 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         if (productListViewModel.currentSortType.value != sortType) {
             isSortTypeUpdate = false
             productListViewModel.setCurrentProductType(sortType)
+        }
+    }
+
+    override fun isListEmpty(isEmpty: Boolean) {
+        if(isEmpty){
+            binding.noData.noDataLayout.visibility = View.VISIBLE
+        }else{
+            binding.noData.noDataLayout.visibility = View.GONE
         }
     }
 

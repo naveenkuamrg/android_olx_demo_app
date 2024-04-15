@@ -19,7 +19,8 @@
             app:title="Sellzone"/>
 
     </com.google.android.material.appbar.AppBarLayout>
-
+    <include android:id="@+id/no_data"
+        layout="@layout/no_data"/>
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container_view_tag"
         android:layout_width="match_parent"

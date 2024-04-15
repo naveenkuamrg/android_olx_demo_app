@@ -8,11 +8,11 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.application.R
-import com.application.callbacks.OnItemClickListener
 import com.application.helper.Utility
 import com.application.model.Notification
+import com.application.model.NotificationType
 
-class NotificationAdapter(val callback: OnItemClickListener) :
+class NotificationAdapter(val onItemClickListener: (Long, NotificationType) -> Unit) :
     RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
 
     class NotificationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -44,11 +44,7 @@ class NotificationAdapter(val callback: OnItemClickListener) :
                 R.layout.notification_item, parent,
                 false
             )
-        return NotificationViewHolder(itemView).apply {
-            itemView.setOnClickListener {
-                callback.onItemClick(adapterPosition)
-            }
-        }
+        return NotificationViewHolder(itemView)
     }
 
     override fun getItemCount(): Int {
@@ -59,5 +55,11 @@ class NotificationAdapter(val callback: OnItemClickListener) :
         holder.contentTextView.text = asyncListDiffer.currentList[position].content
         holder.timeStamp.text =
             Utility.millisecondsToString(asyncListDiffer.currentList[position].timestamp)
+        holder.itemView.setOnClickListener {
+            onItemClickListener(
+                asyncListDiffer.currentList[position].id,
+                asyncListDiffer.currentList[position].type
+            )
+        }
     }
 }

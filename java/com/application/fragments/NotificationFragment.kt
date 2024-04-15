@@ -7,13 +7,12 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.R
 import com.application.adapter.NotificationAdapter
-import com.application.callbacks.OnItemClickListener
 import com.application.databinding.FragmentNotificationBinding
 import com.application.helper.Utility
 import com.application.model.NotificationType
 import com.application.viewmodels.NotificationViewModel
 
-class NotificationFragment : Fragment(R.layout.fragment_notification), OnItemClickListener {
+class NotificationFragment : Fragment(R.layout.fragment_notification) {
 
     lateinit var binding: FragmentNotificationBinding
 
@@ -39,7 +38,9 @@ class NotificationFragment : Fragment(R.layout.fragment_notification), OnItemCli
     private fun setUpRecyclerView() {
         val notificationRecyclerView = binding.notificationRecyclerView
         notificationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        notificationRecyclerView.adapter = NotificationAdapter(this)
+        notificationRecyclerView.adapter = NotificationAdapter{id,type->
+            showDetailFragment(id,type)
+        }
     }
 
     private fun setObserve() {
@@ -48,17 +49,16 @@ class NotificationFragment : Fragment(R.layout.fragment_notification), OnItemCli
         }
     }
 
-    override fun onItemClick(position: Int) {
+     private fun showDetailFragment(notificationId: Long, type: NotificationType) {
         parentFragmentManager.beginTransaction().apply {
             addToBackStack("showProductDetailFragment")
             replace(R.id.main_view_container, ProductDetailsFragment().apply {
                 arguments = Bundle().apply {
                     putLong(
                         "notificationId",
-                        notificationViewModel.notifications.value!![position].id
+                        notificationId
                     )
-                    if (notificationViewModel.notifications.value!![position].type
-                        == NotificationType.PRODUCT
+                    if (type == NotificationType.PRODUCT
                     ) {
                         putBoolean("isCurrentUserProduct", false)
                     } else {

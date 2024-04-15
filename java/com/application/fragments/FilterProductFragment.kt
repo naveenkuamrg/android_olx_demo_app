@@ -2,12 +2,13 @@ package com.application.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.paging.PagingData
 import com.application.R
-import com.application.callbacks.OnItemClickListener
+import com.application.callbacks.ProductRecyclerFragmentCallback
 import com.application.callbacks.ProductRecycleViewModelCallback
 import com.application.callbacks.SortBottomSheetCallback
 import com.application.databinding.FragmentFilterProductsBinding
@@ -17,7 +18,7 @@ import com.application.model.ProductSortType
 import com.application.model.ProductType
 import com.application.viewmodels.ProductListViewModel
 
-class FilterProductFragment : Fragment(R.layout.fragment_filter_products), OnItemClickListener,
+class FilterProductFragment : Fragment(R.layout.fragment_filter_products), ProductRecyclerFragmentCallback,
     SortBottomSheetCallback {
 
     lateinit var binding: FragmentFilterProductsBinding
@@ -60,6 +61,7 @@ class FilterProductFragment : Fragment(R.layout.fragment_filter_products), OnIte
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentFilterProductsBinding.bind(view)
+        binding.noData.errorText.text = "Sorry, No product availble for this category"
         setUpToolbar()
         setObserve()
     }
@@ -124,14 +126,14 @@ class FilterProductFragment : Fragment(R.layout.fragment_filter_products), OnIte
     }
 
 
-    override fun onItemClick(position: Int) {
+    override fun onProductSummaryClick(productId: Long) {
         parentFragmentManager.beginTransaction().apply {
             addToBackStack("showProductDetailFragment")
             replace(R.id.main_view_container, ProductDetailsFragment().apply {
                 arguments = Bundle().apply {
                     putLong(
                         "currentProductId",
-                        position.toLong()
+                        productId
                     )
                     putBoolean("isCurrentUserProduct", false)
                 }
@@ -140,6 +142,24 @@ class FilterProductFragment : Fragment(R.layout.fragment_filter_products), OnIte
         }
     }
 
+
+    override fun onSortTypeSelected(sortType: ProductSortType) {
+        if (productListViewModel.currentSortType.value != sortType) {
+            isSortTypeUpdate = false
+            productListViewModel.setCurrentProductType(sortType)
+        }
+    }
+
+    override fun isListEmpty(isEmpty: Boolean) {
+        Log.i("TAG empty",isEmpty.toString())
+        if(isEmpty){
+            binding.noData.noDataLayout.visibility = View.VISIBLE
+        }else{
+            binding.noData.noDataLayout.visibility = View.GONE
+        }
+    }
+
+
     companion object {
         fun getInstant(type: ProductType): FilterProductFragment {
             return FilterProductFragment().apply {
@@ -147,13 +167,6 @@ class FilterProductFragment : Fragment(R.layout.fragment_filter_products), OnIte
                     putString("filterType", type.toString())
                 }
             }
-        }
-    }
-
-    override fun onSortTypeSelected(sortType: ProductSortType) {
-        if (productListViewModel.currentSortType.value != sortType) {
-            isSortTypeUpdate = false
-            productListViewModel.setCurrentProductType(sortType)
         }
     }
 

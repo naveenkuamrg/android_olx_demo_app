@@ -6,26 +6,24 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.PagingData
-import androidx.paging.map
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.R
 import com.application.adapter.ProductSummaryAdapter
 import com.application.adapter.ProductSummaryAdapterWithFilter
-import com.application.callbacks.OnFilterItemClickListener
-import com.application.callbacks.OnItemClickListener
+import com.application.callbacks.ProductRecyclerFragmentCallback
 import com.application.callbacks.ProductRecycleViewModelCallback
+import com.application.callbacks.ProductRecyclerFragmentWithFilterCallback
 import com.application.databinding.FragmentProductRecycleViewBinding
 import com.application.model.ProductListItem
-import com.application.model.ProductType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
 class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_view),
-    OnFilterItemClickListener, ProductRecycleViewModelCallback {
+    ProductRecycleViewModelCallback {
 
-    lateinit var callback: OnItemClickListener
+    lateinit var callback: ProductRecyclerFragmentCallback
     lateinit var binding: FragmentProductRecycleViewBinding
     lateinit var adapter: ProductSummaryAdapter
 
@@ -34,9 +32,8 @@ class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_vi
         binding = FragmentProductRecycleViewBinding.bind(view)
 
         setUpRecycleView()
-        callback = parentFragment as OnItemClickListener
+        callback = parentFragment as ProductRecyclerFragmentCallback
     }
-
 
 
     private fun setUpRecycleView() {
@@ -52,45 +49,42 @@ class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_vi
         }
         recyclerView.addItemDecoration(dividerItemDecoration)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        setAdapter()
+
+    }
+
+
+    override fun reassignedAdapter() {
+        setAdapter()
+    }
+
+    private fun setAdapter(){
         adapter = if (arguments?.getBoolean("isFilterEnable") == true) {
-            ProductSummaryAdapterWithFilter(this) {
-                callback.onItemClick(it.id.toInt())
+            ProductSummaryAdapterWithFilter({
+                (callback as ProductRecyclerFragmentWithFilterCallback).onFilterItemClick(
+                    it
+                )
+            }) {
+                callback.onProductSummaryClick(it.id)
             }
         } else {
             ProductSummaryAdapter {
-                callback.onItemClick(it.id.toInt())
+                callback.onProductSummaryClick(it.id)
             }
         }
-        recyclerView.adapter = adapter
-
-    }
-
-    override fun onFilterItemClick(productType: ProductType) {
-        (callback as OnFilterItemClickListener).onFilterItemClick(productType)
-    }
-
-    override fun onItemClick(position: Int) {
-        callback.onItemClick(position)
-    }
-
-    override fun reassignedAdapter() {
-
-        adapter = if (arguments?.getBoolean("isFilterEnable") == true) {
-                ProductSummaryAdapterWithFilter(this) {
-                    callback.onItemClick(it.id.toInt())
-                }
-            } else {
-                ProductSummaryAdapter {
-                    callback.onItemClick(it.id.toInt())
+        adapter.addLoadStateListener {
+            if (it.append.endOfPaginationReached) {
+                if (adapter.itemCount < 1) {
+                    callback.isListEmpty(true)
+                } else {
+                    callback.isListEmpty(false)
                 }
             }
+        }
         binding.productRecycleView.adapter = adapter
     }
 
     override fun onSetData(list: PagingData<ProductListItem>) {
-       list.map {
-           Log.i("onSetData",it.toString())
-       }
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
             adapter.submitData(list)
         }
@@ -98,10 +92,10 @@ class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_vi
     }
 
     companion object {
-        fun getInstance(isFilterEnable: Boolean):ProductRecycleViewFragment{
+        fun getInstance(isFilterEnable: Boolean): ProductRecycleViewFragment {
             return ProductRecycleViewFragment().apply {
                 arguments = Bundle().apply {
-                    putBoolean("isFilterEnable",isFilterEnable)
+                    putBoolean("isFilterEnable", isFilterEnable)
                 }
             }
         }

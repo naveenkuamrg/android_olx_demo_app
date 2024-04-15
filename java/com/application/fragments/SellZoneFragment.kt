@@ -5,12 +5,12 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.application.R
-import com.application.callbacks.OnItemClickListener
+import com.application.callbacks.ProductRecyclerFragmentCallback
 import com.application.callbacks.ProductViewCallback
 import com.application.databinding.FragmentSellZoneBinding
 import com.application.viewmodels.ProductListViewModel
 
-class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), OnItemClickListener {
+class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), ProductRecyclerFragmentCallback {
     lateinit var binding: FragmentSellZoneBinding
 
 
@@ -39,6 +39,7 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), OnItemClickListe
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentSellZoneBinding.bind(view)
         callBack = parentFragment as ProductViewCallback
+        binding.noData.errorText.text = "You din't Post any Product"
         setOnClickListenerAddProduct()
         setObserve()
 
@@ -50,8 +51,16 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), OnItemClickListe
         }
     }
 
-    override fun onItemClick(position: Int) {
-        callBack.onShowProductDetailsPage(position.toLong())
+    override fun onProductSummaryClick(position: Long) {
+        callBack.onShowProductDetailsPage(position)
+    }
+
+    override fun isListEmpty(isEmpty: Boolean) {
+        if(isEmpty){
+            binding.noData.noDataLayout.visibility = View.VISIBLE
+        }else{
+            binding.noData.noDataLayout.visibility = View.GONE
+        }
     }
 
     private fun setObserve() {

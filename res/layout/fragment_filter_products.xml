@@ -19,6 +19,8 @@
             app:menu="@menu/home_menu"
             android:layout_height="match_parent"/>
     </com.google.android.material.appbar.AppBarLayout>
+    <include android:id="@+id/no_data"
+        layout="@layout/no_data"/>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/product_recycle_view"

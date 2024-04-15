@@ -17,7 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </com.google.android.material.appbar.AppBarLayout>
-
+    <include android:id="@+id/no_data"
+        layout="@layout/no_data"/>
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/recycler_view_container"
         android:layout_width="match_parent"

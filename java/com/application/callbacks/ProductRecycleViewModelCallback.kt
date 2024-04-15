@@ -9,4 +9,5 @@ interface ProductRecycleViewModelCallback {
     fun reassignedAdapter()
     fun onSetData(list: PagingData<ProductListItem>)
 
+
 }

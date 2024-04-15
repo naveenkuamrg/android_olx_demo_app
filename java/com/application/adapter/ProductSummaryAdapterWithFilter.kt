@@ -6,14 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.application.R
-import com.application.callbacks.OnFilterItemClickListener
 import com.application.model.ProductListItem
 import com.application.model.ProductType
 
 class ProductSummaryAdapterWithFilter(
-    private val itemClickListener: OnFilterItemClickListener,
-    itemClick: (ProductListItem.ProductItem) -> Unit
-) : ProductSummaryAdapter(itemClick) {
+    private val onFilterClickListener: (ProductType)->Unit,
+    onItemClickListener: (ProductListItem.ProductItem) -> Unit
+) : ProductSummaryAdapter(onItemClickListener) {
 
     class FilterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val vehicles = itemView.findViewById<View>(R.id.vehicles)
@@ -47,25 +46,25 @@ class ProductSummaryAdapterWithFilter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (holder is FilterViewHolder) {
             holder.vehicles.setOnClickListener {
-                itemClickListener.onFilterItemClick(ProductType.VEHICLES)
+                onFilterClickListener(ProductType.VEHICLES)
             }
             holder.mobile.setOnClickListener {
-                itemClickListener.onFilterItemClick(ProductType.MOBILES)
+                onFilterClickListener(ProductType.MOBILES)
             }
             holder.electronic.setOnClickListener {
-                itemClickListener.onFilterItemClick(ProductType.ELECTRONICS_AND_APPLIANCES)
+                onFilterClickListener(ProductType.ELECTRONICS_AND_APPLIANCES)
             }
             holder.furniture.setOnClickListener {
-                itemClickListener.onFilterItemClick(ProductType.FURNITURE)
+                onFilterClickListener(ProductType.FURNITURE)
             }
             holder.fashion.setOnClickListener {
-                itemClickListener.onFilterItemClick(ProductType.FASHION)
+                onFilterClickListener(ProductType.FASHION)
             }
             holder.books.setOnClickListener {
-                itemClickListener.onFilterItemClick(ProductType.BOOKS_SPORTS_AND_HOBBIES)
+                onFilterClickListener(ProductType.BOOKS_SPORTS_AND_HOBBIES)
             }
             holder.sport.setOnClickListener {
-                itemClickListener.onFilterItemClick(ProductType.SPORTS)
+                onFilterClickListener(ProductType.SPORTS)
             }
         } else {
             super.onBindViewHolder(holder, position )
