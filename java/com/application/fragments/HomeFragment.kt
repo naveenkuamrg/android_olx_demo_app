@@ -2,6 +2,7 @@ package com.application.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -99,11 +100,16 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                         replace(R.id.main_view_container, NotificationFragment())
                         commit()
                     }
+                    return@setOnMenuItemClickListener true
                 }
 
                 R.id.sort -> {
+                    if(childFragmentManager.findFragmentByTag("bottomSheet") != null){
+                        return@setOnMenuItemClickListener true
+                    }
                     val bottomSheet = BottomSheetDialogSort(this)
                     bottomSheet.show(childFragmentManager, "bottomSheet")
+                    return@setOnMenuItemClickListener true
                 }
             }
 
@@ -163,9 +169,9 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     }
 
     override fun isListEmpty(isEmpty: Boolean) {
-        if(isEmpty){
+        if (isEmpty) {
             binding.noData.noDataLayout.visibility = View.VISIBLE
-        }else{
+        } else {
             binding.noData.noDataLayout.visibility = View.GONE
         }
     }

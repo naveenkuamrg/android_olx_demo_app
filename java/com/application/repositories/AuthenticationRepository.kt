@@ -9,6 +9,6 @@ interface AuthenticationRepository {
                                phoneNumber: String,
                                password: String): Long
 
-    suspend fun getUser(email: String, password: String) : Profile
+    suspend fun getUser(identifier: String, password: String) : Profile
 
 }

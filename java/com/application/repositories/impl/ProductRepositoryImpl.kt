@@ -20,7 +20,7 @@ import com.application.model.Product
 import com.application.model.ProductListItem
 import com.application.model.ProductListItem.ProductItem
 import com.application.model.ProductType
-import com.application.model.Profile
+import com.application.model.ProfileSummary
 import com.application.model.SearchProductResultItem
 import com.application.repositories.ProductImageRepository
 import com.application.repositories.ProductRepository
@@ -57,7 +57,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
 
         return Pager(
             PagingConfig(
-                pageSize = 8,
+                pageSize = 3,
                 enablePlaceholders = false,
                 prefetchDistance = 2
             )
@@ -140,7 +140,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         }.flow.map { pagingData ->
             pagingData.map {
                 setImg(it)
-                Log.i("naveen",it.toString())
+                Log.i("naveen", it.toString())
                 it
 
             }
@@ -208,6 +208,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
             }
         }
     }
+
     override suspend fun getProductDetailsUsingProductId(productId: Long, userId: Long): Product {
         return productDao.getProductUsingProductId(productId, userId).apply {
             images = productImageRepository.getAllImageFromFile(productId.toString())
@@ -240,7 +241,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
     override suspend fun updateProductAvailabilityAndNotify(
         product: Product,
         status: AvailabilityStatus,
-        productInterestedProfile: List<Profile>
+        productInterestedProfile: List<ProfileSummary>
     ) {
 
         product.id?.let {
@@ -253,7 +254,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
                             NotificationType.PRODUCT,
                             Utility.getLoginUserName(context),
                             product.title
-                        )
+                        ),Utility.getLoginUserId(context)
                     )
                 )
             }
@@ -274,7 +275,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
                     Utility.getLoginUserName(context),
                     product.title,
                     isInterested
-                )
+                ),Utility.getLoginUserId(context)
             )
         )
         return if (isInterested) {
@@ -284,14 +285,16 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         }
     }
 
-    override suspend fun getInterestedProfile(productId: Long): List<Profile> {
-        val profiles: MutableList<Profile> = mutableListOf()
-        profileDao.getInterestedProfile(productId).profileList.map {
-            profiles.add(ModelConverter.profileFromUserAndUri(it).apply {
-                profileImage = profileImageRepository.getProfileImage(it.id.toString())
-            })
-        }
-        return profiles
+    override suspend fun getInterestedProfile(productId: Long): List<ProfileSummary> {
+     return   ModelConverter.productsWithInterestedProfileSummary(
+            profileDao.getInterestedProfile(productId)
+        ).apply {
+         forEach { productSummary ->
+             productSummary.profileImage =
+                 profileImageRepository.getProfileImage(productSummary.id.toString())
+         }
+     }
+
     }
 
     override suspend fun getSearchProduct(
@@ -343,14 +346,10 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         }
     }
 
-    private suspend fun setImage(listOfProductSummary: List<ProductItem>) {
-        for (product in listOfProductSummary) {
-            product.image =
-                productImageRepository.getMainImage(
-                    product.id.toString()
-                )
-        }
+    override suspend fun updateIsContent(userId: Long, productId: Long) {
+        productDao.updateIsContent(userId, productId )
     }
+
 
     private suspend fun setImg(product: ProductItem) {
         product.image = productImageRepository.getMainImage(

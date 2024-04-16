@@ -60,8 +60,8 @@ interface ProductDao {
     @Query("UPDATE product_details SET availabilityStatus = :status where product_id = :productId")
     fun updateProductAvailabilityStatus(productId: Long, status: AvailabilityStatus)
 
-    @Query("insert into interested_buyers values(:userId,:productId)")
-    fun insertInterestedList(productId: Long, userId: Long): Long
+    @Query("insert into interested_buyers values(:userId,:productId,:isContented)")
+    fun insertInterestedList(productId: Long, userId: Long,isContented: Boolean = false): Long
 
     @Query("delete from interested_buyers where product_id LIKE :productId and user_id = :userId")
     fun removeInterestedList(productId: Long, userId: Long): Int
@@ -99,5 +99,7 @@ interface ProductDao {
 
     @Query("select product_details.product_id as id ,title,postedDate,location,price from interested_buyers left join product_details on interested_buyers.product_id == product_details.product_id where interested_buyers.user_id LIKE :userId AND availabilityStatus LIKE 'AVAILABLE'")
     fun getInterestedProductSummary(userId: Long): PagingSource<Int, ProductItem>
+    @Query("Update interested_buyers set isContented = 1 where user_id LIKE :userId AND product_id LIKE :productId")
+    fun updateIsContent(userId: Long,productId: Long)
 
 }

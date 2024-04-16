@@ -24,9 +24,9 @@ class AuthenticationRepositoryImpl(context : Context) : AuthenticationRepository
         return  userDao.getUserId(email)
     }
 
-    override suspend fun getUser(email: String, password: String): Profile {
-       val user = userDao.getUser(email) ?: throw AuthenticationSignInException.
-            UserNotFoundAuthenticationException("Email Dose not exits")
+    override suspend fun getUser(identifier: String, password: String): Profile {
+       val user = userDao.getUser(identifier) ?: throw AuthenticationSignInException.
+            UserNotFoundAuthenticationException("User not found")
         if(user.password != password){
             throw  AuthenticationSignInException.
                 PasswordInvalidAuthenticationException("Invalid password",)

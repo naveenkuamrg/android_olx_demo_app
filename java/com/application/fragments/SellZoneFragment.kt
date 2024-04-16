@@ -1,6 +1,7 @@
 package com.application.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -65,6 +66,7 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), ProductRecyclerF
 
     private fun setObserve() {
         productListViewModel.sellProductList.observe(viewLifecycleOwner) {
+            Log.i("PagingData",it.toString())
             val fragment = childFragmentManager.findFragmentByTag("recyclerView")
             if (fragment is ProductRecycleViewFragment) {
                 fragment.onSetData(it)
