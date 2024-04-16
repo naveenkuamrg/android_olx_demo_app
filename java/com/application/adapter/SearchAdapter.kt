@@ -54,7 +54,6 @@ class SearchAdapter(private val onItemClickListener: (Long)->Unit) :
             parent,
             false
         )
-
         return SearchViewHolder(itemView)
     }
 

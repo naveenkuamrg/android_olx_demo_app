@@ -10,5 +10,5 @@ data class Notification(
     val content: String,
     val type: NotificationType
 ){
-    lateinit var image: Bitmap
+     var image: Bitmap? = null
 }

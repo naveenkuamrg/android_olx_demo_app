@@ -21,7 +21,7 @@
                 android:id="@+id/email_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="enter the email"
+                android:hint="Enter Email / Mobile No :"
                 android:imeOptions="actionNext"
                 android:inputType="text"
                 android:maxLines="1"
@@ -39,7 +39,7 @@
                 android:id="@+id/password_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="enter the password"
+                android:hint="Enter the password"
                 android:imeOptions="actionNext"
                 android:inputType="textPassword"
                 android:maxLines="1"
@@ -52,18 +52,18 @@
             android:gravity="center">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/signin"
+                android:id="@+id/Signin"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="10dp"
-                android:text="signin" />
+                android:text="Signin" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/signup"
+                android:id="@+id/Signup"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="10dp"
-                android:text="signup" />
+                android:text="Signup" />
 
         </LinearLayout>
     </LinearLayout>

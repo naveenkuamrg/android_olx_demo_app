@@ -3,6 +3,7 @@ package com.application.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -18,10 +19,12 @@ class NotificationAdapter(val onItemClickListener: (Long, NotificationType) -> U
     class NotificationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val contentTextView = itemView.findViewById<TextView>(R.id.content_text_view)
         val timeStamp = itemView.findViewById<TextView>(R.id.time_stamp_text_view)
+        val image: ImageView = itemView.findViewById(R.id.notification_ic)
     }
 
 
-    private val diffUtil = object : DiffUtil.ItemCallback<Notification>() {
+    private val diffUtil = object :
+        DiffUtil.ItemCallback<Notification>() {
         override fun areItemsTheSame(oldItem: Notification, newItem: Notification): Boolean {
             return oldItem.id == newItem.id
         }
@@ -52,13 +55,23 @@ class NotificationAdapter(val onItemClickListener: (Long, NotificationType) -> U
     }
 
     override fun onBindViewHolder(holder: NotificationViewHolder, position: Int) {
-        holder.contentTextView.text = asyncListDiffer.currentList[position].content
+        val value = asyncListDiffer.currentList[position]
+        holder.contentTextView.text = value.content
         holder.timeStamp.text =
-            Utility.millisecondsToString(asyncListDiffer.currentList[position].timestamp)
+            Utility.millisecondsToString(value.timestamp)
+        if(value.image == null){
+            if(value.type == NotificationType.PROFILE){
+                holder.image.setImageResource(R.drawable.ic_profile_outline)
+            }else{
+                holder.image.setImageResource(R.drawable.ic_delete_forevere)
+            }
+        }else{
+            holder.image.setImageBitmap(value.image)
+        }
         holder.itemView.setOnClickListener {
             onItemClickListener(
-                asyncListDiffer.currentList[position].id,
-                asyncListDiffer.currentList[position].type
+                value.id,
+                value.type
             )
         }
     }

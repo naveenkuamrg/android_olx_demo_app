@@ -1,5 +1,6 @@
 package com.application.fragments
 
+import android.app.AlertDialog
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.SystemClock
@@ -102,7 +103,16 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         val toolbar = binding.toolbar
         toolbar.setNavigationIcon(R.drawable.ic_back)
         toolbar.setNavigationOnClickListener {
-            parentFragmentManager.popBackStack()
+            androidx.appcompat.app.AlertDialog.Builder(requireContext()).apply {
+                setMessage(
+                    "If you go back, you'll lose all the data you've entered in the form."
+                )
+                setPositiveButton("OK") { _, _ ->
+                    parentFragmentManager.popBackStack()
+                }
+                setNegativeButton("NO") { _, _ -> }
+                show()
+            }
         }
     }
 
@@ -163,8 +173,10 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
 
     private fun setOnClickListenerForAddImageButton() {
         binding.addImageButton.setOnClickListener {
-            val bottomSheet = BottomSheetDialogPhotoPicker()
-            bottomSheet.show(childFragmentManager, "bottomSheet")
+            if(childFragmentManager.findFragmentByTag("bottomSheet") == null) {
+                val bottomSheet = BottomSheetDialogPhotoPicker()
+                bottomSheet.show(childFragmentManager, "bottomSheet")
+            }
         }
     }
 

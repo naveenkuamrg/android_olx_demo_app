@@ -127,7 +127,6 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
         }
         binding.productDetailLayout.favouriteImg.setOnClickListener {
             viewModel.updateIsInterested(userId)
-
         }
     }
 
@@ -181,9 +180,11 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
             it?.let { isUpdate ->
                 binding.productDetailLayout.imInterestedBtn.isEnabled = true
                 if (isUpdate) {
-                    viewModel.product.value?.isInterested = !viewModel.product.value?.isInterested!!
+                    Log.i("check ",viewModel.product.value?.isInterested!!.toString())
+                    viewModel.setProductInterestedValue(!viewModel.product.value?.isInterested!!)
                     updateButtonUI()
-                } else {
+                }
+                if(!isUpdate){
                     Utility.showToast(
                         requireContext(),
                         "Sorry, your update was not successful. Please try again later"
@@ -194,14 +195,16 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
         }
 
         viewModel.profileList.observe(viewLifecycleOwner) {
-            Log.i("TAG",it.toString())
+
             if(it.isEmpty()) {
                 binding.productDetailLayout.noData.noDataLayout.visibility = View.VISIBLE
                 binding.productDetailLayout.noData.errorText.text = "No one interested"
             }else{
                 binding.productDetailLayout.noData.noDataLayout.visibility = View.GONE
             }
-            val adapter = ProfileSummaryAdapter(it, requireContext())
+            val adapter = ProfileSummaryAdapter(it, requireContext()){userId->
+                viewModel.updateIsContented(userId,viewModel.product.value?.id!!)
+            }
             binding.productDetailLayout.profileRecyclerView.layoutManager =
                 LinearLayoutManager(requireContext())
             binding.productDetailLayout.profileRecyclerView.adapter = adapter
@@ -290,6 +293,8 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
     }
 
     private fun updateButtonUI() {
+        Log.i("TAG check",viewModel.product.value?.isInterested.toString())
+        Log.i("TAG check",viewModel.product.toString())
         if (viewModel.product.value?.isInterested == false) {
             binding.productDetailLayout.imInterestedBtn.text = "I'm Interested"
         } else {

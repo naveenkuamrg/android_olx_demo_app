@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.R
 import com.application.adapter.ProductSummaryAdapter
-import com.application.adapter.ProductSummaryAdapterWithFilter
 import com.application.callbacks.ProductRecyclerFragmentCallback
 import com.application.callbacks.ProductRecycleViewModelCallback
 import com.application.callbacks.ProductRecyclerFragmentWithFilterCallback
@@ -58,18 +57,17 @@ class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_vi
         setAdapter()
     }
 
-    private fun setAdapter(){
-        adapter = if (arguments?.getBoolean("isFilterEnable") == true) {
-            ProductSummaryAdapterWithFilter({
-                (callback as ProductRecyclerFragmentWithFilterCallback).onFilterItemClick(
-                    it
-                )
-            }) {
-                callback.onProductSummaryClick(it.id)
-            }
-        } else {
-            ProductSummaryAdapter {
-                callback.onProductSummaryClick(it.id)
+    private fun setAdapter() {
+         adapter = ProductSummaryAdapter {
+             Log.i("TAG","onClickLisner")
+            callback.onProductSummaryClick(it.id)
+        }
+
+        if (arguments?.getBoolean("isFilterEnable") == true) {
+            Log.i("TAG","check is Filtere")
+            adapter.onFilterClickListener = {
+                Log.i("TAG","check")
+                (callback as ProductRecyclerFragmentWithFilterCallback).onFilterItemClick(it)
             }
         }
         adapter.addLoadStateListener {
@@ -85,6 +83,7 @@ class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_vi
     }
 
     override fun onSetData(list: PagingData<ProductListItem>) {
+        Log.i("PagingData list", list.toString())
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
             adapter.submitData(list)
         }

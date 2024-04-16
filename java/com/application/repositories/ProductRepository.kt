@@ -11,6 +11,7 @@ import com.application.model.Profile
 import com.application.model.SearchProductResultItem
 import com.application.model.ProductSortType
 import com.application.model.ProductType
+import com.application.model.ProfileSummary
 import kotlinx.coroutines.flow.Flow
 
 interface ProductRepository {
@@ -45,7 +46,7 @@ interface ProductRepository {
     suspend fun updateProductAvailabilityAndNotify(
         product: Product,
         status: AvailabilityStatus,
-        productInterestedProfile: List<Profile>
+        productInterestedProfile: List<ProfileSummary>
     )
 
     suspend fun updateProductIsInterested(
@@ -54,7 +55,7 @@ interface ProductRepository {
         isInterested: Boolean
     ): Boolean
 
-    suspend fun getInterestedProfile(productId: Long): List<Profile>
+    suspend fun getInterestedProfile(productId: Long): List<ProfileSummary>
 
     suspend fun getSearchProduct(searchTerm: String, userId: Long): List<SearchProductResultItem>
 
@@ -64,5 +65,7 @@ interface ProductRepository {
     fun getFavouriteProductList(): Flow<PagingData<ProductListItem>>
 
     fun getInterestedProductList(): Flow<PagingData<ProductListItem>>
+
+    suspend fun updateIsContent(userId: Long,productId: Long)
 
 }

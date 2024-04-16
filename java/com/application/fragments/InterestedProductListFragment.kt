@@ -28,7 +28,7 @@ class InterestedProductListFragment: Fragment(R.layout.fragment_product_list),Pr
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentProductListBinding.bind(view)
-        binding.noData.errorText.text = "Your's interested product is empty"
+        binding.noData.errorText.text = "Your's interested list is empty"
         setToolbar()
         setObserve()
     }

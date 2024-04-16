@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.R
 import com.application.adapter.NotificationAdapter
@@ -41,7 +42,19 @@ class NotificationFragment : Fragment(R.layout.fragment_notification) {
         notificationRecyclerView.adapter = NotificationAdapter{id,type->
             showDetailFragment(id,type)
         }
+        val dividerItemDecoration =
+            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        requireContext().getDrawable(
+            R.drawable.recycleview_divider
+        )?.let {
+            dividerItemDecoration.setDrawable(
+                it
+            )
+        }
+        notificationRecyclerView.addItemDecoration(dividerItemDecoration)
     }
+
+
 
     private fun setObserve() {
         notificationViewModel.notifications.observe(viewLifecycleOwner) {

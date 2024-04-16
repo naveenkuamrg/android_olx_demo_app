@@ -22,22 +22,19 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentLoginBinding.bind(view)
         addObserve()
-        binding.signup.setOnClickListener {
+        binding.Signup.setOnClickListener {
             val fragmentTransaction = parentFragmentManager.beginTransaction()
             fragmentTransaction.replace(R.id.main_view_container, SignupFragment())
             fragmentTransaction.addToBackStack("addSignupPage")
             fragmentTransaction.commit()
         }
 
-        binding.signin.setOnClickListener {
+        binding.Signin.setOnClickListener {
             val email = binding.emailEdittext.text.toString().trim()
             val password = binding.passwordEdittext.text.toString()
-            if (!Validator.isEmailValid(email) || email == "") {
-                if (email == "") {
+
+            if  (email == "") {
                     binding.emailEdittextLayout.error = "Email not should be empty"
-                } else {
-                    binding.emailEdittextLayout.error = "Email is not valid"
-                }
                 return@setOnClickListener
             } else {
                 binding.emailEdittextLayout.error = null

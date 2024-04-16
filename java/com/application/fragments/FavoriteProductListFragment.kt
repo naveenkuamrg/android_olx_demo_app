@@ -35,7 +35,7 @@ class FavoriteProductListFragment : Fragment(R.layout.fragment_product_list),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentProductListBinding.bind(view)
-        binding.noData.errorText.text = "Your Favorite List is Empty"
+        binding.noData.errorText.text = "Your favorite list is empty"
         setToolbar()
         setObserve()
     }

@@ -8,6 +8,7 @@ import android.os.PersistableBundle
 import android.util.Log
 import android.widget.Button
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -32,7 +33,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val sharedPreferences = getSharedPreferences("mySharePref", MODE_PRIVATE)
-
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.CALL_PHONE
@@ -42,11 +42,8 @@ class MainActivity : AppCompatActivity() {
                 this, arrayOf(Manifest.permission.CALL_PHONE),
                 0
             )
-
         }
-
         if (savedInstanceState == null) {
-
             if (sharedPreferences.getString("userId", "") == "") {
                 val fragmentTransaction = supportFragmentManager.beginTransaction()
                 fragmentTransaction.add(R.id.main_view_container, LoginFragment())
@@ -57,10 +54,5 @@ class MainActivity : AppCompatActivity() {
                 fragmentTransaction.commit()
             }
         }
-
     }
-
-
-
-
 }
