@@ -16,4 +16,7 @@ interface NotificationDao {
     @Query("UPDATE notification SET isRead = 1 WHERE recipientId LIKE :userId ")
     fun updateNotificationIsRead(userId: Long)
 
+    @Query("select COUNT(id) > 0  from notification where" +
+            " recipientId LIKE :userId AND isRead LIKE 0 ")
+    fun getIsUnreadNotification(userId: Long): Boolean
 }

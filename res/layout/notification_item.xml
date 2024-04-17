@@ -25,6 +25,7 @@
         android:layout_marginStart="10dp"
         android:ellipsize="end"
         android:maxLines="3"
+        android:textStyle="bold"
         android:text="Content"
         app:layout_constraintBottom_toTopOf="@+id/time_stamp_text_view"
         app:layout_constraintEnd_toEndOf="parent"

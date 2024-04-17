@@ -39,13 +39,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:layout_gravity="center_horizontal"
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:padding="10dp"
+                android:layout_marginBottom="10dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/radius"
                 android:clipToOutline="true"

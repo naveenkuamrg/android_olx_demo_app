@@ -3,7 +3,7 @@ package com.application.callbacks
 import com.application.model.ProductType
 
 interface ProductRecyclerFragmentCallback {
-    fun onProductSummaryClick(position: Long)
+    fun onProductSummaryClick(productId: Long)
 
     fun isListEmpty(isEmpty: Boolean)
 

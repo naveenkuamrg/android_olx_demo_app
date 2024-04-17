@@ -14,14 +14,17 @@ import androidx.paging.insertHeaderItem
 import com.application.model.ProductListItem
 import com.application.model.ProductSortType
 import com.application.model.ProductType
+import com.application.repositories.NotificationRepository
 import com.application.repositories.ProductRepository
+import com.application.repositories.impl.NotificationRepositoryImpl
 import com.application.repositories.impl.ProductRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class ProductListViewModel(private val productRepository: ProductRepository) : ViewModel() {
-
+class ProductListViewModel(
+    private val productRepository: ProductRepository
+) : ViewModel() {
 
     private val _currentSortType: MutableLiveData<ProductSortType> =
         MutableLiveData(ProductSortType.POSTED_DATE_DESC)

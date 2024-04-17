@@ -27,6 +27,11 @@ class NotificationFragment : Fragment(R.layout.fragment_notification) {
         setUpRecyclerView()
         setObserve()
         notificationViewModel.fetchNotification(Utility.getLoginUserId(requireContext()))
+        notificationViewModel.updateNotificationIsReadStatus(
+            Utility.getLoginUserId(
+                requireContext()
+            )
+        )
     }
 
     private fun setToolbar() {
@@ -39,8 +44,8 @@ class NotificationFragment : Fragment(R.layout.fragment_notification) {
     private fun setUpRecyclerView() {
         val notificationRecyclerView = binding.notificationRecyclerView
         notificationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        notificationRecyclerView.adapter = NotificationAdapter{id,type->
-            showDetailFragment(id,type)
+        notificationRecyclerView.adapter = NotificationAdapter { id, type ->
+            showDetailFragment(id, type)
         }
         val dividerItemDecoration =
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
@@ -51,9 +56,8 @@ class NotificationFragment : Fragment(R.layout.fragment_notification) {
                 it
             )
         }
-        notificationRecyclerView.addItemDecoration(dividerItemDecoration)
+//        notificationRecyclerView.addItemDecoration(dividerItemDecoration)
     }
-
 
 
     private fun setObserve() {
@@ -62,7 +66,7 @@ class NotificationFragment : Fragment(R.layout.fragment_notification) {
         }
     }
 
-     private fun showDetailFragment(notificationId: Long, type: NotificationType) {
+    private fun showDetailFragment(notificationId: Long, type: NotificationType) {
         parentFragmentManager.beginTransaction().apply {
             addToBackStack("showProductDetailFragment")
             replace(R.id.main_view_container, ProductDetailsFragment().apply {

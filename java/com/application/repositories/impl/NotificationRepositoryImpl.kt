@@ -1,15 +1,15 @@
 package com.application.repositories.impl
 
 import android.content.Context
-import android.graphics.Bitmap
 import com.application.AppDatabase
 import com.application.helper.ModelConverter
+import com.application.helper.Utility
 
 import com.application.model.Notification
 import com.application.model.NotificationType
 import com.application.repositories.NotificationRepository
 
-class NotificationRepositoryImpl(context: Context) : NotificationRepository {
+class NotificationRepositoryImpl(val context: Context) : NotificationRepository {
 
     private val notificationDao = AppDatabase.getInstance(context).notificationDao
     private val productImageRepository = ProductImageRepositoryImpl(context)
@@ -43,5 +43,9 @@ class NotificationRepositoryImpl(context: Context) : NotificationRepository {
         notificationDao.updateNotificationIsRead(userId)
     }
 
+    override suspend fun isUnreadNotification(): Boolean {
+
+        return notificationDao.getIsUnreadNotification(Utility.getLoginUserId(context))
+    }
 
 }

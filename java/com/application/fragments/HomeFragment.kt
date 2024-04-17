@@ -1,26 +1,23 @@
 package com.application.fragments
 
-import android.content.Context
+import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
-import android.os.SystemClock
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.paging.PagingData
 import com.application.R
 import com.application.callbacks.SearchbarCallback
-import com.application.callbacks.ProductRecyclerFragmentCallback
 import com.application.callbacks.ProductRecycleViewModelCallback
 import com.application.callbacks.ProductRecyclerFragmentWithFilterCallback
+import com.application.callbacks.ProductViewCallback
 import com.application.callbacks.SortBottomSheetCallback
 import com.application.databinding.FragmentHomeBinding
-import com.application.helper.Utility
 import com.application.model.ProductListItem
 import com.application.model.ProductSortType
 import com.application.model.ProductType
+import com.application.viewmodels.NotificationViewModel
 import com.application.viewmodels.ProductListViewModel
 
 
@@ -29,16 +26,23 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
     lateinit var binding: FragmentHomeBinding
 
-    lateinit var callback: SearchbarCallback
+    private lateinit var searchbarCallback: SearchbarCallback
+
+    private lateinit var productViewCallback: ProductViewCallback
 
     private var isSortTypeUpdate = false
 
-    private val productListViewModel: ProductListViewModel by viewModels { ProductListViewModel.FACTORY }
+    private val productListViewModel: ProductListViewModel by viewModels {
+        ProductListViewModel.FACTORY
+    }
 
-    var userId: Long = -1L
+    private val notificationViewModel: NotificationViewModel by viewModels {
+        NotificationViewModel.FACTORY
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        callback = parentFragment as SearchbarCallback
+        searchbarCallback = parentFragment as SearchbarCallback
         if (savedInstanceState == null) {
             childFragmentManager.beginTransaction().apply {
                 replace(
@@ -49,7 +53,6 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                 commit()
             }
             productListViewModel.setCurrentProductType(ProductSortType.POSTED_DATE_DESC)
-
         }
     }
 
@@ -58,36 +61,22 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentHomeBinding.bind(view)
         binding.noData.errorText.text = "Sorry,Stock Out"
+        notificationViewModel.getIsReadNotification()
+        productViewCallback = parentFragment as ProductViewCallback
         setUpSearchBar()
         setObserve()
     }
 
     override fun onFilterItemClick(productType: ProductType) {
         parentFragment?.parentFragmentManager?.beginTransaction()?.apply {
-            replace(R.id.main_view_container, FilterProductFragment.getInstant(productType))
+            replace(R.id.main_view_container, FilterProductListFragment.getInstant(productType))
             addToBackStack("Filter")
             commit()
         }
     }
 
     override fun onProductSummaryClick(productId: Long) {
-        parentFragment?.parentFragmentManager?.popBackStackImmediate(
-            "showProductDetailFragment",
-            FragmentManager.POP_BACK_STACK_INCLUSIVE
-        )
-        parentFragment?.parentFragmentManager?.beginTransaction()?.apply {
-            addToBackStack("showProductDetailFragment")
-            replace(R.id.main_view_container, ProductDetailsFragment().apply {
-                arguments = Bundle().apply {
-                    putLong(
-                        "currentProductId",
-                        productId
-                    )
-                    putBoolean("isCurrentUserProduct", false)
-                }
-            })
-            commit()
-        }
+        productViewCallback.onShowProductDetailsPage(productId,false)
     }
 
     private fun setUpSearchBar() {
@@ -104,10 +93,10 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                 }
 
                 R.id.sort -> {
-                    if(childFragmentManager.findFragmentByTag("bottomSheet") != null){
+                    if (childFragmentManager.findFragmentByTag("bottomSheet") != null) {
                         return@setOnMenuItemClickListener true
                     }
-                    val bottomSheet = BottomSheetDialogSort(this)
+                    val bottomSheet = BottomSheetDialogSort()
                     bottomSheet.show(childFragmentManager, "bottomSheet")
                     return@setOnMenuItemClickListener true
                 }
@@ -115,15 +104,23 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
             return@setOnMenuItemClickListener false
         }
-        callback.setUpWithSearchBar(searchBar)
+        searchbarCallback.setUpWithSearchBar(searchBar)
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        userId = Utility.getLoginUserId(context)
-    }
 
     private fun setObserve() {
+        notificationViewModel.isUnReadNotification.observe(viewLifecycleOwner) {
+            Log.i("TAG","isRead ${it}")
+            val notificationIndicator =
+                (binding.searchBar.menu.findItem(R.id.notification).icon as LayerDrawable).findDrawableByLayerId(
+                    R.id.notification_indicator
+                )
+            if (it) {
+                notificationIndicator.alpha = 225
+            } else {
+                notificationIndicator.alpha = 0
+            }
+        }
         productListViewModel.currentSortType.observe(viewLifecycleOwner) { sort ->
             val fragment = childFragmentManager.findFragmentByTag("recyclerView")
             if (fragment is ProductRecycleViewModelCallback) {

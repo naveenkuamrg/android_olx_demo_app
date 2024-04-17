@@ -6,17 +6,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/product_summary_container"
     android:layout_width="match_parent"
-    android:layout_height="88dp"
+    android:layout_height="72dp"
     android:background="@color/md_theme_onSecondaryContainer_highContrast"
     android:clickable="true"
+    android:paddingVertical="8dp"
     android:foreground="?android:attr/selectableItemBackground"
-    android:orientation="horizontal"
-    android:padding="16dp"
-    android:paddingTop="15dp"
-    android:paddingEnd="16dp">
+    android:orientation="horizontal">
 
     <androidx.cardview.widget.CardView
         android:layout_width="56dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_gravity="center"
         android:layout_height="56dp"
         app:cardCornerRadius="4dp">
 
@@ -31,36 +31,37 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="15dp"
+        android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteX="51dp">
+        app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/product_title_textview"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:ellipsize="end"
             android:singleLine="true"
             android:text="TITLE"
-            android:textColor="@color/md_theme_primary"
-            android:textSize="10pt"
+            android:textSize="15sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/product_price_textview"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/product_price_textview"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:ellipsize="end"
             android:singleLine="true"
             android:text="PRICE"
-            android:textColor="@color/md_theme_primary"
+            android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/product_title_textview" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

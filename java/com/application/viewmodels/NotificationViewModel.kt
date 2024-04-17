@@ -14,13 +14,14 @@ import kotlinx.coroutines.launch
 
 class NotificationViewModel(private val notificationRepository: NotificationRepository) :
     ViewModel() {
-
     private val _isLoading: MutableLiveData<Boolean> = MutableLiveData()
     val isLoading: LiveData<Boolean> = _isLoading
 
     private val _notifications: MutableLiveData<List<Notification>> = MutableLiveData()
     val notifications: LiveData<List<Notification>> = _notifications
 
+    private val _isUnReadNotification: MutableLiveData<Boolean> = MutableLiveData()
+     val isUnReadNotification: LiveData<Boolean> = _isUnReadNotification
     fun fetchNotification(userId: Long) {
         _isLoading.value = false
         viewModelScope.launch(Dispatchers.Default) {
@@ -36,6 +37,11 @@ class NotificationViewModel(private val notificationRepository: NotificationRepo
 
     }
 
+    fun getIsReadNotification(){
+        viewModelScope.launch(Dispatchers.Default) {
+            _isUnReadNotification.postValue(notificationRepository.isUnreadNotification())
+        }
+    }
     companion object {
         val FACTORY = object : ViewModelProvider.Factory {
 

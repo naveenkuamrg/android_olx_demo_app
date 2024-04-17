@@ -9,8 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import java.text.FieldPosition
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.TimeUnit
+
 
 object Utility {
 
@@ -70,4 +73,66 @@ object Utility {
         ).show()
     }
 
+    fun setCreatedTime(createdTime : Long) : String{
+        val currentTime = Date()
+        val durationInMillis = currentTime.time -  createdTime
+        val days = TimeUnit.MILLISECONDS.toDays(durationInMillis).toInt()
+        val hours = TimeUnit.MILLISECONDS.toHours(durationInMillis).toInt()
+        val minutes = TimeUnit.MILLISECONDS.toMinutes(durationInMillis).toInt()
+        val seconds = TimeUnit.MILLISECONDS.toSeconds(durationInMillis).toInt()
+        if(days==0){
+            return if(hours==0){
+                if(minutes == 0){
+                    if(seconds == 0){
+                        "Just now"
+                    } else{
+                        "$seconds ${if(seconds==1) "second" else "seconds"} ago"
+                    }
+                } else{
+                    "$minutes ${if(minutes==1) "minute" else "minutes"} ago"
+                }
+            } else{
+                "$hours ${if(hours==1) "hour" else "hours"} ago"
+            }
+        }
+        else if(days<7){
+            return  "$days ${if(days==1) "day" else "days"} ago"
+        }
+        else if(days in 7..14){
+            return  "1 week ago"
+        }
+        else{
+            val month = getMonthStringFromDate(createdTime)
+            val year = getYearFromDate(createdTime)
+            val day = getDayFromDate(createdTime)
+
+            val currentYear = getYearFromDate(currentTime.time)
+
+
+            return if(currentYear == year){
+                "$day $month"
+            } else{
+                "$day $month $year"
+            }
+        }
+    }
+
+    private fun getYearFromDate(date: Long): Int {
+        val calendar = Calendar.getInstance()
+        calendar.time.time = date
+        return calendar.get(Calendar.YEAR)
+    }
+
+    private fun getMonthStringFromDate(date: Long): String {
+        val calendar = Calendar.getInstance()
+        calendar.time.time = date
+        return SimpleDateFormat("MMMM", Locale.getDefault()).format(calendar.time)
+    }
+
+
+    private fun getDayFromDate(date: Long): Int {
+        val calendar = Calendar.getInstance()
+        calendar.time.time = date
+        return calendar.get(Calendar.DAY_OF_MONTH)
+    }
 }

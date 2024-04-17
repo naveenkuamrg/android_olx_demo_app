@@ -1,20 +1,22 @@
 package com.application.fragments
 
+import android.content.res.Configuration
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import com.application.R
 import com.application.databinding.FragmentLoginBinding
 import com.application.exceptions.AuthenticationSignInException
-import com.application.helper.Validator
 import com.application.viewmodels.SignInViewModel
+import java.io.InputStream
 
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
+
 
     private lateinit var binding: FragmentLoginBinding
     private val viewModel: SignInViewModel by viewModels { SignInViewModel.FACTORY }
@@ -33,15 +35,25 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             val email = binding.emailEdittext.text.toString().trim()
             val password = binding.passwordEdittext.text.toString()
 
-            if  (email == "") {
-                    binding.emailEdittextLayout.error = "Email not should be empty"
+            if (email == "") {
+                binding.emailEdittextLayout.error = "Email not should be empty"
                 return@setOnClickListener
             } else {
                 binding.emailEdittextLayout.error = null
             }
-
             viewModel.signIn(email, password)
         }
+
+        val nightModeFlags = requireContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val isNightMode = nightModeFlags == Configuration.UI_MODE_NIGHT_YES
+
+        val imageStream: InputStream = if(!isNightMode){
+            this.resources.openRawResource(R.raw.sell_zone)
+        }else{
+            this.resources.openRawResource(R.raw.sell_zone_night)
+        }
+        val bitmap = BitmapFactory.decodeStream(imageStream)
+        binding.logoImageView.setImageBitmap(bitmap)
     }
 
 
@@ -65,7 +77,8 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         }
 
         viewModel.exceptions.observe(
-            viewLifecycleOwner) { value ->
+            viewLifecycleOwner
+        ) { value ->
             when (value) {
                 is AuthenticationSignInException.UserNotFoundAuthenticationException -> {
                     binding.emailEdittextLayout.error = value.message
@@ -77,6 +90,11 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
             }
         }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+
     }
 
 

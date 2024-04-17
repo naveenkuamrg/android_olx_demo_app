@@ -18,7 +18,7 @@
             android:id="@+id/profile_edit_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
+            app:menu="@menu/edit_profile"
             app:titleTextColor="@color/md_theme_primary"
             app:title="Edit Profile"
             app:titleCentered="true" />
@@ -91,7 +91,7 @@
                     android:layout_height="33dp"
                     android:layout_gravity="center"
                     android:layout_marginEnd="10dp"
-                    android:src="@drawable/ic_profile_outline" />
+                    android:src="@drawable/ic_person" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/name_edit_text_layout"
@@ -168,12 +168,6 @@
 
             </LinearLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/update_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Update" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

@@ -1,8 +1,6 @@
 package com.application.fragments
 
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -12,13 +10,12 @@ import com.application.callbacks.ProductRecyclerFragmentCallback
 import com.application.callbacks.ProductRecycleViewModelCallback
 import com.application.callbacks.SortBottomSheetCallback
 import com.application.databinding.FragmentFilterProductsBinding
-import com.application.helper.Utility
 import com.application.model.ProductListItem
 import com.application.model.ProductSortType
 import com.application.model.ProductType
 import com.application.viewmodels.ProductListViewModel
 
-class FilterProductFragment : Fragment(R.layout.fragment_filter_products), ProductRecyclerFragmentCallback,
+class FilterProductListFragment : Fragment(R.layout.fragment_filter_products), ProductRecyclerFragmentCallback,
     SortBottomSheetCallback {
 
     lateinit var binding: FragmentFilterProductsBinding
@@ -27,7 +24,6 @@ class FilterProductFragment : Fragment(R.layout.fragment_filter_products), Produ
 
     private var isSortTypeUpdate = false
 
-    var userId: Long = -1L
     private val getFilterType: ProductType?
         get() {
             val type = arguments?.getString("filterType", "")
@@ -38,10 +34,6 @@ class FilterProductFragment : Fragment(R.layout.fragment_filter_products), Produ
             }
         }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        userId = Utility.getLoginUserId(context)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,7 +70,7 @@ class FilterProductFragment : Fragment(R.layout.fragment_filter_products), Produ
         toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.sort -> {
-                    val bottomSheet = BottomSheetDialogSort(this)
+                    val bottomSheet = BottomSheetDialogSort()
                     bottomSheet.show(childFragmentManager, "bottomSheet")
                 }
             }
@@ -142,7 +134,6 @@ class FilterProductFragment : Fragment(R.layout.fragment_filter_products), Produ
         }
     }
 
-
     override fun onSortTypeSelected(sortType: ProductSortType) {
         if (productListViewModel.currentSortType.value != sortType) {
             isSortTypeUpdate = false
@@ -151,7 +142,6 @@ class FilterProductFragment : Fragment(R.layout.fragment_filter_products), Produ
     }
 
     override fun isListEmpty(isEmpty: Boolean) {
-        Log.i("TAG empty",isEmpty.toString())
         if(isEmpty){
             binding.noData.noDataLayout.visibility = View.VISIBLE
         }else{
@@ -161,10 +151,12 @@ class FilterProductFragment : Fragment(R.layout.fragment_filter_products), Produ
 
 
     companion object {
-        fun getInstant(type: ProductType): FilterProductFragment {
-            return FilterProductFragment().apply {
-                arguments = Bundle().apply {
-                    putString("filterType", type.toString())
+        fun getInstant(type: ProductType?): FilterProductListFragment {
+            return FilterProductListFragment().apply {
+                if(type != null) {
+                    arguments = Bundle().apply {
+                        putString("filterType", ProductType.productTypeToString(type))
+                    }
                 }
             }
         }

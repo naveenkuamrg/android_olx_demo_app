@@ -1,5 +1,7 @@
 package com.application.adapter
 
+import android.Manifest
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -57,10 +59,9 @@ class ProfileSummaryAdapter(
             holder.profileBackGround.setBackgroundColor(R.color.md_theme_surfaceContainer)
         }
         holder.phoneBtn.setOnClickListener {
-
             if (ContextCompat.checkSelfPermission(
                     context,
-                    android.Manifest.permission.CALL_PHONE
+                    Manifest.permission.CALL_PHONE
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
                 onItemClickListener(data[position].id)
@@ -68,6 +69,15 @@ class ProfileSummaryAdapter(
                 intent.data = Uri.parse("tel:" + data[position].phoneNumber)
                 context.startActivities(arrayOf(intent))
                 holder.profileBackGround.setBackgroundColor(R.color.md_theme_surfaceContainer)
+            } else {
+                AlertDialog.Builder(context).apply {
+                    setMessage(
+                        "Please enable call permissions to make  calls.Tap Setting>" +
+                                "Permission>Phone>Allow"
+                    )
+                    setPositiveButton("ok", null)
+                    show()
+                }
             }
 
         }

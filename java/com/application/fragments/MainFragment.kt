@@ -39,6 +39,7 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
         setOnItemSelectListener()
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                Log.i("TAG onBackPressCallback","1")
                 val bottomNavigation = binding.navigationBar
                 if (childFragmentManager.backStackEntryCount > 1) {
                     childFragmentManager.popBackStackImmediate()
@@ -165,12 +166,13 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
             commit()
         }
     }
-    override fun onShowProductDetailsPage(productId: Long) {
+    override fun onShowProductDetailsPage(productId: Long,isCurrentUser:Boolean) {
         parentFragmentManager.beginTransaction().apply {
             addToBackStack("showProductDetailFragment")
             replace(R.id.main_view_container, ProductDetailsFragment().apply {
                 arguments = Bundle().apply {
                     putLong("currentProductId", productId)
+                    putBoolean("isCurrentUserProduct", isCurrentUser)
                 }
             })
             commit()

@@ -6,6 +6,8 @@
 
         <import type="com.application.helper.Utility" />
 
+        <import type="com.application.model.ProductType"/>
+
         <import type="android.view.View" />
 
         <variable
@@ -130,7 +132,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@{viewModel.product.productType.toString()}" />
+                        android:text="@{ProductType.productTypeToString(viewModel.product.productType)}" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -199,10 +201,16 @@
                     android:text="Interested Profile"
                     android:textColor="@color/md_theme_primary"
                     app:layout_constraintTop_toTopOf="parent" />
-                <include android:id="@+id/no_data"
+
+                <include
+                    android:id="@+id/no_data"
                     layout="@layout/no_data"
-                    android:layout_height="170dp"
-                    android:layout_width="match_parent"/>
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/profile_recycler_view"

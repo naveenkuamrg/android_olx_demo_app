@@ -17,6 +17,7 @@ data class Product(
     var isInterested: Boolean? = null,
     var isWishList : Boolean? = null
 ){
+
     @Ignore
     lateinit var images: List<Bitmap>
 }

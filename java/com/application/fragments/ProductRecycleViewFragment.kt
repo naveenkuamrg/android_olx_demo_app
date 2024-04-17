@@ -59,14 +59,11 @@ class ProductRecycleViewFragment : Fragment(R.layout.fragment_product_recycle_vi
 
     private fun setAdapter() {
          adapter = ProductSummaryAdapter {
-             Log.i("TAG","onClickLisner")
             callback.onProductSummaryClick(it.id)
         }
 
         if (arguments?.getBoolean("isFilterEnable") == true) {
-            Log.i("TAG","check is Filtere")
             adapter.onFilterClickListener = {
-                Log.i("TAG","check")
                 (callback as ProductRecyclerFragmentWithFilterCallback).onFilterItemClick(it)
             }
         }

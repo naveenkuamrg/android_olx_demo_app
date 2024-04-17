@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -58,15 +59,30 @@ class NotificationAdapter(val onItemClickListener: (Long, NotificationType) -> U
         val value = asyncListDiffer.currentList[position]
         holder.contentTextView.text = value.content
         holder.timeStamp.text =
-            Utility.millisecondsToString(value.timestamp)
-        if(value.image == null){
-            if(value.type == NotificationType.PROFILE){
+            Utility.setCreatedTime(value.timestamp)
+        if (value.image == null) {
+            if (value.type == NotificationType.PROFILE) {
                 holder.image.setImageResource(R.drawable.ic_profile_outline)
-            }else{
+            } else {
                 holder.image.setImageResource(R.drawable.ic_delete_forevere)
             }
-        }else{
+        } else {
             holder.image.setImageBitmap(value.image)
+        }
+        if (value.isRead) {
+            holder.itemView.setBackgroundColor(
+                ContextCompat.getColor(
+                    holder.itemView.context,
+                    R.color.md_theme_onSecondaryContainer_highContrast
+                )
+            )
+        } else {
+            holder.itemView.setBackgroundColor(
+                ContextCompat.getColor(
+                    holder.itemView.context,
+                    R.color.md_theme_primaryContainer
+                )
+            )
         }
         holder.itemView.setOnClickListener {
             onItemClickListener(

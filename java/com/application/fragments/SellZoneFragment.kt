@@ -52,8 +52,8 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), ProductRecyclerF
         }
     }
 
-    override fun onProductSummaryClick(position: Long) {
-        callBack.onShowProductDetailsPage(position)
+    override fun onProductSummaryClick(productId: Long) {
+        callBack.onShowProductDetailsPage(productId,true)
     }
 
     override fun isListEmpty(isEmpty: Boolean) {
@@ -66,7 +66,6 @@ class SellZoneFragment : Fragment(R.layout.fragment_sell_zone), ProductRecyclerF
 
     private fun setObserve() {
         productListViewModel.sellProductList.observe(viewLifecycleOwner) {
-            Log.i("PagingData",it.toString())
             val fragment = childFragmentManager.findFragmentByTag("recyclerView")
             if (fragment is ProductRecycleViewFragment) {
                 fragment.onSetData(it)

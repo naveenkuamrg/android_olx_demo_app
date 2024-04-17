@@ -1,9 +1,13 @@
 package com.application.fragments
 
+import android.content.res.Configuration
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import com.application.R
 import androidx.fragment.app.activityViewModels
@@ -11,6 +15,7 @@ import androidx.fragment.app.viewModels
 import com.application.databinding.FragmentSignupBinding
 import com.application.helper.Validator
 import com.application.viewmodels.SignupViewModel
+import java.io.InputStream
 
 class SignupFragment : Fragment(R.layout.fragment_signup) {
     private lateinit var binding: FragmentSignupBinding
@@ -20,7 +25,7 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentSignupBinding.bind(view)
         addObserver()
-        binding.reenterPassword.addTextChangedListener { text ->
+        binding.reenterPassword.doAfterTextChanged { text ->
             if (text.toString() != binding.passwordEdittext.text.toString()) {
                 binding.reenterPasswordLayout.error = "password dose not match"
             } else {
@@ -46,6 +51,19 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
 
         }
 
+        binding.Signin.setOnClickListener{
+            parentFragmentManager.popBackStack()
+        }
+
+        val nightModeFlags = requireContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val isNightMode = nightModeFlags == Configuration.UI_MODE_NIGHT_YES
+        val imageStream: InputStream = if(!isNightMode){
+            this.resources.openRawResource(R.raw.sell_zone)
+        }else{
+            this.resources.openRawResource(R.raw.sell_zone_night)
+        }
+        val bitmap = BitmapFactory.decodeStream(imageStream)
+        binding.logoImageView.setImageBitmap(bitmap)
 
     }
 

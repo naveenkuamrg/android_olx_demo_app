@@ -68,7 +68,7 @@ class ProductSummaryAdapter(private val onItemClickListener: (ProductItem) -> Un
                     onFilterClickListener(ProductType.MOBILES)
                 }
                 holder.electronic.setOnClickListener {
-                    onFilterClickListener(ProductType.ELECTRONICS_AND_APPLIANCES)
+                    onFilterClickListener(ProductType.APPLIANCES)
                 }
                 holder.furniture.setOnClickListener {
                     onFilterClickListener(ProductType.FURNITURE)
@@ -77,7 +77,7 @@ class ProductSummaryAdapter(private val onItemClickListener: (ProductItem) -> Un
                     onFilterClickListener(ProductType.FASHION)
                 }
                 holder.books.setOnClickListener {
-                    onFilterClickListener(ProductType.BOOKS_SPORTS_AND_HOBBIES)
+                    onFilterClickListener(ProductType.BOOKS)
                 }
                 holder.sport.setOnClickListener {
                     onFilterClickListener(ProductType.SPORTS)
@@ -88,9 +88,7 @@ class ProductSummaryAdapter(private val onItemClickListener: (ProductItem) -> Un
                 holder.title.text = item.title
                 holder.price.text = Utility.convertToINR(item.price.toDouble())
                 holder.imageView.setImageBitmap(item.image)
-                Log.i("TAG","ProductSummaryViewHolder")
                 holder.itemView.setOnClickListener {
-                    Log.i("TAG","ProductSummaryViewHolder")
                     onItemClickListener(item)
                 }
             }

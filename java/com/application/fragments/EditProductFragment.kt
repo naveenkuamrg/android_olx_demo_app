@@ -3,18 +3,19 @@ package com.application.fragments
 import android.app.AlertDialog
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.os.SystemClock
 import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
 import androidx.viewpager2.widget.ViewPager2
 import com.application.R
 import com.application.adapter.ImageViewAdapter
@@ -26,12 +27,9 @@ import com.application.helper.Utility
 import com.application.model.ProductType
 import com.application.viewmodels.EditProductViewModel
 import com.application.viewmodels.ProductViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 
 class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapterListener,
     PhotoPickerBottomSheet {
-    var isScreenRotated = false
 
     val adapter = ImageViewAdapter(mutableListOf()).apply {
         callBack = this@EditProductFragment
@@ -52,9 +50,6 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState != null) {
-            isScreenRotated = true
-        }
         if (productId == -1L) {
             productViewModel.clearProduct()
         }
@@ -78,11 +73,66 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         if (savedInstanceState == null) {
             setObserveForUI()
         }
+
         setUpToolbar()
         setCategoriesButton()
         setOnClickListenerForAddImageButton()
         setOnClickListenerForPostBtn()
         setObserve()
+        setUpOnBackPress()
+        setTextChangedListener()
+    }
+
+    private fun setUpOnBackPress() {
+        val onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                onBackPress()
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            onBackPressedCallback
+        )
+    }
+
+    private fun onBackPress(){
+        if (editProductViewModel.isDataUpdate) {
+            AlertDialog.Builder(context).apply {
+                setMessage("If you go back, any changes you made will be lost")
+                setPositiveButton("OK") { _, _ ->
+                    editProductViewModel.isDataUpdate = false
+                    parentFragmentManager.popBackStack()
+                }
+                setNegativeButton("NO", null)
+                show()
+            }
+        } else {
+            parentFragmentManager.popBackStack()
+        }
+    }
+    private fun setTextChangedListener() {
+        val product = productViewModel.product.value
+        updateIsDataUpdate(binding.titleEditText, product?.title)
+        updateIsDataUpdate(binding.descriptionEditText, product?.description)
+        if(product?.productType != null) {
+            updateIsDataUpdate(
+                binding.descriptionEditText,
+                ProductType.productTypeToString(product.productType)
+            )
+        }
+        updateIsDataUpdate(binding.locationEditText, product?.location)
+        updateIsDataUpdate(binding.priceEditText, product?.price.toString())
+    }
+
+    private fun updateIsDataUpdate(editText: EditText, previousData: String?) {
+        editText.addTextChangedListener {
+            if (it.toString() == previousData) {
+                editProductViewModel.isDataUpdate = false
+                return@addTextChangedListener
+            }
+            editProductViewModel.isDataUpdate = true
+        }
     }
 
     private fun setObserveForUI() {
@@ -93,7 +143,7 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
                 binding.priceEditText.text =
                     StringConverter.toEditable(Utility.convertToString(it.price))
                 binding.categoriesDropdown.text =
-                    StringConverter.toEditable(it.productType.toString())
+                    StringConverter.toEditable(ProductType.productTypeToString(it.productType))
                 binding.locationEditText.text = StringConverter.toEditable(it.location)
             }
         }
@@ -103,16 +153,7 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         val toolbar = binding.toolbar
         toolbar.setNavigationIcon(R.drawable.ic_back)
         toolbar.setNavigationOnClickListener {
-            androidx.appcompat.app.AlertDialog.Builder(requireContext()).apply {
-                setMessage(
-                    "If you go back, you'll lose all the data you've entered in the form."
-                )
-                setPositiveButton("OK") { _, _ ->
-                    parentFragmentManager.popBackStack()
-                }
-                setNegativeButton("NO") { _, _ -> }
-                show()
-            }
+            onBackPress()
         }
     }
 
@@ -136,11 +177,11 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
                 )
                 slideDot.addView(img, params)
             }
-            if(dotsImage.isNotEmpty()){
-                if(binding.viewPager.currentItem < dotsImage.size) {
+            if (dotsImage.isNotEmpty()) {
+                if (binding.viewPager.currentItem < dotsImage.size) {
                     dotsImage[binding.viewPager.currentItem].setImageResource(R.drawable.active_dot)
-                }else{
-                    dotsImage[binding.viewPager.currentItem-1].setImageResource(R.drawable.active_dot)
+                } else {
+                    dotsImage[binding.viewPager.currentItem - 1].setImageResource(R.drawable.active_dot)
                 }
             }
             pageChangeListener = object : ViewPager2.OnPageChangeCallback() {
@@ -166,14 +207,17 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
     private fun setCategoriesButton() {
         binding.categoriesDropdown.setAdapter(
             ArrayAdapter(
-                requireContext(), R.layout.textview, R.id.text, ProductType.values().map { it.name }
+                requireContext(),
+                R.layout.textview,
+                R.id.text,
+                ProductType.entries.map { ProductType.productTypeToString(it) }
             )
         )
     }
 
     private fun setOnClickListenerForAddImageButton() {
         binding.addImageButton.setOnClickListener {
-            if(childFragmentManager.findFragmentByTag("bottomSheet") == null) {
+            if (childFragmentManager.findFragmentByTag("bottomSheet") == null) {
                 val bottomSheet = BottomSheetDialogPhotoPicker()
                 bottomSheet.show(childFragmentManager, "bottomSheet")
             }
@@ -278,18 +322,23 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         binding.viewPager.adapter = adapter
 
         editProductViewModel.images.observe(viewLifecycleOwner) { images ->
+            if (productViewModel.product.value?.images?.size != images?.size) {
+                editProductViewModel.isDataUpdate = true
+                Log.i("TAg new", "${productViewModel.product.value?.images?.size}")
+                if (productViewModel.product.value?.images?.size == null && images?.size == 0) {
+                    editProductViewModel.isDataUpdate = false
+                }
+            }
             val _images = mutableListOf<Bitmap>()
-            images.forEach {
-                _images.add(it.copy(it.config,true))
+            images?.forEach {
+                _images.add(it.copy(it.config, true))
             }
             adapter.data = _images
-            adapter.notifyDataSetChanged()
-            setUpIndicatorForViewPager(images.size)
-            binding.viewPager.visibility = if (images.isNotEmpty()) View.VISIBLE else View.GONE
-            binding.addImageButton.visibility = if (images.size >= 5) View.GONE else View.VISIBLE
+            setUpIndicatorForViewPager(_images.size)
+            binding.viewPager.visibility = if (_images.isNotEmpty()) View.VISIBLE else View.GONE
+            binding.addImageButton.visibility = if (_images.size >= 5) View.GONE else View.VISIBLE
         }
     }
-
 
 
     override fun onRemoveButtonClick(position: Int) {
@@ -303,11 +352,6 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
 
     override fun addBitmap(bitmap: Bitmap) {
         editProductViewModel.updateImage(bitmap)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
     }
 
 

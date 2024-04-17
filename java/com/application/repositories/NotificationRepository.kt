@@ -6,4 +6,6 @@ interface NotificationRepository {
     suspend fun  getNotification(userId: Long): List<Notification>
 
     suspend fun updateNotificationIsReadStatus(userId: Long)
+
+    suspend fun isUnreadNotification(): Boolean
 }
