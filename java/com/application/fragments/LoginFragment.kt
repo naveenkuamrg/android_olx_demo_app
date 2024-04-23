@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.application.R
@@ -23,26 +24,8 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentLoginBinding.bind(view)
+
         addObserve()
-        binding.Signup.setOnClickListener {
-            val fragmentTransaction = parentFragmentManager.beginTransaction()
-            fragmentTransaction.replace(R.id.main_view_container, SignupFragment())
-            fragmentTransaction.addToBackStack("addSignupPage")
-            fragmentTransaction.commit()
-        }
-
-        binding.Signin.setOnClickListener {
-            val email = binding.emailEdittext.text.toString().trim()
-            val password = binding.passwordEdittext.text.toString()
-
-            if (email == "") {
-                binding.emailEdittextLayout.error = "Email not should be empty"
-                return@setOnClickListener
-            } else {
-                binding.emailEdittextLayout.error = null
-            }
-            viewModel.signIn(email, password)
-        }
 
         val nightModeFlags = requireContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         val isNightMode = nightModeFlags == Configuration.UI_MODE_NIGHT_YES
@@ -54,8 +37,37 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         }
         val bitmap = BitmapFactory.decodeStream(imageStream)
         binding.logoImageView.setImageBitmap(bitmap)
+        setOnClickListener()
+
+
     }
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if(savedInstanceState == null){
+            binding.emailEdittextLayout.error = null
+            binding.passwordEdittextLayout.error = null
+        }
+    }
+    private fun setOnClickListener(){
+        binding.Signin.setOnClickListener {
+            val email = binding.emailEdittext.text.toString().trim()
+            val password = binding.passwordEdittext.text.toString()
+            if (email == "") {
+                binding.emailEdittextLayout.error = "Email not should be empty"
+                return@setOnClickListener
+            } else {
+                binding.emailEdittextLayout.error = null
+            }
+            viewModel.signIn(email, password)
+        }
+        binding.Signup.setOnClickListener {
+            val fragmentTransaction = parentFragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.main_view_container, SignupFragment())
+            fragmentTransaction.addToBackStack("addSignupPage")
+            fragmentTransaction.commit()
+        }
+    }
 
     private fun addObserve() {
         viewModel.user.observe(
@@ -90,11 +102,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
             }
         }
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-
     }
 
 

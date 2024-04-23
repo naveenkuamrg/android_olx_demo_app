@@ -2,14 +2,20 @@ package com.application.repositories.impl
 
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.PagingSource
+import androidx.paging.TerminalSeparatorType
+import androidx.paging.insertHeaderItem
+import androidx.paging.insertSeparators
 import androidx.paging.map
 import com.application.AppDatabase
 import com.application.dao.NotificationDao
 import com.application.dao.ProductDao
 import com.application.dao.ProfileDao
+import com.application.entity.ProductDetails
 import com.application.exceptions.ProductDataException
 import com.application.helper.ModelConverter
 import com.application.helper.NotificationContentBuilder
@@ -25,13 +31,16 @@ import com.application.model.SearchProductResultItem
 import com.application.repositories.ProductImageRepository
 import com.application.repositories.ProductRepository
 import com.application.repositories.ProfileImageRepository
+import com.bumptech.glide.disklrucache.DiskLruCache.Value
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class ProductRepositoryImpl(val context: Context) : ProductRepository {
 
-    val productPaddingConfig = PagingConfig(
+    private val productPaddingConfig = PagingConfig(
         8,
         2,
         enablePlaceholders = false
@@ -63,12 +72,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
             )
         ) {
             productDao.getPostProductSummary(Utility.getLoginUserId(context))
-        }.flow.map { pagingData ->
-            pagingData.map {
-                setImg(it)
-                it
-            }
-        }
+        }.getFlowPagingData()
     }
 
 
@@ -82,12 +86,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
                 ),
                 type
             )
-        }.flow.map { pagingData ->
-            pagingData.map {
-                setImg(it)
-                it
-            }
-        }
+        }.getFlowPagingData()
     }
 
 
@@ -101,12 +100,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
                     context
                 )
             )
-        }.flow.map { pagingData ->
-            pagingData.map {
-                setImg(it)
-                it
-            }
-        }
+        }.getFlowPagingData()
     }
 
     override fun getProductSummaryDetailsForBuyZonePostedDateDESC(type: ProductType): Flow<PagingData<ProductListItem>> {
@@ -119,12 +113,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
                 ),
                 type
             )
-        }.flow.map { pagingData ->
-            pagingData.map {
-                setImg(it)
-                it
-            }
-        }
+        }.getFlowPagingData()
     }
 
     override fun getProductSummaryDetailsForBuyZonePostedDateDESC():
@@ -137,14 +126,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
                     context
                 )
             )
-        }.flow.map { pagingData ->
-            pagingData.map {
-                setImg(it)
-                Log.i("naveen", it.toString())
-                it
-
-            }
-        }
+        }.getFlowPagingData()
     }
 
     override fun getProductSummaryDetailsForBuyZonePriceDESC(type: ProductType): Flow<PagingData<ProductListItem>> {
@@ -157,12 +139,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
                 ),
                 type
             )
-        }.flow.map { pagingData ->
-            pagingData.map {
-                setImg(it)
-                it
-            }
-        }
+        }.getFlowPagingData()
     }
 
     override fun getProductSummaryDetailsForBuyZonePriceDESC(): Flow<PagingData<ProductListItem>> {
@@ -170,12 +147,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
             productPaddingConfig
         ) {
             productDao.getBuyProductSummaryOrderByPriceDESC(Utility.getLoginUserId(context))
-        }.flow.map { pagingData ->
-            pagingData.map {
-                setImg(it)
-                it
-            }
-        }
+        }.getFlowPagingData()
     }
 
     override fun getProductSummaryDetailsForBuyZonePriceASC(type: ProductType): Flow<PagingData<ProductListItem>> {
@@ -188,12 +160,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
                 ),
                 type
             )
-        }.flow.map { pagingData ->
-            pagingData.map {
-                setImg(it)
-                it
-            }
-        }
+        }.getFlowPagingData()
     }
 
     override fun getProductSummaryDetailsForBuyZonePriceASC(): Flow<PagingData<ProductListItem>> {
@@ -201,18 +168,14 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
             productPaddingConfig
         ) {
             productDao.getBuyProductSummaryOrderByPriceASC(Utility.getLoginUserId(context))
-        }.flow.map { pagingData ->
-            pagingData.map {
-                setImg(it)
-                it
-            }
-        }
+        }.getFlowPagingData()
     }
 
-    override suspend fun getProductDetailsUsingProductId(productId: Long, userId: Long): Product {
-        return productDao.getProductUsingProductId(productId, userId).apply {
-            images = productImageRepository.getAllImageFromFile(productId.toString())
-        }
+    override suspend fun getProductDetailsUsingProductId(productId: Long): Product {
+        return productDao.getProductUsingProductId(productId, Utility.getLoginUserId(context))
+            .apply {
+                images = productImageRepository.getAllImageFromFile(productId.toString())
+            }
     }
 
     override suspend fun getProductDetailsUsingNotificationId(
@@ -254,7 +217,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
                             NotificationType.PRODUCT,
                             Utility.getLoginUserName(context),
                             product.title
-                        ),Utility.getLoginUserId(context)
+                        ), Utility.getLoginUserId(context)
                     )
                 )
             }
@@ -275,7 +238,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
                     Utility.getLoginUserName(context),
                     product.title,
                     isInterested
-                ),Utility.getLoginUserId(context)
+                ), Utility.getLoginUserId(context)
             )
         )
         return if (isInterested) {
@@ -286,14 +249,14 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
     }
 
     override suspend fun getInterestedProfile(productId: Long): List<ProfileSummary> {
-     return   ModelConverter.productsWithInterestedProfileSummary(
+        return ModelConverter.productsWithInterestedProfileSummary(
             profileDao.getInterestedProfile(productId)
         ).apply {
-         forEach { productSummary ->
-             productSummary.profileImage =
-                 profileImageRepository.getProfileImage(productSummary.id.toString())
-         }
-     }
+            forEach { productSummary ->
+                productSummary.profileImage =
+                    profileImageRepository.getProfileImage(productSummary.id.toString())
+            }
+        }
 
     }
 
@@ -314,40 +277,24 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
 
     override fun getFavouriteProductList(): Flow<PagingData<ProductListItem>> {
         return Pager(
-            PagingConfig(
-                10,
-                8,
-                enablePlaceholders = false
-            )
+            productPaddingConfig
         ) {
             productDao.getFavouriteProductSummary(Utility.getLoginUserId(context))
-        }.flow.map { pagingData ->
-            pagingData.map {
-                setImg(it)
-                it
-            }
-        }
+        }.getFlowPagingData()
     }
 
+
     override fun getInterestedProductList(): Flow<PagingData<ProductListItem>> {
+
         return Pager(
-            PagingConfig(
-                10,
-                8,
-                enablePlaceholders = false
-            )
+            productPaddingConfig
         ) {
             productDao.getInterestedProductSummary(Utility.getLoginUserId(context))
-        }.flow.map { pagingData ->
-            pagingData.map {
-                setImg(it)
-                it
-            }
-        }
+        }.getFlowPagingData()
     }
 
     override suspend fun updateIsContent(userId: Long, productId: Long) {
-        productDao.updateIsContent(userId, productId )
+        productDao.updateIsContent(userId, productId)
     }
 
 
@@ -356,4 +303,15 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
             product.id.toString()
         )
     }
+
+    private fun <Key : Any> Pager<Key, ProductItem>.getFlowPagingData(): Flow<PagingData<ProductListItem>> {
+        return this.flow.map { pagingData ->
+            pagingData.map {
+                setImg(it)
+                it
+            }
+        }
+    }
+
+
 }

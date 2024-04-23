@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:hint="Email"
                 android:imeOptions="actionNext"
-                android:inputType="text"
+                android:inputType="textEmailAddress"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -67,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:hint="PhoneNumber"
                 android:imeOptions="actionNext"
-                android:inputType="text"
+                android:inputType="phone"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -116,19 +116,17 @@
             android:layout_height="wrap_content"
             android:gravity="center">
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/registerButton"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
-                android:text="Register" />
-
-            <com.google.android.material.button.MaterialButton
                 android:id="@+id/Signin"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="10dp"
                 android:text="Signin" />
-
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/registerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:text="Register" />
 
 
         </LinearLayout>

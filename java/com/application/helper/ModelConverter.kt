@@ -7,6 +7,7 @@ import com.application.entity.WishList
 import com.application.entity.relations.ProductsWithInterestedProfile
 import com.application.model.NotificationType
 import com.application.model.Product
+import com.application.model.ProductListItem
 import com.application.model.Profile
 import com.application.model.ProfileSummary
 import java.util.Date
@@ -106,6 +107,16 @@ object ModelConverter {
         }
 
         return listProfileSummary
+    }
+
+    fun productDetailsToProductSummary(productDetails: ProductDetails): ProductListItem{
+        return ProductListItem.ProductItem(
+            productDetails.id,
+            productDetails.title,
+            productDetails.postedDate,
+            productDetails.location,
+            productDetails.price
+        )
     }
 }
 

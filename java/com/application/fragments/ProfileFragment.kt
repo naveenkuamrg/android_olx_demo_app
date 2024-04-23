@@ -11,7 +11,7 @@ import com.application.callbacks.ProfileFragmentCallback
 import com.application.databinding.FragmentProfileBinding
 import com.application.viewmodels.ProfilePageViewModel
 
-class ProfileFragment() : Fragment(R.layout.fragment_profile) {
+class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     lateinit var binding: FragmentProfileBinding
 

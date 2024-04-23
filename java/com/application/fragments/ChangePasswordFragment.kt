@@ -24,6 +24,7 @@ class ChangePasswordFragment : Fragment(R.layout.fragment_change_password) {
         setOnClickListenerForButton()
         setObserve()
 
+
         binding.reNewPasswordEditText.addTextChangedListener {
             if (it.toString() != binding.newPasswordEditText.text.toString()) {
                 binding.reNewPasswordEditTextlayout.error = "not match"

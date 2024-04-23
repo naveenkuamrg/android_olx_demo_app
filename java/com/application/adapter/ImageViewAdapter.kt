@@ -39,7 +39,7 @@ class ImageViewAdapter(var data: MutableList<Bitmap>) :
         holder.image.setImageBitmap(data[position])
         if(callBack != null){
             holder.deleteImageView.setOnClickListener {
-                callBack?.onRemoveButtonClick(position)
+                callBack?.onRemoveButtonClick(data[position])
             }
         }else{
             holder.deleteImageView.visibility = View.GONE

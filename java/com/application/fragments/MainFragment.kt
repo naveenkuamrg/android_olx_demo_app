@@ -1,5 +1,6 @@
 package com.application.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -7,6 +8,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.R
@@ -27,19 +29,24 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
     private val searchProductViewModel: SearchProductViewModel by viewModels {
         SearchProductViewModel.FACTORY
     }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
             addHomeFragment()
         }
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentMainBinding.bind(view)
         setOnItemSelectListener()
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                Log.i("TAG onBackPressCallback","1")
+                Log.i("TAG onBackPressCallback", "1")
                 val bottomNavigation = binding.navigationBar
                 if (childFragmentManager.backStackEntryCount > 1) {
                     childFragmentManager.popBackStackImmediate()
@@ -48,17 +55,17 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
                             bottomNavigation.selectedItemId = R.id.profile
                         }
 
-                        is SellZoneFragment -> {
+                        is SellProductListFragment -> {
                             bottomNavigation.selectedItemId = R.id.sell_zone
                         }
 
-                        is HomeFragment -> {
+                        is BuyProductListFragment -> {
                             bottomNavigation.selectedItemId = R.id.home
                         }
                     }
                 } else {
                     if (binding.searchView.isShowing) {
-                         binding.searchView.hide()
+                        binding.searchView.hide()
                     } else {
                         requireActivity().finish()
                     }
@@ -76,17 +83,17 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
 
             when (it.itemId) {
                 R.id.home -> {
-                    if (childFragmentManager.fragments[0] is HomeFragment) {
+                    if (childFragmentManager.fragments[0] is BuyProductListFragment) {
                         return@setOnItemSelectedListener true
                     }
-                    childFragmentManager.popBackStackImmediate(
+                    childFragmentManager.popBackStack(
                         "home",
-                       0
+                        0
                     )
                 }
 
                 R.id.sell_zone -> {
-                    if (childFragmentManager.fragments[0] is SellZoneFragment) {
+                    if (childFragmentManager.fragments[0] is SellProductListFragment) {
                         return@setOnItemSelectedListener true
                     }
 
@@ -95,8 +102,16 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
                         FragmentManager.POP_BACK_STACK_INCLUSIVE
                     )
                     childFragmentManager.beginTransaction().apply {
-                        replace(R.id.bottom_navigation_fragment_view_container, SellZoneFragment())
-
+//                        setCustomAnimations(
+//                            R.anim.fade_in,
+//                            R.anim.fade_out,
+//                            R.anim.fade_in,
+//                            R.anim.fade_out
+//                        )
+                        replace(
+                            R.id.bottom_navigation_fragment_view_container,
+                            SellProductListFragment()
+                        )
                         addToBackStack("sellZone")
                         commit()
                     }
@@ -106,11 +121,17 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
                     if (childFragmentManager.fragments[0] is ProfileFragment) {
                         return@setOnItemSelectedListener true
                     }
-                    childFragmentManager.popBackStack(
+                    childFragmentManager.popBackStackImmediate(
                         "profile",
                         FragmentManager.POP_BACK_STACK_INCLUSIVE
                     )
                     val transaction = childFragmentManager.beginTransaction()
+//                    transaction.setCustomAnimations(
+//                        R.anim.fade_in,
+//                        R.anim.fade_out,
+//                        R.anim.fade_in,
+//                        R.anim.fade_out
+//                    )
                     transaction.replace(
                         R.id.bottom_navigation_fragment_view_container,
                         ProfileFragment()
@@ -124,28 +145,53 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
             return@setOnItemSelectedListener true
         }
     }
+
     private fun addHomeFragment() {
         val transaction = childFragmentManager.beginTransaction()
-        transaction.replace(R.id.bottom_navigation_fragment_view_container, HomeFragment())
+        transaction.setCustomAnimations(
+            R.anim.fade_in,
+            R.anim.fade_out,
+            R.anim.fade_in,
+            R.anim.fade_out
+        )
+        transaction.replace(
+            R.id.bottom_navigation_fragment_view_container,
+            BuyProductListFragment()
+        )
         transaction.addToBackStack("home")
         transaction.commit()
     }
+
     override fun onShowEditPage() {
         parentFragmentManager.beginTransaction().apply {
+            setCustomAnimations(
+                R.anim.slide_in,
+                R.anim.slide_out,
+                R.anim.slide_in_pop,
+                R.anim.slide_out_pop
+            )
             addToBackStack("editProfileFragment")
             replace(R.id.main_view_container, EditProfileFragment())
             commit()
         }
     }
+
     override fun onShowLoginPage() {
         parentFragmentManager.beginTransaction().apply {
             replace(R.id.main_view_container, LoginFragment())
             commit()
         }
     }
+
     override fun onShowChangePasswordPage() {
         parentFragmentManager.beginTransaction().apply {
             addToBackStack("changePasswordFragment")
+            setCustomAnimations(
+                R.anim.slide_in,
+                R.anim.slide_out,
+                R.anim.slide_in_pop,
+                R.anim.slide_out_pop
+            )
             replace(R.id.main_view_container, ChangePasswordFragment())
             commit()
         }
@@ -153,8 +199,14 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
 
     override fun onShowActivityPage() {
         parentFragmentManager.beginTransaction().apply {
+            setCustomAnimations(
+                R.anim.slide_in,
+                R.anim.slide_out,
+                R.anim.slide_in_pop,
+                R.anim.slide_out_pop
+            )
             addToBackStack("showActivityFragment")
-            replace(R.id.main_view_container,ActivityPageFragment())
+            replace(R.id.main_view_container, ActivityPageFragment())
             commit()
         }
     }
@@ -166,13 +218,19 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
             commit()
         }
     }
-    override fun onShowProductDetailsPage(productId: Long,isCurrentUser:Boolean) {
+
+    override fun onShowProductDetailsPage(productId: Long) {
         parentFragmentManager.beginTransaction().apply {
             addToBackStack("showProductDetailFragment")
+            setCustomAnimations(
+                R.anim.slide_in,
+                R.anim.slide_out,
+                R.anim.slide_in_pop,
+                R.anim.slide_out_pop
+            )
             replace(R.id.main_view_container, ProductDetailsFragment().apply {
                 arguments = Bundle().apply {
                     putLong("currentProductId", productId)
-                    putBoolean("isCurrentUserProduct", isCurrentUser)
                 }
             })
             commit()
@@ -180,11 +238,10 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
     }
 
 
-
     private fun setObserve() {
         searchProductViewModel.searchResult.observe(viewLifecycleOwner) {
-          val adapter =  binding.searchResult.adapter
-            if(adapter is SearchAdapter) {
+            val adapter = binding.searchResult.adapter
+            if (adapter is SearchAdapter) {
                 adapter.submitData(it)
             }
         }
@@ -195,16 +252,21 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
         searchView.setupWithSearchBar(searchBar)
         searchView.editText.addTextChangedListener {
             val searchTerm = it.toString().trim().lowercase(Locale.ROOT)
-            searchProductViewModel.search(searchTerm,Utility.getLoginUserId(requireContext()))
+            searchProductViewModel.search(searchTerm, Utility.getLoginUserId(requireContext()))
         }
         val searchRecyclerView = binding.searchResult
-        searchRecyclerView.adapter = SearchAdapter{
+        searchRecyclerView.adapter = SearchAdapter {
             parentFragmentManager.beginTransaction().apply {
                 addToBackStack("showProductDetailFragment")
+                setCustomAnimations(
+                    R.anim.slide_in,
+                    R.anim.slide_out,
+                    R.anim.slide_in_pop,
+                    R.anim.slide_out_pop
+                )
                 replace(R.id.main_view_container, ProductDetailsFragment().apply {
                     arguments = Bundle().apply {
                         putLong("currentProductId", it)
-                        putBoolean("isCurrentUserProduct",false)
                     }
                 })
                 commit()
@@ -213,6 +275,24 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
         searchRecyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 
+    fun FragmentManager.commitWithSlideAnimation(
+        addToBackStack: String?,
+        fragment: Fragment,
+        containerViewId: Int
+    ) {
+        commit {
+            if(addToBackStack == null) {
+                addToBackStack(addToBackStack)
+            }
+            setCustomAnimations(
+                R.anim.slide_in,
+                R.anim.slide_out,
+                R.anim.slide_in_pop,
+                R.anim.slide_out_pop
+            )
+            replace(containerViewId,fragment)
+        }
+    }
 
 
 }

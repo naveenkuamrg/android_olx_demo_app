@@ -3,16 +3,14 @@ package com.application.fragments
 import android.content.res.Configuration
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import com.application.R
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.application.databinding.FragmentSignupBinding
+import com.application.exceptions.InvalidUserDataException
 import com.application.helper.Validator
 import com.application.viewmodels.SignupViewModel
 import java.io.InputStream
@@ -51,15 +49,16 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
 
         }
 
-        binding.Signin.setOnClickListener{
+        binding.Signin.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
 
-        val nightModeFlags = requireContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val nightModeFlags =
+            requireContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         val isNightMode = nightModeFlags == Configuration.UI_MODE_NIGHT_YES
-        val imageStream: InputStream = if(!isNightMode){
+        val imageStream: InputStream = if (!isNightMode) {
             this.resources.openRawResource(R.raw.sell_zone)
-        }else{
+        } else {
             this.resources.openRawResource(R.raw.sell_zone_night)
         }
         val bitmap = BitmapFactory.decodeStream(imageStream)
@@ -116,9 +115,25 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
     }
 
     private fun addObserver() {
-        viewModel.errorMessage.observe(
+        viewModel.exception.observe(
             viewLifecycleOwner
-        ) { value -> binding.emailEditTextLayout.error = value }
+        ) { value ->
+            val emailEditTextLayout = binding.emailEditTextLayout
+            val phoneNumberTextLayout = binding.phoneNumberLayout
+            emailEditTextLayout.error = null
+            phoneNumberTextLayout.error = null
+            when (value) {
+                is InvalidUserDataException.EmailAlreadyExists -> {
+                    emailEditTextLayout.error = value.message
+                }
+
+                is InvalidUserDataException.PhoneNumberAlreadyRegistered -> {
+                    phoneNumberTextLayout.error = value.message
+                }
+            }
+        }
+
+
         viewModel.userId.observe(viewLifecycleOwner) { value ->
             parentFragmentManager.popBackStack()
             val sharedPreferences = requireContext().getSharedPreferences(
@@ -126,7 +141,7 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
                 AppCompatActivity.MODE_PRIVATE
             ).edit()
             sharedPreferences.putString("userId", value.toString())
-            sharedPreferences.putString("userName",binding.name.text.toString())
+            sharedPreferences.putString("userName", binding.name.text.toString())
             sharedPreferences.apply()
             val homeTransaction = parentFragmentManager.beginTransaction()
             homeTransaction.replace(R.id.main_view_container, MainFragment())

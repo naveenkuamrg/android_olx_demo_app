@@ -1,8 +1,11 @@
 package com.application.fragments
 
 import android.app.AlertDialog
+import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -56,32 +59,64 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
 
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentEditProductBinding.bind(view)
 
-        if (savedInstanceState == null) {
+
+
+
+        if (productViewModel.product.value == null) {
+            binding.toolbar.title = "Add product"
+        } else {
             productViewModel.product.value?.let {
-                editProductViewModel.setProduct(it)
+                if (savedInstanceState == null) {
+                    editProductViewModel.setProduct(it)
+                }
                 binding.postBtn.text = "Re-post"
                 binding.toolbar.title = "Edit product"
             }
         }
-        if (productViewModel.product.value == null) {
-            binding.toolbar.title = "Add product"
-        }
         if (savedInstanceState == null) {
             setObserveForUI()
         }
-
+        setObserve()
         setUpToolbar()
         setCategoriesButton()
         setOnClickListenerForAddImageButton()
         setOnClickListenerForPostBtn()
-        setObserve()
+
         setUpOnBackPress()
-        setTextChangedListener()
     }
+
+
+    private fun isDataUpdate(): Boolean {
+        val product = editProductViewModel.product.value
+        return isChanged(product?.title, binding.titleEditText.text.toString()) ||
+                isChanged(product?.description, binding.descriptionEditText.text.toString()) ||
+                isChanged(product?.price, binding.priceEditText.text.toString().toDoubleOrNull()) ||
+                isChanged(
+                    ProductType.productTypeToString(product?.productType),
+                    binding.categoriesDropdown.text.toString()
+                ) ||
+                isChanged(product?.location, binding.locationEditText.text.toString()) ||
+                isChanged(product?.images?.size,editProductViewModel.images.value?.size)
+    }
+
+    private fun <T> isChanged(productVal: T, enteredVal: T): Boolean {
+        Log.i("EditProductFragment","${productVal} val ${enteredVal}")
+        if (productVal == null && enteredVal.toString().isEmpty() || enteredVal == 0) {
+            return false
+        }
+        return productVal != enteredVal
+
+
+    }
+
 
     private fun setUpOnBackPress() {
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
@@ -96,12 +131,13 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         )
     }
 
-    private fun onBackPress(){
-        if (editProductViewModel.isDataUpdate) {
+    private fun onBackPress() {
+
+        Log.i("EditProductFragment", "onBackPress ${editProductViewModel.isDataUpdate}")
+        if (isDataUpdate()) {
             AlertDialog.Builder(context).apply {
                 setMessage("If you go back, any changes you made will be lost")
                 setPositiveButton("OK") { _, _ ->
-                    editProductViewModel.isDataUpdate = false
                     parentFragmentManager.popBackStack()
                 }
                 setNegativeButton("NO", null)
@@ -111,29 +147,8 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
             parentFragmentManager.popBackStack()
         }
     }
-    private fun setTextChangedListener() {
-        val product = productViewModel.product.value
-        updateIsDataUpdate(binding.titleEditText, product?.title)
-        updateIsDataUpdate(binding.descriptionEditText, product?.description)
-        if(product?.productType != null) {
-            updateIsDataUpdate(
-                binding.descriptionEditText,
-                ProductType.productTypeToString(product.productType)
-            )
-        }
-        updateIsDataUpdate(binding.locationEditText, product?.location)
-        updateIsDataUpdate(binding.priceEditText, product?.price.toString())
-    }
 
-    private fun updateIsDataUpdate(editText: EditText, previousData: String?) {
-        editText.addTextChangedListener {
-            if (it.toString() == previousData) {
-                editProductViewModel.isDataUpdate = false
-                return@addTextChangedListener
-            }
-            editProductViewModel.isDataUpdate = true
-        }
-    }
+
 
     private fun setObserveForUI() {
         productViewModel.product.observe(viewLifecycleOwner) {
@@ -235,24 +250,36 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
 
             if (title.isEmpty()) {
                 binding.titleEditTextLayout.error = "Title should not be empty"
+                binding.titleEditTextLayout.requestFocus()
                 isValid = false
             } else {
                 binding.titleEditTextLayout.error = null
             }
             if (description.isEmpty()) {
                 binding.descriptionEditTextLayout.error = "Description should not be empty"
+                binding.descriptionEditText.requestFocus()
                 isValid = false
             } else {
                 binding.descriptionEditTextLayout.error = null
             }
             if (price.isEmpty()) {
                 binding.priceEditTextLayout.error = "Price should not be empty"
+                binding.priceEditTextLayout.requestFocus()
                 isValid = false
             } else {
+                if (price.toDouble() > 100000000) {
+                    binding.priceEditTextLayout.error =
+                        "your price should Less then Rs:10,00,00,000"
+                    binding.priceEditTextLayout.requestFocus()
+                    isValid = false
+                }
                 binding.priceEditTextLayout.error = null
+
             }
+
             if (category.isEmpty()) {
                 binding.categoriesDropdownLayout.error = "Category should not be empty"
+                binding.categoriesDropdownLayout.requestFocus()
 
                 isValid = false
             } else {
@@ -260,12 +287,14 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
             }
             if (ProductType.stringToProductType(category) == null) {
                 binding.categoriesDropdownLayout.error = "Please select the correct category"
+                binding.categoriesDropdownLayout.requestFocus()
                 isValid = false
             } else {
                 binding.categoriesDropdownLayout.error = null
             }
             if (location.isEmpty()) {
                 binding.locationEditTextLayout.error = "Location should not be empty"
+                binding.descriptionEditText.requestFocus()
                 isValid = false
             } else {
                 binding.locationEditTextLayout.error = null
@@ -322,11 +351,15 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         binding.viewPager.adapter = adapter
 
         editProductViewModel.images.observe(viewLifecycleOwner) { images ->
+
             if (productViewModel.product.value?.images?.size != images?.size) {
-                editProductViewModel.isDataUpdate = true
-                Log.i("TAg new", "${productViewModel.product.value?.images?.size}")
-                if (productViewModel.product.value?.images?.size == null && images?.size == 0) {
+
+                if (productViewModel.product.value?.images?.size == null && images?.size == 0
+                    && !editProductViewModel.isDataUpdate
+                ) {
                     editProductViewModel.isDataUpdate = false
+                } else {
+                    editProductViewModel.isDataUpdate = true
                 }
             }
             val _images = mutableListOf<Bitmap>()
@@ -334,6 +367,7 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
                 _images.add(it.copy(it.config, true))
             }
             adapter.data = _images
+            adapter.notifyDataSetChanged()
             setUpIndicatorForViewPager(_images.size)
             binding.viewPager.visibility = if (_images.isNotEmpty()) View.VISIBLE else View.GONE
             binding.addImageButton.visibility = if (_images.size >= 5) View.GONE else View.VISIBLE
@@ -341,8 +375,9 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
     }
 
 
-    override fun onRemoveButtonClick(position: Int) {
-        editProductViewModel.removeImage(position)
+    override fun onRemoveButtonClick(element: Bitmap) {
+        Log.i("EditProductFragment", "position ${adapter.data.indexOf(element)}")
+        editProductViewModel.removeImage(adapter.data.indexOf(element))
     }
 
 

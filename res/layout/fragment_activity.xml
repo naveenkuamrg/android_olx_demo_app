@@ -14,6 +14,7 @@
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
+            app:titleTextColor="@color/md_theme_primary"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="Activity" />

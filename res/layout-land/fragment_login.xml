@@ -41,7 +41,7 @@
                     android:id="@+id/email_edittext"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Enter Email / Mobile No :"
+                    android:hint="Enter Email / Mobile No "
                     android:imeOptions="actionNext"
                     android:inputType="text"
                     android:maxLines="1" />

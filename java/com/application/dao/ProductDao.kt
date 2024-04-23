@@ -21,7 +21,7 @@ interface ProductDao {
     @Upsert
     fun upsertProductDetails(product: ProductDetails): Long
 
-    @Query("select product_id as id ,title,postedDate,location,price,availabilityStatus from product_details where user_id LIKE :userId And availabilityStatus LIKE 'AVAILABLE' order by postedDate DESC  ")
+    @Query("select product_id as id ,title,postedDate,location,price,availabilityStatus from product_details where user_id LIKE :userId  order by  availabilityStatus,postedDate DESC   ")
     fun getPostProductSummary(userId: Long): PagingSource<Int, ProductItem>
 
     @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' ORDER BY postedDate DESC ")

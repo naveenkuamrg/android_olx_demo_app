@@ -18,25 +18,25 @@
         android:id="@+id/posted_date_higher_to_lower"
         android:layout_width="match_parent"
         style="?attr/materialIconButtonStyle"
-        android:text="Posted date higher to lower"
+        android:text="Posted date high to low"
         android:layout_marginEnd="10dp"
         android:layout_height="wrap_content"/>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/posted_date_lower_to_higher"
         android:layout_width="match_parent"
         style="?attr/materialIconButtonStyle"
-        android:text="Posted date lower to higher"
+        android:text="Posted date low to high"
         android:layout_height="wrap_content"/>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/price_lower_to_higher"
         android:layout_width="match_parent"
         style="?attr/materialIconButtonStyle"
-        android:text="Price lower to higher"
+        android:text="Price low to high"
         android:layout_height="wrap_content"/>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/price_date_lower_to_higher"
         android:layout_width="match_parent"
         style="?attr/materialIconButtonStyle"
-        android:text="price lower to higher"
+        android:text="price high to low"
         android:layout_height="wrap_content"/>
 </LinearLayout>

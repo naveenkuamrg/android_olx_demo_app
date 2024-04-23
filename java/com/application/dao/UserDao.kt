@@ -8,7 +8,7 @@ import com.application.entity.User
 @Dao
 interface UserDao {
     @Insert
-    suspend fun insertUser(user : User)
+    suspend fun insertUser(user : User): Long
     @Query("select user_id from user where email LIKE :email")
     fun getUserId(email: String) : Long
 

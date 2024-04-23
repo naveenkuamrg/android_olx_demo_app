@@ -37,7 +37,7 @@ interface ProductRepository {
     fun getProductSummaryDetailsForBuyZonePriceASC(): Flow<PagingData<ProductListItem>>
 
 
-    suspend fun getProductDetailsUsingProductId(productId: Long, userId: Long): Product
+    suspend fun getProductDetailsUsingProductId(productId: Long,): Product
 
     suspend fun getProductDetailsUsingNotificationId(notificationId: Long, userId: Long): Product
 

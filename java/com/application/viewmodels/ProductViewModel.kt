@@ -51,7 +51,6 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
                 _product.postValue(
                     productRepository.getProductDetailsUsingProductId(
                         productId,
-                        userId
                     )
                 )
                 _isLoading.postValue(false)
@@ -142,7 +141,6 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
             _product.postValue(
                 productRepository.getProductDetailsUsingProductId(
                     product.value?.id!!,
-                    product.value?.sellerId!!
                 )
             )
             _isLoading.postValue(false)
@@ -162,7 +160,7 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
     fun updateIsContented(userId: Long,productId: Long){
         viewModelScope.launch(Dispatchers.Default) {
             productRepository.updateIsContent(userId, productId)
-            _profileList.postValue( productRepository.getInterestedProfile(productId))
+            _profileList.postValue(productRepository.getInterestedProfile(productId))
         }
     }
     companion object {

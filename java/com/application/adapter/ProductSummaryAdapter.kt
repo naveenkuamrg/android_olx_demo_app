@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.paging.PagingDataAdapter
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.application.R
+import com.application.adapter.diffUtil.ProductSummaryDiffUtil
 import com.application.helper.Utility
 import com.application.model.ProductListItem
 import com.application.model.ProductListItem.ProductItem
@@ -18,26 +20,18 @@ import com.application.model.ProductType
 
 class ProductSummaryAdapter(private val onItemClickListener: (ProductItem) -> Unit) :
     PagingDataAdapter<ProductListItem,
-            ViewHolder>(object : DiffUtil.ItemCallback<ProductListItem>() {
-        override fun areItemsTheSame(oldItem: ProductListItem, newItem: ProductListItem): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(
-            oldItem: ProductListItem,
-            newItem: ProductListItem
-        ): Boolean {
-            return oldItem == newItem
-        }
-
-    }) {
+            ViewHolder>(ProductSummaryDiffUtil()) {
     class ProductSummaryViewHolder(itemView: View) : ViewHolder(itemView) {
         val imageView = itemView.findViewById<ImageView>(R.id.product_main_image_view)
         val title = itemView.findViewById<TextView>(R.id.product_title_textview)
         val price = itemView.findViewById<TextView>(R.id.product_price_textview)
     }
 
-    class FilterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class DividerViewHolder(itemView: View): ViewHolder(itemView){
+
+    }
+
+    class FilterViewHolder(itemView: View) : ViewHolder(itemView) {
         val vehicles = itemView.findViewById<View>(R.id.vehicles)
         val mobile = itemView.findViewById<View>(R.id.mobiles)
         val electronic = itemView.findViewById<View>(R.id.electronics)
@@ -49,11 +43,14 @@ class ProductSummaryAdapter(private val onItemClickListener: (ProductItem) -> Un
 
     lateinit var onFilterClickListener: (ProductType) -> Unit
     override fun getItemViewType(position: Int): Int {
-        return if (getItem(position) is ProductListItem.Header) {
-            PRODUCT_ITEM
-        } else {
-            HEADER
+
+        return  when(getItem(position)){
+            is ProductListItem.Header->{HEADER}
+            is ProductListItem.Divider ->{DIVIDER}
+            is ProductItem -> {PRODUCT_ITEM}
+            null -> {Int.MIN_VALUE}
         }
+
     }
 
 
@@ -92,21 +89,31 @@ class ProductSummaryAdapter(private val onItemClickListener: (ProductItem) -> Un
                     onItemClickListener(item)
                 }
             }
+
+            is  DividerViewHolder->{
+                Log.i("TAGs","naveen")
+            }
         }
     }
+
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
         return when (viewType) {
-            PRODUCT_ITEM -> {
+            HEADER -> {
                 val itemView = LayoutInflater.from(parent.context)
                     .inflate(R.layout.product_item_header, parent, false)
                 FilterViewHolder(itemView)
             }
-            HEADER -> {
+            PRODUCT_ITEM -> {
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.product_summary_view, parent, false)
                 ProductSummaryViewHolder(view)
+            }
+
+            DIVIDER ->{
+                DividerViewHolder(Button(parent.context))
             }
             else -> {
                 throw Exception("View Type is not found")
@@ -117,6 +124,7 @@ class ProductSummaryAdapter(private val onItemClickListener: (ProductItem) -> Un
     companion object {
         const val PRODUCT_ITEM = 1
         const val HEADER = 2
+        const val DIVIDER = 3
     }
 
 }

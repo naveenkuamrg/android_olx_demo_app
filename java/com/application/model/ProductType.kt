@@ -9,7 +9,8 @@ enum class ProductType {
     FURNITURE,
     FASHION,
     BOOKS,
-    SPORTS;
+    SPORTS,
+    OTHERS;
 
     companion object {
         fun stringToProductType(type: String): ProductType? {
@@ -30,6 +31,7 @@ enum class ProductType {
                   FASHION -> {"Fashion"}
                   BOOKS -> {"Books"}
                   SPORTS -> {"Sports"}
+                  OTHERS->{"Others"}
                  null -> {""}
              }
         }

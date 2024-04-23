@@ -40,20 +40,6 @@ object Utility {
     }
 
 
-    fun createAlertDialog(
-        context: Context,
-        message: String,
-        positionCallback: (DialogInterface, Int) -> Unit,
-        negativeCallback: (DialogInterface, Int) -> Unit
-    ) {
-        AlertDialog.Builder(context).apply {
-            setMessage(message)
-            setPositiveButton("Yes", positionCallback)
-            setNegativeButton("No", negativeCallback)
-            show()
-        }
-
-    }
 
     fun getLoginUserId(context: Context): Long {
        return context.getSharedPreferences("mySharePref", AppCompatActivity.MODE_PRIVATE)
@@ -135,4 +121,6 @@ object Utility {
         calendar.time.time = date
         return calendar.get(Calendar.DAY_OF_MONTH)
     }
+
+
 }

@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
@@ -17,6 +18,7 @@ import com.application.databinding.FragmentEditProfileBinding
 import com.application.exceptions.InvalidUserDataException
 import com.application.helper.StringConverter
 import com.application.helper.Validator
+import com.application.model.ProductType
 import com.application.viewmodels.EditProfileViewModel
 import com.application.viewmodels.ProfilePageViewModel
 
@@ -42,12 +44,11 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
         setOnClickListenerToAddImageBtn()
         setOnClickListenerToRemoveBtn()
         setUpOnBackPress()
-        setTextChangedListener()
-        setUpToolBar()
+
     }
 
     private fun onBackPress(){
-        if (editProfileViewModel.isDataUpdate) {
+        if (isDataUpdate()) {
             AlertDialog.Builder(context).apply {
                 setMessage("If you go back, any changes you made will be lost")
                 setPositiveButton("OK") { _, _ ->
@@ -62,7 +63,21 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
         }
     }
 
-    private fun setUpToolBar() {
+    private fun isDataUpdate(): Boolean {
+        val profile = profilePageViewModel.profile.value
+        return isChanged(profile?.name, binding.nameEdittext.text.toString()) ||
+                isChanged(profile?.email, binding.emailEdittext.text.toString()) ||
+                isChanged(profile?.phoneNumber, binding.phoneNumberEdittext.text.toString()) ||
+                isChanged(profile?.profileImage,editProfileViewModel.tempImage.value)
+    }
+
+    private fun <T> isChanged(productVal: T, enteredVal: T): Boolean {
+        Log.i("EditProductFragment","${productVal} val ${enteredVal}")
+        if (productVal == null && enteredVal.toString().isEmpty() || enteredVal == 0) {
+            return false
+        }
+        return productVal != enteredVal
+
 
     }
 
@@ -104,6 +119,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
             binding.nameEdittext.text = StringConverter.toEditable(value.name)
             binding.phoneNumberEdittext.text = StringConverter.toEditable(value.phoneNumber)
             if (value.profileImage != null) {
+                editProfileViewModel.tempImage.value = value.profileImage
                 binding.userDp.setImageBitmap(value.profileImage)
                 binding.addImageButton.apply {
                     text = "Change image"
@@ -138,7 +154,6 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
         }
 
         editProfileViewModel.tempImage.observe(viewLifecycleOwner) {
-            editProfileViewModel.isDataUpdate = true
             if (it != null) {
                 binding.userDp.setImageBitmap(it)
             } else {

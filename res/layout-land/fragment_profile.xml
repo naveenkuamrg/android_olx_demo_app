@@ -19,7 +19,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
+            app:titleCentered="true"
             app:title="Profile"
             app:titleTextColor="@color/md_theme_primary" />
     </com.google.android.material.appbar.AppBarLayout>

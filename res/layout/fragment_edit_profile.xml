@@ -20,8 +20,7 @@
             android:layout_height="match_parent"
             app:menu="@menu/edit_profile"
             app:titleTextColor="@color/md_theme_primary"
-            app:title="Edit Profile"
-            app:titleCentered="true" />
+            app:title="Edit Profile" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -132,7 +131,7 @@
                         android:layout_height="wrap_content"
                         android:hint="Email"
                         android:imeOptions="actionNext"
-                        android:inputType="text"
+                        android:inputType="textEmailAddress"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 
