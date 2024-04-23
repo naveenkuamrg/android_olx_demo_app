@@ -2,13 +2,16 @@ package com.application.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 import com.application.R
 import com.application.databinding.FragmentProductListBinding
+import com.google.android.material.progressindicator.CircularProgressIndicator
 
 class ProductListFragment : BaseProductListFragment(R.layout.fragment_product_list) {
 
     lateinit var binding: FragmentProductListBinding
-
+    override lateinit var recyclerView: RecyclerView
+    override lateinit var progressIndicator: CircularProgressIndicator
 
     private val getActionType: Int?
         get() {
@@ -17,8 +20,11 @@ class ProductListFragment : BaseProductListFragment(R.layout.fragment_product_li
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         binding = FragmentProductListBinding.bind(view)
+        recyclerView = binding.recycleView
+        progressIndicator = binding.progressCircular
+        super.onViewCreated(view, savedInstanceState)
+
         when (getActionType) {
             FAVOURITE_LIST ->
                 binding.noData.errorText.text = "Your favorite list is empty"

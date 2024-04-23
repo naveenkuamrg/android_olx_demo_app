@@ -3,14 +3,20 @@ package com.application.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 import com.application.R
 import com.application.databinding.FragmentFilterProductsBinding
 import com.application.model.ProductType
+import com.google.android.material.progressindicator.CircularProgressIndicator
 
 class FilterProductListFragment :
     SortableProductListFragment(R.layout.fragment_filter_products) {
 
     lateinit var binding: FragmentFilterProductsBinding
+
+    override lateinit var progressIndicator: CircularProgressIndicator
+
+    override lateinit var recyclerView: RecyclerView
 
     private val getFilterType: ProductType?
         get() {
@@ -31,9 +37,12 @@ class FilterProductListFragment :
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         binding = FragmentFilterProductsBinding.bind(view)
+        recyclerView = binding.recycleView
+        progressIndicator = binding.progressCircular
+        super.onViewCreated(view, savedInstanceState)
         binding.noData.errorText.text = "Sorry, No product available for this category"
+
         setUpToolbar()
         setObserve()
     }
@@ -50,6 +59,9 @@ class FilterProductListFragment :
         toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.sort -> {
+                    if(childFragmentManager.findFragmentByTag("bottomSheet") != null){
+                        return@setOnMenuItemClickListener true
+                    }
                     val bottomSheet = BottomSheetDialogSort()
                     bottomSheet.show(childFragmentManager, "bottomSheet")
                     return@setOnMenuItemClickListener  true

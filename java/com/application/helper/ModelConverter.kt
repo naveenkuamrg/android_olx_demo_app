@@ -115,7 +115,8 @@ object ModelConverter {
             productDetails.title,
             productDetails.postedDate,
             productDetails.location,
-            productDetails.price
+            productDetails.price,
+            productDetails.availabilityStatus
         )
     }
 }

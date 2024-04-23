@@ -2,9 +2,11 @@ package com.application.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 import com.application.R
 import com.application.callbacks.ProductViewCallback
 import com.application.databinding.FragmentSellZoneBinding
+import com.google.android.material.progressindicator.CircularProgressIndicator
 
 class SellProductListFragment : BaseProductListFragment(R.layout.fragment_sell_zone){
     lateinit var binding: FragmentSellZoneBinding
@@ -12,12 +14,17 @@ class SellProductListFragment : BaseProductListFragment(R.layout.fragment_sell_z
 
     private lateinit var callBack: ProductViewCallback
 
+    override lateinit var recyclerView: RecyclerView
+
+    override lateinit var progressIndicator: CircularProgressIndicator
 
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         binding = FragmentSellZoneBinding.bind(view)
+        recyclerView = binding.recycleView
+        progressIndicator = binding.progressCircular
+        super.onViewCreated(view, savedInstanceState)
         callBack = parentFragment as ProductViewCallback
         binding.noData.errorText.text = "You din't Post any Product"
         setOnClickListenerAddProduct()
@@ -46,10 +53,6 @@ class SellProductListFragment : BaseProductListFragment(R.layout.fragment_sell_z
     private fun setObserve() {
         productListViewModel.sellProductList.observe(viewLifecycleOwner) {
             setData(it)
-//            val fragment = childFragmentManager.findFragmentByTag("recyclerView")
-//            if (fragment is ProductRecycleViewFragment) {
-//                fragment.onSetData(it)
-//            }
         }
     }
 }

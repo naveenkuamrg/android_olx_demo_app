@@ -73,7 +73,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         viewModel.user.observe(
             viewLifecycleOwner
         ) { value ->
-            Log.i("TAG", value.name)
             val sharedPreferences = requireContext().getSharedPreferences(
                 "mySharePref",
                 AppCompatActivity.MODE_PRIVATE

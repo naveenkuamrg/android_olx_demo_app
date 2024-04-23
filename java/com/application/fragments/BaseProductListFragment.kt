@@ -4,9 +4,12 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.CombinedLoadStates
+import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +20,7 @@ import com.application.callbacks.ProductRecyclerFragmentCallback
 import com.application.callbacks.ProductRecyclerFragmentWithFilterCallback
 import com.application.model.ProductListItem
 import com.application.viewmodels.ProductListViewModel
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -25,12 +29,12 @@ abstract class BaseProductListFragment(layout: Int): Fragment(layout),
     protected val productListViewModel: ProductListViewModel by viewModels {
         ProductListViewModel.FACTORY
     }
-    private lateinit var recyclerView: RecyclerView
+    protected abstract var recyclerView: RecyclerView
+    protected abstract var progressIndicator: CircularProgressIndicator
 
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        recyclerView = view.findViewById(R.id.recycle_view)
         setUpRecycleView()
     }
     private fun setUpRecycleView() {
@@ -61,6 +65,12 @@ abstract class BaseProductListFragment(layout: Int): Fragment(layout),
         }
 
         adapter.addLoadStateListener {
+            if(it.refresh == LoadState.Loading){
+                progressIndicator.visibility = View.VISIBLE
+            }else{
+                progressIndicator.visibility = View.GONE
+
+            }
             if (it.append.endOfPaginationReached) {
                 if (adapter.itemCount < 1) {
                     isListEmpty(true)
@@ -69,8 +79,13 @@ abstract class BaseProductListFragment(layout: Int): Fragment(layout),
                 }
             }
         }
+        adapter.addLoadStateListener {
+            Log.i("BaseProductListFragment",it.toString())
+
+        }
         recyclerView.adapter = adapter
     }
+
 
     protected fun setData(it: PagingData<ProductListItem>) {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {

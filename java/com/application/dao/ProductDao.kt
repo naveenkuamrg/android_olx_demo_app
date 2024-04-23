@@ -24,16 +24,16 @@ interface ProductDao {
     @Query("select product_id as id ,title,postedDate,location,price,availabilityStatus from product_details where user_id LIKE :userId  order by  availabilityStatus,postedDate DESC   ")
     fun getPostProductSummary(userId: Long): PagingSource<Int, ProductItem>
 
-    @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' ORDER BY postedDate DESC ")
+    @Query("select product_id as id ,title,postedDate,location,price,availabilityStatus from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' ORDER BY postedDate DESC ")
     fun getBuyProductSummaryOrderByPostedDateDESC(userId: Long): PagingSource<Int, ProductItem>
 
-    @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' ORDER BY postedDate ASC ")
+    @Query("select product_id as id ,title,postedDate,location,price,availabilityStatus from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' ORDER BY postedDate ASC ")
     fun getBuyProductSummaryOrderByPostedDateASC(userId: Long): PagingSource<Int, ProductItem>
 
-    @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' ORDER BY price DESC ")
+    @Query("select product_id as id ,title,postedDate,location,price,availabilityStatus from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' ORDER BY price DESC ")
     fun getBuyProductSummaryOrderByPriceDESC(userId: Long): PagingSource<Int, ProductItem>
 
-    @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' ORDER BY price ASC ")
+    @Query("select product_id as id ,title,postedDate,location,price,availabilityStatus from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' ORDER BY price ASC ")
     fun getBuyProductSummaryOrderByPriceASC(userId: Long): PagingSource<Int, ProductItem>
 
     @Query(
@@ -82,22 +82,22 @@ interface ProductDao {
     @Delete
     fun removeIsWishList(data: WishList)
 
-    @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' and productType LIKE :type ORDER BY price ASC ")
+    @Query("select product_id as id ,title,postedDate,location,price,availabilityStatus from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' and productType LIKE :type ORDER BY price ASC ")
     fun getBuyProductSummaryOrderByPriceASCWithProductType(userId: Long,type: ProductType): PagingSource<Int, ProductItem>
 
-    @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' and productType LIKE :type ORDER BY postedDate DESC ")
+    @Query("select product_id as id ,title,postedDate,location,price,availabilityStatus from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' and productType LIKE :type ORDER BY postedDate DESC ")
     fun getBuyProductSummaryOrderByPostedDateDESCWithProductType(userId: Long,type: ProductType): PagingSource<Int, ProductItem>
 
-    @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' and productType LIKE :type ORDER BY postedDate ASC ")
+    @Query("select product_id as id ,title,postedDate,location,price,availabilityStatus from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' and productType LIKE :type ORDER BY postedDate ASC ")
     fun getBuyProductSummaryOrderByPostedDateASCWithProductType(userId: Long,type: ProductType): PagingSource<Int, ProductItem>
 
-    @Query("select product_id as id ,title,postedDate,location,price from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' and productType LIKE :type ORDER BY price DESC ")
+    @Query("select product_id as id ,title,postedDate,location,price,availabilityStatus from product_details where user_id Not Like :userId and availabilityStatus LIKE 'AVAILABLE' and productType LIKE :type ORDER BY price DESC ")
     fun getBuyProductSummaryOrderByPriceDESCWithProductType(userId: Long,type: ProductType): PagingSource<Int, ProductItem>
 
-    @Query("select product_details.product_id as id ,title,postedDate,location,price from wish_list left join product_details on wish_list.product_id == product_details.product_id where wish_list.user_id LIKE :userId AND availabilityStatus LIKE 'AVAILABLE'")
+    @Query("select product_details.product_id as id ,title,postedDate,location,price,availabilityStatus from wish_list left join product_details on wish_list.product_id == product_details.product_id where wish_list.user_id LIKE :userId AND availabilityStatus LIKE 'AVAILABLE'")
     fun getFavouriteProductSummary(userId: Long): PagingSource<Int, ProductItem>
 
-    @Query("select product_details.product_id as id ,title,postedDate,location,price from interested_buyers left join product_details on interested_buyers.product_id == product_details.product_id where interested_buyers.user_id LIKE :userId AND availabilityStatus LIKE 'AVAILABLE'")
+    @Query("select product_details.product_id as id ,title,postedDate,location,price,availabilityStatus from interested_buyers left join product_details on interested_buyers.product_id == product_details.product_id where interested_buyers.user_id LIKE :userId AND availabilityStatus LIKE 'AVAILABLE'")
     fun getInterestedProductSummary(userId: Long): PagingSource<Int, ProductItem>
     @Query("Update interested_buyers set isContented = 1 where user_id LIKE :userId AND product_id LIKE :productId")
     fun updateIsContent(userId: Long,productId: Long)

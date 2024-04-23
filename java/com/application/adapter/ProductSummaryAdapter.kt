@@ -27,8 +27,8 @@ class ProductSummaryAdapter(private val onItemClickListener: (ProductItem) -> Un
         val price = itemView.findViewById<TextView>(R.id.product_price_textview)
     }
 
-    class DividerViewHolder(itemView: View): ViewHolder(itemView){
-
+    class DividerViewHolder(itemView: View) : ViewHolder(itemView) {
+        val textView = itemView.findViewById<TextView>(R.id.titleDivider)
     }
 
     class FilterViewHolder(itemView: View) : ViewHolder(itemView) {
@@ -44,11 +44,22 @@ class ProductSummaryAdapter(private val onItemClickListener: (ProductItem) -> Un
     lateinit var onFilterClickListener: (ProductType) -> Unit
     override fun getItemViewType(position: Int): Int {
 
-        return  when(getItem(position)){
-            is ProductListItem.Header->{HEADER}
-            is ProductListItem.Divider ->{DIVIDER}
-            is ProductItem -> {PRODUCT_ITEM}
-            null -> {Int.MIN_VALUE}
+        return when (getItem(position)) {
+            is ProductListItem.Header -> {
+                HEADER
+            }
+
+            is ProductListItem.Divider -> {
+                DIVIDER
+            }
+
+            is ProductItem -> {
+                PRODUCT_ITEM
+            }
+
+            null -> {
+                Int.MIN_VALUE
+            }
         }
 
     }
@@ -56,8 +67,8 @@ class ProductSummaryAdapter(private val onItemClickListener: (ProductItem) -> Un
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        when(holder){
-            is FilterViewHolder ->{
+        when (holder) {
+            is FilterViewHolder -> {
                 holder.vehicles.setOnClickListener {
                     onFilterClickListener(ProductType.VEHICLES)
                 }
@@ -80,7 +91,8 @@ class ProductSummaryAdapter(private val onItemClickListener: (ProductItem) -> Un
                     onFilterClickListener(ProductType.SPORTS)
                 }
             }
-            is ProductSummaryViewHolder->{
+
+            is ProductSummaryViewHolder -> {
                 val item = getItem(position) as ProductItem
                 holder.title.text = item.title
                 holder.price.text = Utility.convertToINR(item.price.toDouble())
@@ -90,12 +102,12 @@ class ProductSummaryAdapter(private val onItemClickListener: (ProductItem) -> Un
                 }
             }
 
-            is  DividerViewHolder->{
-                Log.i("TAGs","naveen")
+            is DividerViewHolder -> {
+                val item = getItem(position) as ProductListItem.Divider
+                holder.textView.text = item.title
             }
         }
     }
-
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -106,21 +118,29 @@ class ProductSummaryAdapter(private val onItemClickListener: (ProductItem) -> Un
                     .inflate(R.layout.product_item_header, parent, false)
                 FilterViewHolder(itemView)
             }
+
             PRODUCT_ITEM -> {
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.product_summary_view, parent, false)
                 ProductSummaryViewHolder(view)
             }
 
-            DIVIDER ->{
-                DividerViewHolder(Button(parent.context))
+            DIVIDER -> {
+                val view =
+                    LayoutInflater.from(parent.context).inflate(
+                        R.layout.divider, parent,
+                        false
+                    )
+                DividerViewHolder(view)
             }
+
             else -> {
                 throw Exception("View Type is not found")
             }
         }
 
     }
+
     companion object {
         const val PRODUCT_ITEM = 1
         const val HEADER = 2

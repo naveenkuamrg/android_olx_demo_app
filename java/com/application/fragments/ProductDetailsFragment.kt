@@ -129,9 +129,11 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
 
         binding.productDetailLayout.imInterestedBtn.setOnClickListener { btn ->
             btn.isEnabled = false
-            viewModel.product.value?.let {
-                viewModel.updateProductInterested(it, userId, !it.isInterested!!)
 
+            AlertDialog.Builder(requireContext())
+
+            viewModel.product.value?.let {
+                viewModel.updateProductInterested(it, userId, !it.isInterested)
             }
         }
         binding.productDetailLayout.favouriteImg.setOnClickListener {
@@ -140,21 +142,23 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
     }
 
     private fun setObserve() {
-        //add loader background image should be gone while loading
 
         viewModel.isLoading.observe(viewLifecycleOwner) {
             if (it == true) {
+                binding.appBarLayout4.visibility = View.GONE
                 binding.productDetailLayout.productDetailLayout.visibility = View.GONE
                 binding.progressCircular.visibility = View.VISIBLE
             }
 
             if (it == false) {
+                binding.appBarLayout4.visibility = View.VISIBLE
                 binding.productDetailLayout.productDetailLayout.visibility = View.VISIBLE
                 binding.progressCircular.visibility = View.GONE
                 setView()
                 setUpToolbar()
             }
         }
+
         viewModel.product.observe(viewLifecycleOwner) {
             if (isCurrentUserProduct && it?.availabilityStatus != AvailabilityStatus.SOLD_OUT) {
                 if (it?.id != null) {
@@ -171,6 +175,7 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
             setView()
             updateButtonUI()
         }
+
 
         viewModel.isDelete.observe(viewLifecycleOwner) {
             if (it == true) {

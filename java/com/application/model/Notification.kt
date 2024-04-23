@@ -9,6 +9,4 @@ data class Notification(
     val isRead : Boolean,
     val content: String,
     val type: NotificationType
-){
-     var image: Bitmap? = null
-}
+)

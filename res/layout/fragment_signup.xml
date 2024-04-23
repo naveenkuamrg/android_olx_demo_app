@@ -105,26 +105,35 @@
 
 
 
-        <LinearLayout
-            android:layout_marginTop="15dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center">
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/Signin"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
-                android:text="Signin" />
+<!--        <LinearLayout-->
+<!--            android:layout_marginTop="15dp"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:gravity="center">-->
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:id="@+id/Signin"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_margin="10dp"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:text="Signin" />-->
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/registerButton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:layout_margin="10dp"
                 android:text="Register" />
+        <TextView
+            android:id="@+id/Signin"
+            android:textColor="@color/md_theme_primary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Do you have an account? Sign In"/>
 
-        </LinearLayout>
+<!--        </LinearLayout>-->
 
 
     </LinearLayout>

@@ -14,6 +14,7 @@ sealed class ProductListItem {
         val postedDate: Long,
         val location: String,
         val price: Double,
+        val availabilityStatus: AvailabilityStatus
         ) : ProductListItem() {
         @Ignore
         var image: Bitmap? = null
@@ -23,7 +24,7 @@ sealed class ProductListItem {
         override var id = Long.MIN_VALUE
     }
 
-    class Divider: ProductListItem(){
+    class Divider(val title: String): ProductListItem(){
         override var id: Long = Long.MIN_VALUE
     }
 

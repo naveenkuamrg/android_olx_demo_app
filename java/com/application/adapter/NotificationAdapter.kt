@@ -24,7 +24,7 @@ class NotificationAdapter(val onItemClickListener: (Long, NotificationType) -> U
     class NotificationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val contentTextView = itemView.findViewById<TextView>(R.id.content_text_view)
         val timeStamp = itemView.findViewById<TextView>(R.id.time_stamp_text_view)
-        val image: ImageView = itemView.findViewById(R.id.notification_ic)
+
     }
 
 
@@ -45,15 +45,6 @@ class NotificationAdapter(val onItemClickListener: (Long, NotificationType) -> U
             holder.contentTextView.text = value!!.content
             holder.timeStamp.text =
                 Utility.setCreatedTime(value.timestamp)
-            if (value.image == null) {
-                if (value.type == NotificationType.PROFILE) {
-                    holder.image.setImageResource(R.drawable.ic_profile_outline)
-                } else {
-                    holder.image.setImageResource(R.drawable.ic_delete_forevere)
-                }
-            } else {
-                holder.image.setImageBitmap(value.image)
-            }
             if (value.isRead) {
                 holder.itemView.setBackgroundColor(
                     ContextCompat.getColor(

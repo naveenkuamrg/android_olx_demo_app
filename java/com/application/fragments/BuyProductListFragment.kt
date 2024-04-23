@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.RecyclerView
 import com.application.R
 import com.application.callbacks.SearchbarCallback
 import com.application.callbacks.ProductRecyclerFragmentWithFilterCallback
@@ -14,12 +15,18 @@ import com.application.databinding.FragmentHomeBinding
 import com.application.model.ProductSortType
 import com.application.model.ProductType
 import com.application.viewmodels.NotificationViewModel
+import com.google.android.material.progressindicator.CircularProgressIndicator
 
 
 class BuyProductListFragment : SortableProductListFragment(R.layout.fragment_home),
     ProductRecyclerFragmentWithFilterCallback {
 
     lateinit var binding: FragmentHomeBinding
+
+    override lateinit var progressIndicator: CircularProgressIndicator
+
+    override lateinit var recyclerView: RecyclerView
+
 
     private lateinit var searchbarCallback: SearchbarCallback
 
@@ -40,11 +47,12 @@ class BuyProductListFragment : SortableProductListFragment(R.layout.fragment_hom
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         binding = FragmentHomeBinding.bind(view)
+        recyclerView = binding.recycleView
+        progressIndicator = binding.progressCircular
+        super.onViewCreated(view, savedInstanceState)
         binding.noData.errorText.text = "Sorry,Stock Out"
         notificationViewModel.getIsReadNotification()
-
         setUpSearchBar()
         setObserve()
     }
@@ -77,6 +85,9 @@ class BuyProductListFragment : SortableProductListFragment(R.layout.fragment_hom
         toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.sort -> {
+                    if(childFragmentManager.findFragmentByTag("bottomSheet") != null){
+                        return@setOnMenuItemClickListener true
+                    }
                     val bottomSheet = BottomSheetDialogSort()
                     bottomSheet.show(childFragmentManager, "bottomSheet")
                     return@setOnMenuItemClickListener true

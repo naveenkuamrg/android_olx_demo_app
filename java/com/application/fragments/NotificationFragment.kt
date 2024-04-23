@@ -44,13 +44,23 @@ class NotificationFragment : Fragment(R.layout.fragment_notification) {
             notificationViewModel.updateNotificationIsReadStatus(id)
             showDetailFragment(id, type)
         }
-
+        val dividerItemDecoration =
+            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        requireContext().getDrawable(
+            R.drawable.recycleview_divider
+        )?.let {
+            dividerItemDecoration.setDrawable(
+                it
+            )
+        }
+        notificationRecyclerView.addItemDecoration(dividerItemDecoration)
     }
 
 
     private fun setObserve() {
         notificationViewModel.notifications.observe(viewLifecycleOwner) {
             lifecycleScope.launch {
+
                 (binding.notificationRecyclerView.adapter as NotificationAdapter).submitData(it)
             }
         }

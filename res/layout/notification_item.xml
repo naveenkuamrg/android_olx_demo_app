@@ -8,16 +8,7 @@
     android:layout_height="wrap_content"
     android:padding="10dp">
 
-    <ImageView
-        android:id="@+id/notification_ic"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:contentDescription="Notificaition Image"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_sad"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+  =
 
 
     <TextView
@@ -27,11 +18,12 @@
         android:layout_marginStart="10dp"
         android:ellipsize="end"
         android:maxLines="3"
+        android:layout_marginBottom="3dp"
         android:textStyle="bold"
         android:text="Content"
         app:layout_constraintBottom_toTopOf="@+id/time_stamp_text_view"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/notification_ic"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView

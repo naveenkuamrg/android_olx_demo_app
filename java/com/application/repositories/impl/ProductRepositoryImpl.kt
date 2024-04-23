@@ -41,8 +41,8 @@ import java.lang.Exception
 class ProductRepositoryImpl(val context: Context) : ProductRepository {
 
     private val productPaddingConfig = PagingConfig(
-        8,
-        2,
+        20,
+        50,
         enablePlaceholders = false
     )
 
@@ -66,13 +66,25 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
 
         return Pager(
             PagingConfig(
-                pageSize = 3,
+                pageSize = 20,
                 enablePlaceholders = false,
-                prefetchDistance = 2
+                prefetchDistance = 50
             )
         ) {
             productDao.getPostProductSummary(Utility.getLoginUserId(context))
-        }.getFlowPagingData()
+        }.getFlowPagingData().map {
+            it.insertSeparators { productListItem: ProductListItem?, productListItem2: ProductListItem? ->
+                if(productListItem != null && productListItem2 != null) {
+                    if ((productListItem as ProductItem).availabilityStatus
+                        != (productListItem2 as ProductItem).availabilityStatus
+                    ) {
+                       return@insertSeparators ProductListItem.Divider("Sold Products")
+                    }
+                }
+                null
+            }
+        }
+
     }
 
 

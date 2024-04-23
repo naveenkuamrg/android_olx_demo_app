@@ -14,6 +14,9 @@ import androidx.paging.map
 import com.application.model.Notification
 import com.application.model.NotificationType
 import com.application.repositories.NotificationRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class NotificationRepositoryImpl(val context: Context) : NotificationRepository {
 
@@ -26,8 +29,8 @@ class NotificationRepositoryImpl(val context: Context) : NotificationRepository 
 
         return Pager(
             PagingConfig(
-                20,
-                20,
+                100,
+                100,
                 enablePlaceholders = false
             )
         ) {
@@ -36,20 +39,7 @@ class NotificationRepositoryImpl(val context: Context) : NotificationRepository 
             pagingData.map { notificationEntity ->
                 ModelConverter.notificationEntityToNotificationModel(
                     notificationEntity
-                ).apply {
-                    val tempImage = if (type == NotificationType.PRODUCT) {
-                        productImageRepository.getMainImage(
-                            notificationEntity.productId.toString()
-                        )
-                    } else {
-                        profileImageRepository.getProfileImage(
-                            notificationEntity.senderId.toString()
-                        )
-                    }
-                    if (tempImage != null) {
-                        image = tempImage
-                    }
-                }
+                )
             }
 
         }
