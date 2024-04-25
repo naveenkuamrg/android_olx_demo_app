@@ -1,16 +1,19 @@
 package com.application.fragments
 
+import android.content.res.Configuration
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.addTextChangedListener
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import com.application.R
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.application.databinding.FragmentSignupBinding
+import com.application.exceptions.InvalidUserDataException
 import com.application.helper.Validator
 import com.application.viewmodels.SignupViewModel
+import java.io.InputStream
 
 class SignupFragment : Fragment(R.layout.fragment_signup) {
     private lateinit var binding: FragmentSignupBinding
@@ -20,9 +23,9 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentSignupBinding.bind(view)
         addObserver()
-        binding.reenterPassword.addTextChangedListener { text ->
+        binding.reenterPassword.doAfterTextChanged { text ->
             if (text.toString() != binding.passwordEdittext.text.toString()) {
-                binding.reenterPasswordLayout.error = "password dose not match"
+                binding.reenterPasswordLayout.error = "Passwords do not match"
             } else {
                 binding.reenterPasswordLayout.error = null
             }
@@ -46,6 +49,20 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
 
         }
 
+        binding.Signin.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
+
+        val nightModeFlags =
+            requireContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val isNightMode = nightModeFlags == Configuration.UI_MODE_NIGHT_YES
+        val imageStream: InputStream = if (!isNightMode) {
+            this.resources.openRawResource(R.raw.sell_zone)
+        } else {
+            this.resources.openRawResource(R.raw.sell_zone_night)
+        }
+        val bitmap = BitmapFactory.decodeStream(imageStream)
+        binding.logoImageView.setImageBitmap(bitmap)
 
     }
 
@@ -75,9 +92,9 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
         }
         if (password != confirmPassword || confirmPassword == "") {
             isValid = false
-            binding.reenterPasswordLayout.error = "not match"
+            binding.reenterPasswordLayout.error = "Passwords do not match"
             if (password == "") {
-                binding.reenterPasswordLayout.error = "can't be empty"
+                binding.reenterPasswordLayout.error = "Password can't be empty"
             }
 
         } else {
@@ -86,9 +103,9 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
 
         if (!Validator.doesNotContainSpecialChars(name)) {
             if (name == "") {
-                binding.nameEditTextLayout.error = "Name not Should be empty"
+                binding.nameEditTextLayout.error = "Name should not be empty"
             } else {
-                binding.nameEditTextLayout.error = "Name dosen't allowed spical chareters"
+                binding.nameEditTextLayout.error = "Name shouldn't contain special characters"
             }
             isValid = false
         } else {
@@ -98,9 +115,25 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
     }
 
     private fun addObserver() {
-        viewModel.errorMessage.observe(
+        viewModel.exception.observe(
             viewLifecycleOwner
-        ) { value -> binding.emailEditTextLayout.error = value }
+        ) { value ->
+            val emailEditTextLayout = binding.emailEditTextLayout
+            val phoneNumberTextLayout = binding.phoneNumberLayout
+            emailEditTextLayout.error = null
+            phoneNumberTextLayout.error = null
+            when (value) {
+                is InvalidUserDataException.EmailAlreadyExists -> {
+                    emailEditTextLayout.error = value.message
+                }
+
+                is InvalidUserDataException.PhoneNumberAlreadyRegistered -> {
+                    phoneNumberTextLayout.error = value.message
+                }
+            }
+        }
+
+
         viewModel.userId.observe(viewLifecycleOwner) { value ->
             parentFragmentManager.popBackStack()
             val sharedPreferences = requireContext().getSharedPreferences(
@@ -108,7 +141,7 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
                 AppCompatActivity.MODE_PRIVATE
             ).edit()
             sharedPreferences.putString("userId", value.toString())
-            sharedPreferences.putString("userName",binding.name.text.toString())
+            sharedPreferences.putString("userName", binding.name.text.toString())
             sharedPreferences.apply()
             val homeTransaction = parentFragmentManager.beginTransaction()
             homeTransaction.replace(R.id.main_view_container, MainFragment())

@@ -1,32 +1,61 @@
 package com.application.repositories.impl
 
 import android.content.Context
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.map
 import com.application.AppDatabase
 import com.application.helper.ModelConverter
-
+import com.application.helper.Utility
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.liveData
+import androidx.paging.map
 import com.application.model.Notification
+import com.application.model.NotificationType
 import com.application.repositories.NotificationRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class NotificationRepositoryImpl(context: Context) : NotificationRepository {
+class NotificationRepositoryImpl(val context: Context) : NotificationRepository {
 
     private val notificationDao = AppDatabase.getInstance(context).notificationDao
-    private val productImageRepository = ProductImageRepositoryImpl(context)
 
-    override suspend fun getNotification(userId: Long): List<Notification> {
-        val notifications: MutableList<Notification> = mutableListOf()
-        notificationDao.getNotification(userId).forEach {
-            notifications.add(ModelConverter.notificationEntityToNotificationModel(it).apply {
-                val tempImage = productImageRepository.getMainImage(it.productId.toString())
-                if(tempImage != null) {
-                    image = tempImage
-                }
-            })
+
+    override fun getNotification(): LiveData<PagingData<Notification>> {
+
+
+        return Pager(
+            PagingConfig(
+                100,
+                100,
+                enablePlaceholders = false
+            )
+        ) {
+            notificationDao.getNotification(Utility.getLoginUserId(context))
+        }.liveData.map { pagingData ->
+            pagingData.map { notificationEntity ->
+                ModelConverter.notificationEntityToNotificationModel(
+                    notificationEntity
+                )
+            }
+
         }
-        return notifications
+
     }
 
-    override suspend fun updateNotificationIsReadStatus(userId: Long){
-        notificationDao.updateNotificationIsRead(userId)
+    override suspend fun updateAllNotificationIsReadStatus() {
+        notificationDao.updateAllNotificationIsRead(Utility.getLoginUserId(context))
+    }
+
+    override suspend fun isUnreadNotification(): Boolean {
+
+        return notificationDao.getIsUnreadNotification(Utility.getLoginUserId(context))
+    }
+
+    override suspend fun updateNotificationIsReadStatus(notificationId: Long) {
+        notificationDao.updateNotificationIsRead(notificationId)
     }
 
 

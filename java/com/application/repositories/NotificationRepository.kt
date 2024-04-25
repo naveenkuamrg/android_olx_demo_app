@@ -1,9 +1,16 @@
 package com.application.repositories
 
+import androidx.lifecycle.LiveData
+import androidx.paging.PagingData
 import com.application.model.Notification
 
 interface NotificationRepository {
-    suspend fun  getNotification(userId: Long): List<Notification>
+     fun  getNotification(): LiveData<PagingData<Notification>>
 
-    suspend fun updateNotificationIsReadStatus(userId: Long)
+    suspend fun updateAllNotificationIsReadStatus()
+
+    suspend fun isUnreadNotification(): Boolean
+
+    suspend fun updateNotificationIsReadStatus(notificationId: Long)
+
 }

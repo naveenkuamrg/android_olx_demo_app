@@ -11,6 +11,7 @@ import com.application.exceptions.ProductDataException
 import com.application.model.AvailabilityStatus
 import com.application.model.Product
 import com.application.model.Profile
+import com.application.model.ProfileSummary
 import com.application.repositories.ProductRepository
 import com.application.repositories.impl.ProductRepositoryImpl
 import kotlinx.coroutines.Dispatchers
@@ -32,8 +33,8 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
     private val _isInterestedChangeIsUpdate: MutableLiveData<Boolean?> = MutableLiveData()
     val isInterestedChangeIsUpdate: LiveData<Boolean?> = _isInterestedChangeIsUpdate
 
-    private val _profileList: MutableLiveData<List<Profile>> = MutableLiveData()
-    val profileList: LiveData<List<Profile>> = _profileList
+    private val _profileList: MutableLiveData<List<ProfileSummary>> = MutableLiveData()
+    val profileList: LiveData<List<ProfileSummary>> = _profileList
 
     private val _isWishListIsUpdate: MutableLiveData<Boolean?> = MutableLiveData()
     val isWishListIsUpdate: LiveData<Boolean?> = _isWishListIsUpdate
@@ -42,15 +43,14 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
     val exception: MutableLiveData<Exception?> = _exception
 
 
+
     fun fetchProductDetailsUsingProductId(productId: Long, userId: Long) {
-        Log.i("TAG","navea")
         if (productId != -1L) {
             _isLoading.value = true
             viewModelScope.launch(Dispatchers.Default) {
                 _product.postValue(
                     productRepository.getProductDetailsUsingProductId(
                         productId,
-                        userId
                     )
                 )
                 _isLoading.postValue(false)
@@ -89,16 +89,22 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
         }
     }
 
+
+    fun setProductInterestedValue(isInterested: Boolean){
+        _product.value?.isInterested = isInterested
+        product.value?.isInterested = isInterested
+    }
     fun updateProductInterested(product: Product, userId: Long, isInterested: Boolean) {
         _isInterestedChangeIsUpdate.value = null
         viewModelScope.launch(Dispatchers.Default) {
-            _isInterestedChangeIsUpdate.postValue(
-                productRepository.updateProductIsInterested(
-                    userId,
-                    product,
-                    isInterested
-                )
-            )
+            val  res =  productRepository.updateProductIsInterested(
+                userId,
+                product,
+                isInterested)
+            withContext(Dispatchers.Main) {
+                _isInterestedChangeIsUpdate.value = res
+            }
+            _isInterestedChangeIsUpdate.postValue( null)
         }
     }
 
@@ -119,6 +125,7 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
         _isLoading.value = null
         _isInterestedChangeIsUpdate.value = null
         _exception.value = null
+        _profileList.value = mutableListOf()
     }
 
     fun updateMarkAsSold() {
@@ -134,7 +141,6 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
             _product.postValue(
                 productRepository.getProductDetailsUsingProductId(
                     product.value?.id!!,
-                    product.value?.sellerId!!
                 )
             )
             _isLoading.postValue(false)
@@ -151,15 +157,18 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
 
     }
 
+    fun updateIsContented(userId: Long,productId: Long){
+        viewModelScope.launch(Dispatchers.Default) {
+            productRepository.updateIsContent(userId, productId)
+            _profileList.postValue(productRepository.getInterestedProfile(productId))
+        }
+    }
     companion object {
 
         @Suppress("UNCHECKED_CAST")
         val FACTORY = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val application = extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]
-
-
-
                 return ProductViewModel(
                     ProductRepositoryImpl(application!!.applicationContext)
                 ) as T

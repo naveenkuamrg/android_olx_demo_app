@@ -2,7 +2,6 @@ package com.application.model
 
 import android.graphics.Bitmap
 import androidx.room.Ignore
-import java.util.Date
 
 data class Product(
     val id: Long?,
@@ -14,9 +13,10 @@ data class Product(
     val location: String,
     val productType : ProductType,
     val sellerId : Long,
-    var isInterested: Boolean? = null,
-    var isWishList : Boolean? = null
+    var isInterested: Boolean = false,
+    var isWishList : Boolean = false
 ){
+
     @Ignore
     lateinit var images: List<Bitmap>
 }

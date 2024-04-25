@@ -3,25 +3,17 @@ package com.application.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.application.entity.InterestedList
-import com.application.entity.Notification
-import com.application.entity.ProductDetails
 import com.application.entity.User
-import com.application.entity.WishList
-import com.application.entity.relations.NotificationWithProductDetails
-import com.application.entity.relations.ProductsWithInterestedProfile
-import com.application.entity.relations.ProfileWithInterestedProducts
-import com.application.entity.relations.ProfileWithWishListProducts
 
 @Dao
 interface UserDao {
     @Insert
-    suspend fun insertUser(user : User)
+    suspend fun insertUser(user : User): Long
     @Query("select user_id from user where email LIKE :email")
     fun getUserId(email: String) : Long
 
-    @Query("select * from user where email LIKE :email")
-    fun getUser(email: String) : User?
+    @Query("select * from user where email LIKE :identifier OR phoneNumber LIKE :identifier" )
+    fun getUser(identifier: String) : User?
 
     //UserDao
     @Query("select * from user where user_id LIKE :userId")

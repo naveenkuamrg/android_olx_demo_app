@@ -1,5 +1,7 @@
 package com.application.callbacks
 
+import android.graphics.Bitmap
+
 interface ImageAdapterListener {
-    fun onRemoveButtonClick(position: Int)
+    fun onRemoveButtonClick(element: Bitmap)
 }

@@ -4,11 +4,11 @@
     >
     <item android:id="@+id/home"
         android:icon="@drawable/home_selector"
-        android:title="Home"
+        android:title="Buy"
         app:showAsAction="ifRoom"/>
     <item android:id="@+id/sell_zone"
-        android:title="Sell Zone"
-        android:icon="@drawable/ic_add"
+        android:title="Sell"
+        android:icon="@drawable/sell_selector"
         app:showAsAction="ifRoom"/>
     <item android:id="@+id/profile"
         android:title="Profile"

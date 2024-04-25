@@ -21,6 +21,7 @@ data class Notification(
     val timestamp: Long,
     val isRead: Boolean,
     val recipientId: Long,
+    val senderId:Long,
     val productId: Long,
     val content: String,
     val type: NotificationType

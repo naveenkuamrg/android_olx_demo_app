@@ -14,5 +14,10 @@ data class ProductsWithInterestedProfile(
         entityColumn = "user_id",
         associateBy = Junction(InterestedList :: class)
     )
-    val profileList : List<User>
+    val profileList : List<User>,
+    @Relation(
+        parentColumn = "product_id",
+        entityColumn = "product_id",
+    )
+    val isContented: List<InterestedList>
 )

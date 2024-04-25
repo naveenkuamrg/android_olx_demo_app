@@ -6,6 +6,7 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
+        android:elevation="3dp"
         app:cardBackgroundColor="@color/md_theme_surface"
         android:layout_height="match_parent">
 

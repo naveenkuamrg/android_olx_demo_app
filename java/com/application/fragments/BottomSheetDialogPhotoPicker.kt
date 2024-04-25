@@ -51,7 +51,7 @@ class BottomSheetDialogPhotoPicker :
         } else {
             startActivityForResultProductImages = registerForActivityResult(
                 ActivityResultContracts.PickMultipleVisualMedia(
-                     count
+                    count
                 )
             ) {
                 for (uri in it) {
@@ -112,7 +112,11 @@ class BottomSheetDialogPhotoPicker :
     }
 
     private fun startActivityForResultProductImage() {
-        startActivityForResultProductImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        startActivityForResultProductImage.launch(
+            PickVisualMediaRequest(
+                ActivityResultContracts.PickVisualMedia.ImageOnly
+            )
+        )
     }
 
 }

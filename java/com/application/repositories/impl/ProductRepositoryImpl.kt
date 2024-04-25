@@ -2,17 +2,20 @@ package com.application.repositories.impl
 
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.liveData
+import androidx.paging.PagingSource
+import androidx.paging.TerminalSeparatorType
+import androidx.paging.insertHeaderItem
+import androidx.paging.insertSeparators
 import androidx.paging.map
 import com.application.AppDatabase
 import com.application.dao.NotificationDao
 import com.application.dao.ProductDao
 import com.application.dao.ProfileDao
+import com.application.entity.ProductDetails
 import com.application.exceptions.ProductDataException
 import com.application.helper.ModelConverter
 import com.application.helper.NotificationContentBuilder
@@ -20,18 +23,28 @@ import com.application.helper.Utility
 import com.application.model.AvailabilityStatus
 import com.application.model.NotificationType
 import com.application.model.Product
-import com.application.model.ProductSortType
+import com.application.model.ProductListItem
 import com.application.model.ProductListItem.ProductItem
 import com.application.model.ProductType
-import com.application.model.Profile
+import com.application.model.ProfileSummary
 import com.application.model.SearchProductResultItem
 import com.application.repositories.ProductImageRepository
 import com.application.repositories.ProductRepository
 import com.application.repositories.ProfileImageRepository
+import com.bumptech.glide.disklrucache.DiskLruCache.Value
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class ProductRepositoryImpl(val context: Context) : ProductRepository {
 
+    private val productPaddingConfig = PagingConfig(
+        20,
+        50,
+        enablePlaceholders = false
+    )
 
     private val productDao: ProductDao = AppDatabase.getInstance(context).productDao
     private val profileDao: ProfileDao = AppDatabase.getInstance(context).profileDao
@@ -49,82 +62,132 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         return true
     }
 
-    override  fun getProductSummaryDetailsForSellZone():  LiveData<PagingData<ProductItem>>{
-        val result = productDao.getPostProductSummary(Utility.getLoginUserId(context))
+    override fun getProductSummaryDetailsForSellZone(): Flow<PagingData<ProductListItem>> {
+
         return Pager(
             PagingConfig(
-                pageSize = 8,
+                pageSize = 20,
                 enablePlaceholders = false,
-                prefetchDistance = 2
+                prefetchDistance = 50
             )
-        ){
-            result
-        }.liveData.map{pagingData ->
-            pagingData.map {
-                setImg(it)
-                return@map it
+        ) {
+            productDao.getPostProductSummary(Utility.getLoginUserId(context))
+        }.getFlowPagingData().map {
+            it.insertSeparators { productListItem: ProductListItem?, productListItem2: ProductListItem? ->
+                if(productListItem != null && productListItem2 != null) {
+                    if ((productListItem as ProductItem).availabilityStatus
+                        != (productListItem2 as ProductItem).availabilityStatus
+                    ) {
+                       return@insertSeparators ProductListItem.Divider("Sold Products")
+                    }
+                }
+                null
             }
-        }
-    }
-
-    override suspend fun getProductSummaryDetailsForBuyZone(
-        userId: Long,
-        type: ProductType,
-        sort: ProductSortType
-    ): List<ProductItem> {
-        val productList = when (sort) {
-            ProductSortType.POSTED_DATE_ASC -> {
-                productDao.getBuyProductSummaryOrderByPostedDateASCWithProductType(userId,type)
-            }
-
-            ProductSortType.POSTED_DATE_DESC -> {
-                productDao.getBuyProductSummaryOrderByPostedDateDESCWithProductType(userId,type)
-            }
-
-            ProductSortType.PRICE_ASC -> {
-                productDao.getBuyProductSummaryOrderByPriceASCWithProductType(userId,type)
-            }
-
-            ProductSortType.PRICE_DESC -> {
-                productDao.getBuyProductSummaryOrderByPriceDESCWithProductType(userId,type)
-            }
-        }
-
-        return productList.also {
-            setImage(it)
         }
 
     }
 
-    override suspend fun getProductSummaryDetailsForBuyZone(userId: Long, sort: ProductSortType):
-            List<ProductItem> {
-        val productList = when (sort) {
-            ProductSortType.POSTED_DATE_ASC -> {
-                productDao.getBuyProductSummaryOrderByPostedDateASC(userId)
-            }
 
-            ProductSortType.POSTED_DATE_DESC -> {
-                productDao.getBuyProductSummaryOrderByPostedDateDESC(userId)
-            }
-
-            ProductSortType.PRICE_ASC -> {
-                productDao.getBuyProductSummaryOrderByPriceASC(userId)
-            }
-
-            ProductSortType.PRICE_DESC -> {
-                productDao.getBuyProductSummaryOrderByPriceDESC(userId)
-            }
-        }
-
-        return productList.also {
-            setImage(it)
-        }
+    override fun getProductSummaryDetailsForBuyZonePostedDateASC(type: ProductType): Flow<PagingData<ProductListItem>> {
+        return Pager(
+            productPaddingConfig
+        ) {
+            productDao.getBuyProductSummaryOrderByPriceASCWithProductType(
+                Utility.getLoginUserId(
+                    context
+                ),
+                type
+            )
+        }.getFlowPagingData()
     }
 
-    override suspend fun getProductDetailsUsingProductId(productId: Long, userId: Long): Product {
-        return productDao.getProductUsingProductId(productId, userId).apply {
-            images = productImageRepository.getAllImageFromFile(productId.toString())
-        }
+
+    override fun getProductSummaryDetailsForBuyZonePostedDateASC():
+            Flow<PagingData<ProductListItem>> {
+        return Pager(
+            productPaddingConfig
+        ) {
+            productDao.getBuyProductSummaryOrderByPostedDateASC(
+                Utility.getLoginUserId(
+                    context
+                )
+            )
+        }.getFlowPagingData()
+    }
+
+    override fun getProductSummaryDetailsForBuyZonePostedDateDESC(type: ProductType): Flow<PagingData<ProductListItem>> {
+        return Pager(
+            productPaddingConfig
+        ) {
+            productDao.getBuyProductSummaryOrderByPostedDateDESCWithProductType(
+                Utility.getLoginUserId(
+                    context
+                ),
+                type
+            )
+        }.getFlowPagingData()
+    }
+
+    override fun getProductSummaryDetailsForBuyZonePostedDateDESC():
+            Flow<PagingData<ProductListItem>> {
+        return Pager(
+            productPaddingConfig
+        ) {
+            productDao.getBuyProductSummaryOrderByPostedDateDESC(
+                Utility.getLoginUserId(
+                    context
+                )
+            )
+        }.getFlowPagingData()
+    }
+
+    override fun getProductSummaryDetailsForBuyZonePriceDESC(type: ProductType): Flow<PagingData<ProductListItem>> {
+        return Pager(
+            productPaddingConfig
+        ) {
+            productDao.getBuyProductSummaryOrderByPriceDESCWithProductType(
+                Utility.getLoginUserId(
+                    context
+                ),
+                type
+            )
+        }.getFlowPagingData()
+    }
+
+    override fun getProductSummaryDetailsForBuyZonePriceDESC(): Flow<PagingData<ProductListItem>> {
+        return Pager(
+            productPaddingConfig
+        ) {
+            productDao.getBuyProductSummaryOrderByPriceDESC(Utility.getLoginUserId(context))
+        }.getFlowPagingData()
+    }
+
+    override fun getProductSummaryDetailsForBuyZonePriceASC(type: ProductType): Flow<PagingData<ProductListItem>> {
+        return Pager(
+            productPaddingConfig
+        ) {
+            productDao.getBuyProductSummaryOrderByPriceASCWithProductType(
+                Utility.getLoginUserId(
+                    context
+                ),
+                type
+            )
+        }.getFlowPagingData()
+    }
+
+    override fun getProductSummaryDetailsForBuyZonePriceASC(): Flow<PagingData<ProductListItem>> {
+        return Pager(
+            productPaddingConfig
+        ) {
+            productDao.getBuyProductSummaryOrderByPriceASC(Utility.getLoginUserId(context))
+        }.getFlowPagingData()
+    }
+
+    override suspend fun getProductDetailsUsingProductId(productId: Long): Product {
+        return productDao.getProductUsingProductId(productId, Utility.getLoginUserId(context))
+            .apply {
+                images = productImageRepository.getAllImageFromFile(productId.toString())
+            }
     }
 
     override suspend fun getProductDetailsUsingNotificationId(
@@ -135,10 +198,9 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
             return productDao.getProductUsingNotification(notificationId, userId).apply {
                 images = (productImageRepository.getAllImageFromFile(id.toString()))
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             throw ProductDataException.ProductDataDeleteException()
         }
-
 
 
     }
@@ -154,7 +216,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
     override suspend fun updateProductAvailabilityAndNotify(
         product: Product,
         status: AvailabilityStatus,
-        productInterestedProfile: List<Profile>
+        productInterestedProfile: List<ProfileSummary>
     ) {
 
         product.id?.let {
@@ -162,12 +224,12 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
             for (i in productInterestedProfile) {
                 notificationDao.upsertNotification(
                     ModelConverter.notificationBuilder(
-                        i.id, product.id,NotificationType.PRODUCT,
+                        i.id, product.id, NotificationType.PRODUCT,
                         NotificationContentBuilder.build(
                             NotificationType.PRODUCT,
                             Utility.getLoginUserName(context),
                             product.title
-                        )
+                        ), Utility.getLoginUserId(context)
                     )
                 )
             }
@@ -182,13 +244,13 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         notificationDao.upsertNotification(
             ModelConverter.notificationBuilder(
                 product.sellerId,
-                product.id!!,NotificationType.PROFILE,
+                product.id!!, NotificationType.PROFILE,
                 NotificationContentBuilder.build(
                     NotificationType.PROFILE,
                     Utility.getLoginUserName(context),
                     product.title,
                     isInterested
-                )
+                ), Utility.getLoginUserId(context)
             )
         )
         return if (isInterested) {
@@ -198,14 +260,16 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         }
     }
 
-    override suspend fun getInterestedProfile(productId: Long): List<Profile> {
-        val profiles: MutableList<Profile> = mutableListOf()
-        profileDao.getInterestedProfile(productId).profileList.map {
-            profiles.add(ModelConverter.profileFromUserAndUri(it).apply {
-                profileImage = profileImageRepository.getProfileImage(it.id.toString())
-            })
+    override suspend fun getInterestedProfile(productId: Long): List<ProfileSummary> {
+        return ModelConverter.productsWithInterestedProfileSummary(
+            profileDao.getInterestedProfile(productId)
+        ).apply {
+            forEach { productSummary ->
+                productSummary.profileImage =
+                    profileImageRepository.getProfileImage(productSummary.id.toString())
+            }
         }
-        return profiles
+
     }
 
     override suspend fun getSearchProduct(
@@ -215,38 +279,51 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         return productDao.getProductListForSearchResult(searchTerm, userId)
     }
 
-    override suspend fun updateIsFavorite(product: Product, isFavorite: Boolean,userId: Long) {
-        if(isFavorite){
-            productDao.insertIsWishList(ModelConverter.wishListEntityBuilder(product.id!!,userId))
-        }else{
-            productDao.removeIsWishList(ModelConverter.wishListEntityBuilder(product.id!!,userId))
+    override suspend fun updateIsFavorite(product: Product, isFavorite: Boolean, userId: Long) {
+        if (isFavorite) {
+            productDao.insertIsWishList(ModelConverter.wishListEntityBuilder(product.id!!, userId))
+        } else {
+            productDao.removeIsWishList(ModelConverter.wishListEntityBuilder(product.id!!, userId))
         }
     }
 
-    override suspend fun getFavouriteProductList(userId: Long): List<ProductItem> {
-        return  productDao.getFavouriteProductSummary(userId).also {
-            setImage(it)
-        }
+    override fun getFavouriteProductList(): Flow<PagingData<ProductListItem>> {
+        return Pager(
+            productPaddingConfig
+        ) {
+            productDao.getFavouriteProductSummary(Utility.getLoginUserId(context))
+        }.getFlowPagingData()
     }
 
-    override suspend fun getInterestedProductList(userId: Long): List<ProductItem> {
-       return  productDao.getInterestedProductSummary(userId).also {
-           setImage(it)
-       }
+
+    override fun getInterestedProductList(): Flow<PagingData<ProductListItem>> {
+
+        return Pager(
+            productPaddingConfig
+        ) {
+            productDao.getInterestedProductSummary(Utility.getLoginUserId(context))
+        }.getFlowPagingData()
     }
 
-    private suspend fun setImage(listOfProductSummary: List<ProductItem>) {
-        for (product in listOfProductSummary) {
-            product.image =
-                productImageRepository.getMainImage(
-                    product.id.toString()
-                )
-        }
+    override suspend fun updateIsContent(userId: Long, productId: Long) {
+        productDao.updateIsContent(userId, productId)
     }
 
-    private suspend fun setImg(product: ProductItem){
-        product.image =  productImageRepository.getMainImage(
+
+    private suspend fun setImg(product: ProductItem) {
+        product.image = productImageRepository.getMainImage(
             product.id.toString()
         )
     }
+
+    private fun <Key : Any> Pager<Key, ProductItem>.getFlowPagingData(): Flow<PagingData<ProductListItem>> {
+        return this.flow.map { pagingData ->
+            pagingData.map {
+                setImg(it)
+                it
+            }
+        }
+    }
+
+
 }

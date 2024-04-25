@@ -11,31 +11,40 @@
         android:orientation="vertical"
         android:padding="30dp">
 
+        <ImageView
+            android:id="@+id/logo_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginBottom="15dp"
+            android:scaleType="fitCenter" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/email_edit_text_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="13dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/email_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="email"
+                android:hint="Email"
                 android:imeOptions="actionNext"
-                android:inputType="text"
+                android:inputType="textEmailAddress"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/name_edit_text_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="13dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="name"
+                android:hint="Name"
                 android:imeOptions="actionNext"
                 android:inputType="text"
                 android:maxLines="1" />
@@ -44,15 +53,16 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/phoneNumber_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="13dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/phoneNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="phoneNumber"
+                android:hint="PhoneNumber"
                 android:imeOptions="actionNext"
-                android:inputType="text"
+                android:inputType="phone"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -60,14 +70,15 @@
             android:id="@+id/password_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorIconDrawable="@null"
-            app:endIconMode="password_toggle">
+            android:layout_marginBottom="13dp"
+            app:endIconMode="password_toggle"
+            app:errorIconDrawable="@null">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/password_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="password"
+                android:hint="Password"
                 android:imeOptions="actionNext"
                 android:inputType="textPassword"
                 android:maxLines="1" />
@@ -78,8 +89,9 @@
             android:id="@+id/reenter_password_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorIconDrawable="@null"
-            app:endIconMode="password_toggle">
+            android:layout_marginBottom="13dp"
+            app:endIconMode="password_toggle"
+            app:errorIconDrawable="@null">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/reenter_password"
@@ -92,11 +104,36 @@
         </com.google.android.material.textfield.TextInputLayout>
 
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/registerButton"
-            android:layout_width="match_parent"
+
+<!--        <LinearLayout-->
+<!--            android:layout_marginTop="15dp"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:gravity="center">-->
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:id="@+id/Signin"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_margin="10dp"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:text="Signin" />-->
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/registerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:text="Register" />
+        <TextView
+            android:id="@+id/Signin"
+            android:textColor="@color/md_theme_primary"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Register" />
+            android:layout_gravity="center"
+            android:text="Do you have an account? Sign In"/>
+
+<!--        </LinearLayout>-->
 
 
     </LinearLayout>

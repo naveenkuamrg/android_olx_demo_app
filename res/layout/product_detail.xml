@@ -6,6 +6,8 @@
 
         <import type="com.application.helper.Utility" />
 
+        <import type="com.application.model.ProductType"/>
+
         <import type="android.view.View" />
 
         <variable
@@ -27,15 +29,18 @@
             android:paddingEnd="10dp">
 
             <FrameLayout
-                android:id="@+id/view_pager_container"
+                android:layout_marginTop="10dp"
+                android:id="@+id/frameLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp">
+                android:layout_height="300dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/view_pager"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
+                    android:layout_height="match_parent"
                     android:layout_marginBottom="15dp"
                     android:foreground="?attr/selectableItemBackground"
                     android:scaleType="centerCrop" />
@@ -49,18 +54,17 @@
                     android:layout_marginBottom="16dp"
                     android:clickable="true"
                     android:padding="2dp"
-                    android:src="@{viewModel.product.isWishList() ? @drawable/ic_favorite_fill : @drawable/ic_favorite_outline }" />
+                    android:src="@{viewModel.product.isWishList() ? @drawable/ic_favorite_fill : @drawable/ic_favorite_outline}" />
 
                 <LinearLayout
                     android:id="@+id/indicator"
-                    android:layout_marginTop="3dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center"
+                    android:layout_gravity="center|bottom"
                     android:orientation="horizontal" />
             </FrameLayout>
-
             <TextView
+                android:layout_marginTop="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
@@ -130,7 +134,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@{viewModel.product.productType.toString()}" />
+                        android:text="@{ProductType.productTypeToString(viewModel.product.productType)}" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -186,10 +190,11 @@
             </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_marginTop="10dp"
+                android:background="@color/md_theme_surfaceContainer"
                 android:id="@+id/profile_recycler_view_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintHeight_max="170dp">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/textView"
@@ -199,11 +204,24 @@
                     android:textColor="@color/md_theme_primary"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <include
+                    android:id="@+id/no_data"
+                    layout="@layout/no_data"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/profile_recycler_view"
+                    app:layout_constraintHeight_max="170dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:maxHeight="57dp"
+                    android:minHeight="57dp"
+                    android:maxHeight="17dp"
+                    app:layout_constrainedHeight="true"
                     android:nestedScrollingEnabled="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView" />
@@ -212,6 +230,7 @@
             <FrameLayout
                 android:id="@+id/button_container"
                 android:layout_width="match_parent"
+                android:layout_marginTop="13dp"
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.button.MaterialButton

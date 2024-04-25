@@ -14,12 +14,34 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:menu="@menu/notification"
             android:background="@color/md_theme_surfaceContainer"
             app:title="Notification"
             app:titleTextColor="@color/md_theme_primary" />
     </com.google.android.material.appbar.AppBarLayout>
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_circular"
+        android:layout_width="wrap_content"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:layout_anchorGravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"/>
 
+    <include
+        android:id="@+id/no_data_view"
+        layout="@layout/no_data"
+        app:layout_constraintBottom_toBottomOf="@+id/notification_recycler_view"
+        app:layout_constraintEnd_toEndOf="@+id/notification_recycler_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout5" />
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginVertical="8dp"
         android:id="@+id/notification_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="00dp"

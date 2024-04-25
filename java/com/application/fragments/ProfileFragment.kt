@@ -11,7 +11,7 @@ import com.application.callbacks.ProfileFragmentCallback
 import com.application.databinding.FragmentProfileBinding
 import com.application.viewmodels.ProfilePageViewModel
 
-class ProfileFragment() : Fragment(R.layout.fragment_profile) {
+class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     lateinit var binding: FragmentProfileBinding
 
@@ -28,7 +28,6 @@ class ProfileFragment() : Fragment(R.layout.fragment_profile) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentProfileBinding.bind(view)
         addObserver()
-
         val sharedPreferences = requireActivity().getSharedPreferences(
             "mySharePref", AppCompatActivity.MODE_PRIVATE
         )

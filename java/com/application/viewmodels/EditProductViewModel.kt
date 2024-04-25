@@ -18,16 +18,17 @@ import kotlinx.coroutines.launch
 import java.util.Date
 
 class EditProductViewModel(private val productRepository: ProductRepository) : ViewModel() {
+    var isDataUpdate: Boolean = false
 
-    private val _isUpload: MutableLiveData<Boolean?> = MutableLiveData()
+    private var _isUpload: MutableLiveData<Boolean?> = MutableLiveData()
     val isUpload: LiveData<Boolean?> = _isUpload
 
     private var _product: MutableLiveData<Product?> = MutableLiveData()
     val product: LiveData<Product?> = _product
 
 
-    private val _images: MutableLiveData<MutableList<Bitmap>> = MutableLiveData(mutableListOf())
-    val images: LiveData<MutableList<Bitmap>> = _images
+    private val _images: MutableLiveData<MutableList<Bitmap>?> = MutableLiveData(mutableListOf())
+    val images: LiveData<MutableList<Bitmap>?> = _images
 
 
     fun postProduct(
@@ -77,7 +78,6 @@ class EditProductViewModel(private val productRepository: ProductRepository) : V
         _product.value = product
         _images.value = product.images.toMutableList()
     }
-
 
 
 
