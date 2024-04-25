@@ -21,7 +21,6 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:titleCentered="true"
                 app:titleTextColor="@color/md_theme_primary" />
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -59,8 +58,8 @@
                         android:id="@+id/indicator"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_gravity="center|bottom"/>
+                        android:layout_gravity="center|bottom"
+                        android:orientation="horizontal" />
                 </FrameLayout>
 
                 <com.google.android.material.button.MaterialButton
@@ -145,7 +144,7 @@
                         android:layout_height="wrap_content"
                         android:hint="Price"
                         android:imeOptions="actionNext"
-                        android:inputType="number"
+                        android:inputType="numberDecimal"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -163,7 +162,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:hint="Categories"
-                        android:padding="15dp" />
+                        android:padding="15dp"
+                        android:imeOptions="actionNext"
+                        android:inputType="text"
+                        android:maxLines="1"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -180,9 +182,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Location"
-                        android:imeOptions="actionNext"
-                        android:maxLines="1"
-                        android:scrollbars="vertical" />
+                        android:inputType="text"
+                        android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton

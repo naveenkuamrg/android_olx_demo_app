@@ -5,11 +5,12 @@ import java.util.Locale
 enum class ProductType {
     VEHICLES,
     MOBILES,
-    ELECTRONICS_AND_APPLIANCES,
+    APPLIANCES,
     FURNITURE,
     FASHION,
-    BOOKS_SPORTS_AND_HOBBIES,
-    SPORTS;
+    BOOKS,
+    SPORTS,
+    OTHERS;
 
     companion object {
         fun stringToProductType(type: String): ProductType? {
@@ -18,6 +19,21 @@ enum class ProductType {
             } catch (e: IllegalArgumentException) {
                 null
             }
+        }
+
+        @JvmStatic
+        fun productTypeToString(type: ProductType?): String{
+             return when(type){
+                  VEHICLES -> { "Vehicles" }
+                  MOBILES -> {"Mobiles"}
+                  APPLIANCES -> {"Appliances"}
+                  FURNITURE -> {"Furniture"}
+                  FASHION -> {"Fashion"}
+                  BOOKS -> {"Books"}
+                  SPORTS -> {"Sports"}
+                  OTHERS->{"Others"}
+                 null -> {""}
+             }
         }
     }
 }

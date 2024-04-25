@@ -17,9 +17,13 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.SizeReadyCallback
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 
 
 object ImageConverter {
+
 
     fun loadBitmapFromUri(
         context: Context,
@@ -53,4 +57,5 @@ object ImageConverter {
 
             })
     }
+
 }

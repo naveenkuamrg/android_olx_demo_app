@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.application.model.Notification
 import com.application.repositories.NotificationRepository
 import com.application.repositories.impl.NotificationRepositoryImpl
@@ -15,26 +17,35 @@ import kotlinx.coroutines.launch
 class NotificationViewModel(private val notificationRepository: NotificationRepository) :
     ViewModel() {
 
-    private val _isLoading: MutableLiveData<Boolean> = MutableLiveData()
-    val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _notifications: MutableLiveData<List<Notification>> = MutableLiveData()
-    val notifications: LiveData<List<Notification>> = _notifications
+    val notifications: LiveData<PagingData<Notification>> =
+        notificationRepository.getNotification().cachedIn(viewModelScope)
 
-    fun fetchNotification(userId: Long) {
-        _isLoading.value = false
+    private val _isUnReadNotification: MutableLiveData<Boolean> = MutableLiveData()
+    val isUnReadNotification: LiveData<Boolean> = _isUnReadNotification
+
+
+
+    fun getIsReadNotification() {
         viewModelScope.launch(Dispatchers.Default) {
-            _notifications.postValue(notificationRepository.getNotification(userId))
-            _isLoading.postValue(true)
+            _isUnReadNotification.postValue(notificationRepository.isUnreadNotification())
         }
     }
 
-    fun updateNotificationIsReadStatus(userId: Long) {
+    fun updateNotificationIsReadStatus(notificationId: Long) {
         viewModelScope.launch(Dispatchers.Default) {
-            notificationRepository.updateNotificationIsReadStatus(userId)
+            notificationRepository.updateNotificationIsReadStatus(notificationId)
         }
 
     }
+
+    fun updateAllNotificationIsRead(){
+        viewModelScope.launch(Dispatchers.Default) {
+            notificationRepository.updateAllNotificationIsReadStatus()
+        }
+    }
+
+
 
     companion object {
         val FACTORY = object : ViewModelProvider.Factory {

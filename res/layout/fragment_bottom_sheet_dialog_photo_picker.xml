@@ -1,19 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:orientation="horizontal"
-    android:layout_height="match_parent">
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/galleryBtn"
-        android:layout_width="wrap_content"
-        style="?attr/materialIconButtonStyle"
-        android:text="Gallery"
-        android:layout_marginEnd="10dp"
-        android:layout_height="wrap_content"/>
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/cameraBtn"
-        android:layout_width="wrap_content"
-        style="?attr/materialIconButtonStyle"
-        android:text="Camera"
-        android:layout_height="wrap_content"/>
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp">
+
+    <androidx.cardview.widget.CardView
+        android:elevation="0dp"
+        android:defaultFocusHighlightEnabled="false"
+        android:layout_width="23dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        app:cardBackgroundColor="@color/md_theme_primary" />
+
+
+        <LinearLayout
+            android:id="@+id/galleryBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_photo" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:focusable="false"
+                android:clickable="false"
+                style="?attr/materialIconButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Gallery"
+                android:textAlignment="textStart" />
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:id="@+id/cameraBtn"
+            android:focusable="true"
+            android:clickable="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="20dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_gravity="center"
+                android:focusable="true"
+                android:clickable="true"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/ic_camer" />
+
+            <TextView
+                android:focusable="false"
+                android:clickable="false"
+                style="?attr/materialIconButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Camera"
+                android:textAlignment="textStart" />
+        </LinearLayout>
 </LinearLayout>

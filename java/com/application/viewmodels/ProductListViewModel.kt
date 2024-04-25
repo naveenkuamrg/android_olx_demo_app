@@ -4,74 +4,85 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.paging.PagingData
+import androidx.paging.TerminalSeparatorType
+import androidx.paging.cachedIn
+import androidx.paging.insertHeaderItem
 import com.application.model.ProductListItem
 import com.application.model.ProductSortType
 import com.application.model.ProductType
+import com.application.repositories.NotificationRepository
 import com.application.repositories.ProductRepository
+import com.application.repositories.impl.NotificationRepositoryImpl
 import com.application.repositories.impl.ProductRepositoryImpl
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
-class ProductListViewModel(private val productRepository: ProductRepository) : ViewModel() {
+class ProductListViewModel(
+    private val productRepository: ProductRepository
+) : ViewModel() {
 
-
-    private val _currentSortType: MutableLiveData<ProductSortType> = MutableLiveData()
+    private val _currentSortType: MutableLiveData<ProductSortType> =
+        MutableLiveData(ProductSortType.POSTED_DATE_DESC)
     var currentSortType: LiveData<ProductSortType> = _currentSortType
 
-    private val _data: MutableLiveData<List<ProductListItem.ProductItem>> = MutableLiveData()
-    val data: LiveData<List<ProductListItem.ProductItem>> = _data
+    val sellProductList: LiveData<PagingData<ProductListItem>> =
+        productRepository.getProductSummaryDetailsForSellZone().asLiveData()
+            .cachedIn(viewModelScope)
+    val favoriteProductList: LiveData<PagingData<ProductListItem>> =
+        productRepository.getFavouriteProductList().asLiveData()
+            .cachedIn(viewModelScope)
 
-    fun getProductSummary(id: Long) {
-        viewModelScope.launch(Dispatchers.Default) {
-            _data.postValue(productRepository.getProductSummaryDetailsForSellZone(id))
-        }
-    }
+    val interestedProductList: LiveData<PagingData<ProductListItem>> =
+        productRepository.getInterestedProductList().asLiveData()
+            .cachedIn(viewModelScope)
 
-    fun getProductSummary(id: Long, sortType: ProductSortType) {
-        _currentSortType.value = sortType
-        viewModelScope.launch(Dispatchers.Default) {
-            _data.postValue(
-                productRepository.getProductSummaryDetailsForBuyZone(
-                    id,
-                    sortType
-                )
-            )
-        }
-    }
+    var productListPostedDateASC: LiveData<PagingData<ProductListItem>> = setHeader(
+        productRepository.getProductSummaryDetailsForBuyZonePostedDateASC()
+    )
+
+    var productListPostedDateDESC: LiveData<PagingData<ProductListItem>> = setHeader(
+        productRepository.getProductSummaryDetailsForBuyZonePostedDateDESC()
+    )
+
+    var productListPricesASC: LiveData<PagingData<ProductListItem>> = setHeader(
+        productRepository.getProductSummaryDetailsForBuyZonePriceASC()
+    )
+
+    var productListPricesDESC: LiveData<PagingData<ProductListItem>> = setHeader(
+        productRepository.getProductSummaryDetailsForBuyZonePriceDESC()
+    )
 
 
     fun setCurrentProductType(type: ProductSortType) {
         _currentSortType.value = type
     }
 
-    fun getProductSummary(id: Long, sortType: ProductSortType,type: ProductType) {
-        _currentSortType.value = sortType
-        viewModelScope.launch(Dispatchers.Default) {
-            _data.postValue(
-                productRepository.getProductSummaryDetailsForBuyZone(
-                    id,
-                    type,
-                    sortType
-                )
-            )
-        }
+    private fun setHeader(pagingData: Flow<PagingData<ProductListItem>>):
+            LiveData<PagingData<ProductListItem>> {
+        return pagingData.map {
+            it.insertHeaderItem(TerminalSeparatorType.FULLY_COMPLETE, ProductListItem.Header())
+        }.asLiveData().cachedIn(viewModelScope)
     }
 
-    fun getFavoriteProductSummary(userId: Long){
-        viewModelScope.launch(Dispatchers.Default) {
-            _data.postValue(productRepository.getFavouriteProductList(userId))
-        }
+    fun getProductSummary(type: ProductType) {
+        productListPostedDateASC =
+            productRepository.getProductSummaryDetailsForBuyZonePostedDateASC(type)
+                .asLiveData().cachedIn(viewModelScope)
+        productListPostedDateDESC =
+            productRepository.getProductSummaryDetailsForBuyZonePostedDateDESC(type)
+                .asLiveData().cachedIn(viewModelScope)
+        productListPricesASC =
+            productRepository.getProductSummaryDetailsForBuyZonePriceASC(type)
+                .asLiveData().cachedIn(viewModelScope)
+        productListPricesDESC =
+            productRepository.getProductSummaryDetailsForBuyZonePriceDESC(type)
+                .asLiveData().cachedIn(viewModelScope)
     }
-
-    fun getInterestedProductSummary(userId: Long){
-        viewModelScope.launch(Dispatchers.Default) {
-            _data.postValue(productRepository.getInterestedProductList(userId))
-        }
-    }
-
-
 
 
     companion object {

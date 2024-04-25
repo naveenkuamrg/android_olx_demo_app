@@ -2,6 +2,7 @@ package com.application.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.ImageView
@@ -25,7 +26,7 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
     lateinit var binding: FragmentProductDetailsBinding
     private val isCurrentUserProduct: Boolean
         get() {
-            return arguments?.getBoolean("isCurrentUserProduct", true) == true
+            return viewModel.product.value?.sellerId == Utility.getLoginUserId(requireContext())
         }
 
     private var userId: Long = -1
@@ -55,38 +56,56 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
     }
 
 
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentProductDetailsBinding.bind(view)
         setObserve()
-        setUpToolbar()
-        setOnClickListener()
-        setView()
 
+        setOnClickListener()
+        setUpAdapter()
+    }
+
+    private fun setUpAdapter(){
+        val recyclerView = binding.productDetailLayout.profileRecyclerView
+        recyclerView.layoutManager =
+            LinearLayoutManager(requireContext())
+        recyclerView.adapter =
+            ProfileSummaryAdapter(requireContext()) { userId ->
+                viewModel.updateIsContented(userId, viewModel.product.value?.id!!)
+            }
     }
 
     private fun setView() {
+
+        if (
+            viewModel.product.value?.availabilityStatus == AvailabilityStatus.SOLD_OUT
+        ) {
+            binding.productDetailLayout.buttonContainer.visibility = View.GONE
+            binding.productDetailLayout.profileRecyclerViewContainer.visibility = View.GONE
+            binding.toolbar.menu.removeItem(R.id.edit)
+
+        } else {
+            binding.productDetailLayout.buttonContainer.visibility = View.VISIBLE
+            binding.productDetailLayout.profileRecyclerViewContainer.visibility = View.VISIBLE
+            binding.productDetailLayout.favouriteImg.visibility = View.GONE
+        }
+
         if (!isCurrentUserProduct) {
             binding.productDetailLayout.markAsSoldButton.visibility = View.GONE
             binding.productDetailLayout.imInterestedBtn.visibility = View.VISIBLE
             binding.productDetailLayout.profileRecyclerViewContainer.visibility = View.GONE
-
-        } else {
-            binding.productDetailLayout.favouriteImg.visibility = View.GONE
             if (
                 viewModel.product.value?.availabilityStatus == AvailabilityStatus.SOLD_OUT
             ) {
-                binding.productDetailLayout.buttonContainer.visibility = View.GONE
-                binding.productDetailLayout.profileRecyclerViewContainer.visibility = View.GONE
-                binding.toolbar.menu.removeItem(R.id.edit)
-
+                binding.productDetailLayout.favouriteImg.visibility = View.GONE
             } else {
-                binding.productDetailLayout.buttonContainer.visibility = View.VISIBLE
-                binding.productDetailLayout.profileRecyclerViewContainer.visibility = View.VISIBLE
-
+                binding.productDetailLayout.favouriteImg.visibility = View.VISIBLE
             }
+
+        } else {
+            binding.productDetailLayout.markAsSoldButton.visibility = View.VISIBLE
+
+            binding.productDetailLayout.favouriteImg.visibility = View.GONE
         }
 
 
@@ -110,31 +129,49 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
 
         binding.productDetailLayout.imInterestedBtn.setOnClickListener { btn ->
             btn.isEnabled = false
-            viewModel.product.value?.let {
-                viewModel.updateProductInterested(it, userId, !it.isInterested!!)
-
+            val message = if(viewModel.product.value?.isInterested == false){
+                "Your contact is shared with the product seller."
+            } else {
+                "Your contact is removed from the product seller."
             }
+
+            AlertDialog.Builder(requireContext()).apply {
+                setMessage(message)
+                setPositiveButton("Confirm"){_,_->
+                    viewModel.product.value?.let {
+                        viewModel.updateProductInterested(it, userId, !it.isInterested)
+                    }
+                }
+                setNegativeButton("No"){_,_-> btn.isEnabled = true}
+                setCancelable(false)
+                show()
+            }
+
+
         }
         binding.productDetailLayout.favouriteImg.setOnClickListener {
             viewModel.updateIsInterested(userId)
-
         }
     }
 
     private fun setObserve() {
-        //add loader background image should be gone while loading
-        viewModel.isLoading.observe(viewLifecycleOwner) {
 
+        viewModel.isLoading.observe(viewLifecycleOwner) {
             if (it == true) {
+                binding.appBarLayout4.visibility = View.GONE
                 binding.productDetailLayout.productDetailLayout.visibility = View.GONE
                 binding.progressCircular.visibility = View.VISIBLE
             }
 
             if (it == false) {
+                binding.appBarLayout4.visibility = View.VISIBLE
                 binding.productDetailLayout.productDetailLayout.visibility = View.VISIBLE
                 binding.progressCircular.visibility = View.GONE
+                setView()
+                setUpToolbar()
             }
         }
+
         viewModel.product.observe(viewLifecycleOwner) {
             if (isCurrentUserProduct && it?.availabilityStatus != AvailabilityStatus.SOLD_OUT) {
                 if (it?.id != null) {
@@ -147,10 +184,11 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
 
             binding.productDetailLayout.viewPager.adapter =
                 (viewModel.product.value?.images)?.toMutableList()
-                    ?.let { it1 -> ImageViewAdapter(it1)}
+                    ?.let { it1 -> ImageViewAdapter(it1) }
             setView()
             updateButtonUI()
         }
+
 
         viewModel.isDelete.observe(viewLifecycleOwner) {
             if (it == true) {
@@ -171,9 +209,11 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
             it?.let { isUpdate ->
                 binding.productDetailLayout.imInterestedBtn.isEnabled = true
                 if (isUpdate) {
-                    viewModel.product.value?.isInterested = !viewModel.product.value?.isInterested!!
+                    Log.i("check ", viewModel.product.value?.isInterested!!.toString())
+                    viewModel.setProductInterestedValue(!viewModel.product.value?.isInterested!!)
                     updateButtonUI()
-                } else {
+                }
+                if (!isUpdate) {
                     Utility.showToast(
                         requireContext(),
                         "Sorry, your update was not successful. Please try again later"
@@ -184,10 +224,18 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
         }
 
         viewModel.profileList.observe(viewLifecycleOwner) {
-            val adapter = ProfileSummaryAdapter(it, requireContext())
-            binding.productDetailLayout.profileRecyclerView.layoutManager =
-                LinearLayoutManager(requireContext())
-            binding.productDetailLayout.profileRecyclerView.adapter = adapter
+
+            if (it.isEmpty()) {
+                binding.productDetailLayout.noData.noDataLayout.visibility = View.VISIBLE
+                binding.productDetailLayout.noData.errorText.text = "No one interested"
+            } else {
+                binding.productDetailLayout.noData.noDataLayout.visibility = View.GONE
+            }
+            (binding.productDetailLayout.profileRecyclerView.adapter as ProfileSummaryAdapter)
+                .setData(
+                    it
+                )
+
         }
 
         viewModel.isWishListIsUpdate.observe(viewLifecycleOwner) {
@@ -207,8 +255,10 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
         viewModel.exception.observe(viewLifecycleOwner) {
             if (it != null) {
                 binding.productDetailLayoutContainer.visibility = View.GONE
-                binding.errorText.text = it.message
-                binding.errorText.visibility = View.VISIBLE
+                binding.noData.noDataLayout.visibility = View.VISIBLE
+                binding.noData.errorText.text = "This Product Deleted by seller"
+                binding.toolbar.menu.removeItem(R.id.edit)
+                binding.toolbar.menu.removeItem(R.id.delete)
             }
         }
 
@@ -271,6 +321,7 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
     }
 
     private fun updateButtonUI() {
+
         if (viewModel.product.value?.isInterested == false) {
             binding.productDetailLayout.imInterestedBtn.text = "I'm Interested"
         } else {

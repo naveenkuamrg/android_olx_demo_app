@@ -4,9 +4,12 @@ import com.application.entity.Notification
 import com.application.entity.ProductDetails
 import com.application.entity.User
 import com.application.entity.WishList
+import com.application.entity.relations.ProductsWithInterestedProfile
 import com.application.model.NotificationType
 import com.application.model.Product
+import com.application.model.ProductListItem
 import com.application.model.Profile
+import com.application.model.ProfileSummary
 import java.util.Date
 
 object ModelConverter {
@@ -49,15 +52,17 @@ object ModelConverter {
         recipientId: Long,
         productId: Long,
         type: NotificationType,
-        content: String
+        content: String,
+        senderId: Long
     ): Notification {
         return Notification(
             Date().time,
             false,
             recipientId,
+            senderId,
             productId,
             content,
-            type
+            type,
         )
     }
 
@@ -76,10 +81,44 @@ object ModelConverter {
         )
     }
 
-    fun wishListEntityBuilder(productId: Long,userId: Long): WishList{
-        return WishList(userId,productId)
+    fun wishListEntityBuilder(productId: Long, userId: Long): WishList {
+        return WishList(userId, productId)
     }
 
+    fun productsWithInterestedProfileSummary(model: ProductsWithInterestedProfile):
+            List<ProfileSummary> {
+        val listProfileSummary: MutableList<ProfileSummary> = mutableListOf()
+        model.profileList.forEach { user ->
+            var isContented: Boolean = false
+            model.isContented.forEach {
+                if(it.userId == user.id){
+                    isContented = it.isContented
+                    return@forEach
+                }
+            }
+            listProfileSummary.add(
+                ProfileSummary(
+                    user.id,
+                    user.name,
+                    user.phoneNumber,
+                    isContented
+                )
+            )
+        }
+
+        return listProfileSummary
+    }
+
+    fun productDetailsToProductSummary(productDetails: ProductDetails): ProductListItem{
+        return ProductListItem.ProductItem(
+            productDetails.id,
+            productDetails.title,
+            productDetails.postedDate,
+            productDetails.location,
+            productDetails.price,
+            productDetails.availabilityStatus
+        )
+    }
 }
 
 

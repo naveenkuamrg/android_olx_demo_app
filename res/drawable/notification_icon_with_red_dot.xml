@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ic_notificaiton"/>
+    <item android:drawable="@drawable/baseline_circle_24"
+        android:width="8dp"
+        android:id="@+id/notification_indicator"
+        android:height="8dp"
+        android:gravity="right"/>
+</layer-list>

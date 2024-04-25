@@ -8,14 +8,16 @@ import com.application.databinding.FragmentBottomSheetSortProductBinding
 import com.application.model.ProductSortType
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class BottomSheetDialogSort(private val callback: SortBottomSheetCallback) :
+class BottomSheetDialogSort :
     BottomSheetDialogFragment(R.layout.fragment_bottom_sheet_sort_product) {
         lateinit var binding: FragmentBottomSheetSortProductBinding
+        lateinit var callback: SortBottomSheetCallback
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentBottomSheetSortProductBinding.bind(view)
         setOnClickListener()
+        callback = parentFragment as SortBottomSheetCallback
     }
 
 

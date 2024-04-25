@@ -21,10 +21,10 @@ class SignInViewModel(private val repository: AuthenticationRepository) : ViewMo
     private val _exceptions = MutableLiveData<AuthenticationSignInException>()
     val exceptions: LiveData<AuthenticationSignInException> = _exceptions
 
-    fun signIn(email: String, password: String) {
+    fun signIn(identifier: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val id = repository.getUser(email, password)
+                val id = repository.getUser(identifier, password)
                 _user.postValue(id)
             } catch (e: AuthenticationSignInException) {
                 _exceptions.postValue(e)

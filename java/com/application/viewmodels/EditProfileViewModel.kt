@@ -29,6 +29,7 @@ class EditProfileViewModel(private val userRepository: UserRepository) : ViewMod
     private val _exception = MutableLiveData<InvalidUserDataException>()
     val exception: LiveData<InvalidUserDataException> = _exception
 
+    var isDataUpdate: Boolean = false
     fun uploadProfile(name: String, email: String, phone: String, profile: Profile) {
         viewModelScope.launch(Dispatchers.IO) {
             val userId = profile.id

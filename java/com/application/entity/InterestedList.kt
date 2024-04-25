@@ -14,5 +14,6 @@ data class InterestedList(
     @ColumnInfo("user_id")
     val userId: Long,
     @ColumnInfo("product_id")
-    val productId: Long
+    val productId: Long,
+    val isContented: Boolean
 )
