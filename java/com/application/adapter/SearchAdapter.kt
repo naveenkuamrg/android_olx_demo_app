@@ -64,7 +64,8 @@ class SearchAdapter(private val onItemClickListener: (Long)->Unit) :
         holder.productCategoryTextView.text =
             asyncListDiffer.currentList[position].type.toString()
         holder.itemView.setOnClickListener {
-            onItemClickListener(asyncListDiffer.currentList[position].id)
+//            onItemClickListener(asyncListDiffer.currentList[position].id)
+            onItemClickListener(holder.productId)
         }
     }
 

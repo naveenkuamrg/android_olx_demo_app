@@ -51,9 +51,9 @@ class NotificationFragment : Fragment(R.layout.fragment_notification) {
     private fun setUpRecyclerView() {
         val notificationRecyclerView = binding.notificationRecyclerView
         notificationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        val adapter = NotificationAdapter { id, type ->
+        val adapter = NotificationAdapter { id->
             notificationViewModel.updateNotificationIsReadStatus(id)
-            showDetailFragment(id, type)
+            showDetailFragment(id,)
         }
         notificationRecyclerView.adapter = adapter
 
@@ -92,7 +92,7 @@ class NotificationFragment : Fragment(R.layout.fragment_notification) {
 
     }
 
-    private fun showDetailFragment(notificationId: Long, type: NotificationType) {
+    private fun showDetailFragment(notificationId: Long) {
         parentFragmentManager.commitWithSlideAnimation(
             "showProductDetailFragment",
             ProductDetailsFragment().apply {

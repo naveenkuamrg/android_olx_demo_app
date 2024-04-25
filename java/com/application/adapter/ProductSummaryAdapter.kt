@@ -118,13 +118,11 @@ class ProductSummaryAdapter(private val onItemClickListener: (ProductItem) -> Un
                     .inflate(R.layout.product_item_header, parent, false)
                 FilterViewHolder(itemView)
             }
-
             PRODUCT_ITEM -> {
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.product_summary_view, parent, false)
                 ProductSummaryViewHolder(view)
             }
-
             DIVIDER -> {
                 val view =
                     LayoutInflater.from(parent.context).inflate(

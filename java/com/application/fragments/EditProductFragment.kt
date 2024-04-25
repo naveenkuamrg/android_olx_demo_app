@@ -5,6 +5,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputFilter
+import android.text.Spanned
 import android.text.TextWatcher
 import android.util.Log
 import android.view.Gravity
@@ -60,16 +62,26 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
 
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        binding.categoriesDropdown.addTextChangedListener(object: TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+        })
+//        binding.titleEditText.
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentEditProductBinding.bind(view)
-
-
-
 
         if (productViewModel.product.value == null) {
             binding.toolbar.title = "Add product"
@@ -253,55 +265,55 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
             Validator.validateField(
                 location
             ) {
-                if(!it) {
+                if (!it) {
                     isValid = it
                     binding.locationEditTextLayout.error = "Location should not be empty"
                     binding.locationEditTextLayout.requestFocus()
-                }else{
+                } else {
                     binding.locationEditTextLayout.error = null
                 }
             }
 
-            Validator.validatePrice(price) {_isValid, errorMessage->
-               if(!_isValid){
-                   isValid = _isValid
-                   binding.priceEditTextLayout.error = errorMessage
-                   binding.priceEditTextLayout.requestFocus()
-               }else{
-                   binding.priceEditTextLayout.error = errorMessage
-               }
+            Validator.validatePrice(price) { _isValid, errorMessage ->
+                if (!_isValid) {
+                    isValid = _isValid
+                    binding.priceEditTextLayout.error = errorMessage
+                    binding.priceEditTextLayout.requestFocus()
+                } else {
+                    binding.priceEditTextLayout.error = errorMessage
+                }
             }
 
-            Validator.validateCategory(category,) {
-                if(!it) {
+            Validator.validateCategory(category) {
+                if (!it) {
                     isValid = it
                     binding.categoriesDropdownLayout.error = "Please select the correct category"
                     binding.categoriesDropdownLayout.requestFocus()
-                }else{
+                } else {
                     binding.categoriesDropdownLayout.error = null
                 }
             }
 
             Validator.validateField(
                 description,
-            ){
-                if(!it) {
+            ) {
+                if (!it) {
                     isValid = it
                     binding.descriptionEditTextLayout.error = "Description should not be empty"
                     binding.descriptionEditTextLayout.requestFocus()
-                }else{
+                } else {
                     binding.descriptionEditTextLayout.error = null
                 }
             }
 
             Validator.validateField(
                 title
-            ){
-                if(!it) {
+            ) {
+                if (!it) {
                     isValid = it
                     binding.titleEditTextLayout.error = "Title should not be empty"
                     binding.titleEditTextLayout.requestFocus()
-                }else{
+                } else {
                     binding.titleEditTextLayout.error = null
                 }
             }
@@ -310,11 +322,11 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
                 editProductViewModel.images.value!!.size,
                 binding.textinputError
             ) {
-                if(!it) {
+                if (!it) {
                     isValid = it
                     binding.nestedScrollView2.scrollTo(0, 0)
                     binding.textinputError.visibility = View.VISIBLE
-                }else{
+                } else {
                     binding.textinputError.visibility = View.GONE
                 }
             }

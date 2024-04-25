@@ -17,17 +17,13 @@ import com.application.model.Notification
 import com.application.model.NotificationType
 import com.application.model.ProductListItem
 
-class NotificationAdapter(val onItemClickListener: (Long, NotificationType) -> Unit) :
-    PagingDataAdapter<Notification,
-            RecyclerView.ViewHolder>(NotificationDiffUtil()){
+class NotificationAdapter(val onItemClickListener: (Long) -> Unit) :
+    PagingDataAdapter<Notification, RecyclerView.ViewHolder>(NotificationDiffUtil()) {
 
     class NotificationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val contentTextView = itemView.findViewById<TextView>(R.id.content_text_view)
         val timeStamp = itemView.findViewById<TextView>(R.id.time_stamp_text_view)
-
     }
-
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationViewHolder {
         val itemView =
@@ -41,7 +37,7 @@ class NotificationAdapter(val onItemClickListener: (Long, NotificationType) -> U
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val value = getItem(position)
-        if(holder is NotificationViewHolder){
+        if (holder is NotificationViewHolder) {
             holder.contentTextView.text = value!!.content
             holder.timeStamp.text =
                 Utility.setCreatedTime(value.timestamp)
@@ -62,8 +58,7 @@ class NotificationAdapter(val onItemClickListener: (Long, NotificationType) -> U
             }
             holder.itemView.setOnClickListener {
                 onItemClickListener(
-                    value.id,
-                    value.type
+                    value.id
                 )
             }
         }
