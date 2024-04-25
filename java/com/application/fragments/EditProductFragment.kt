@@ -27,6 +27,7 @@ import com.application.callbacks.PhotoPickerBottomSheet
 import com.application.databinding.FragmentEditProductBinding
 import com.application.helper.StringConverter
 import com.application.helper.Utility
+import com.application.helper.Validator
 import com.application.model.ProductType
 import com.application.viewmodels.EditProductViewModel
 import com.application.viewmodels.ProductViewModel
@@ -104,11 +105,11 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
                     binding.categoriesDropdown.text.toString()
                 ) ||
                 isChanged(product?.location, binding.locationEditText.text.toString()) ||
-                isChanged(product?.images?.size,editProductViewModel.images.value?.size)
+                isChanged(product?.images?.size, editProductViewModel.images.value?.size)
     }
 
     private fun <T> isChanged(productVal: T, enteredVal: T): Boolean {
-        Log.i("EditProductFragment","${productVal} val ${enteredVal}")
+        Log.i("EditProductFragment", "${productVal} val ${enteredVal}")
         if (productVal == null && enteredVal.toString().isEmpty() || enteredVal == 0) {
             return false
         }
@@ -147,7 +148,6 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
             parentFragmentManager.popBackStack()
         }
     }
-
 
 
     private fun setObserveForUI() {
@@ -248,64 +248,77 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
             val location = binding.locationEditText.text.toString().trim()
             var isValid = true
 
-            if (title.isEmpty()) {
-                binding.titleEditTextLayout.error = "Title should not be empty"
-                binding.titleEditTextLayout.requestFocus()
-                isValid = false
-            } else {
-                binding.titleEditTextLayout.error = null
-            }
-            if (description.isEmpty()) {
-                binding.descriptionEditTextLayout.error = "Description should not be empty"
-                binding.descriptionEditText.requestFocus()
-                isValid = false
-            } else {
-                binding.descriptionEditTextLayout.error = null
-            }
-            if (price.isEmpty()) {
-                binding.priceEditTextLayout.error = "Price should not be empty"
-                binding.priceEditTextLayout.requestFocus()
-                isValid = false
-            } else {
-                if (price.toDouble() > 100000000) {
-                    binding.priceEditTextLayout.error =
-                        "your price should Less then Rs:10,00,00,000"
-                    binding.priceEditTextLayout.requestFocus()
-                    isValid = false
+
+
+            Validator.validateField(
+                location
+            ) {
+                if(!it) {
+                    isValid = it
+                    binding.locationEditTextLayout.error = "Location should not be empty"
+                    binding.locationEditTextLayout.requestFocus()
+                }else{
+                    binding.locationEditTextLayout.error = null
                 }
-                binding.priceEditTextLayout.error = null
-
             }
 
-            if (category.isEmpty()) {
-                binding.categoriesDropdownLayout.error = "Category should not be empty"
-                binding.categoriesDropdownLayout.requestFocus()
+            Validator.validatePrice(price) {_isValid, errorMessage->
+               if(!_isValid){
+                   isValid = _isValid
+                   binding.priceEditTextLayout.error = errorMessage
+                   binding.priceEditTextLayout.requestFocus()
+               }else{
+                   binding.priceEditTextLayout.error = errorMessage
+               }
+            }
 
-                isValid = false
-            } else {
-                binding.categoriesDropdownLayout.error = null
+            Validator.validateCategory(category,) {
+                if(!it) {
+                    isValid = it
+                    binding.categoriesDropdownLayout.error = "Please select the correct category"
+                    binding.categoriesDropdownLayout.requestFocus()
+                }else{
+                    binding.categoriesDropdownLayout.error = null
+                }
             }
-            if (ProductType.stringToProductType(category) == null) {
-                binding.categoriesDropdownLayout.error = "Please select the correct category"
-                binding.categoriesDropdownLayout.requestFocus()
-                isValid = false
-            } else {
-                binding.categoriesDropdownLayout.error = null
+
+            Validator.validateField(
+                description,
+            ){
+                if(!it) {
+                    isValid = it
+                    binding.descriptionEditTextLayout.error = "Description should not be empty"
+                    binding.descriptionEditTextLayout.requestFocus()
+                }else{
+                    binding.descriptionEditTextLayout.error = null
+                }
             }
-            if (location.isEmpty()) {
-                binding.locationEditTextLayout.error = "Location should not be empty"
-                binding.descriptionEditText.requestFocus()
-                isValid = false
-            } else {
-                binding.locationEditTextLayout.error = null
+
+            Validator.validateField(
+                title
+            ){
+                if(!it) {
+                    isValid = it
+                    binding.titleEditTextLayout.error = "Title should not be empty"
+                    binding.titleEditTextLayout.requestFocus()
+                }else{
+                    binding.titleEditTextLayout.error = null
+                }
             }
-            if (editProductViewModel.images.value!!.size == 0) {
-                binding.textinputError.text = "Must upload a single Image"
-                binding.textinputError.visibility = View.VISIBLE
-                isValid = false
-            } else {
-                binding.textinputError.visibility = View.GONE
+
+            Validator.validateImages(
+                editProductViewModel.images.value!!.size,
+                binding.textinputError
+            ) {
+                if(!it) {
+                    isValid = it
+                    binding.nestedScrollView2.scrollTo(0, 0)
+                    binding.textinputError.visibility = View.VISIBLE
+                }else{
+                    binding.textinputError.visibility = View.GONE
+                }
             }
+
 
             if (isValid) {
                 editProductViewModel.postProduct(

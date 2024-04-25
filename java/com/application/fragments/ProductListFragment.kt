@@ -5,6 +5,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.application.R
 import com.application.databinding.FragmentProductListBinding
+import com.application.helper.Utility.commitWithSlideAnimation
 import com.google.android.material.progressindicator.CircularProgressIndicator
 
 class ProductListFragment : BaseProductListFragment(R.layout.fragment_product_list) {
@@ -57,12 +58,6 @@ class ProductListFragment : BaseProductListFragment(R.layout.fragment_product_li
 
     }
 
-//    private fun setData(it: PagingData<ProductListItem>) {
-//        val fragment = childFragmentManager.findFragmentByTag("recyclerView")
-//        if (fragment is ProductRecycleViewFragment) {
-//            fragment.onSetData(it)
-//        }
-//    }
 
     private fun setToolbar() {
         val toolbar = binding.toolbar
@@ -79,24 +74,16 @@ class ProductListFragment : BaseProductListFragment(R.layout.fragment_product_li
     }
 
     override fun onProductSummaryClick(productId: Long) {
-        parentFragmentManager.beginTransaction().apply {
-            setCustomAnimations(
-                R.anim.slide_in,
-                R.anim.slide_out,
-                R.anim.slide_in_pop,
-                R.anim.slide_out_pop
-            )
-            addToBackStack("showProductDetailFragment")
-            replace(R.id.main_view_container, ProductDetailsFragment().apply {
+        parentFragmentManager.commitWithSlideAnimation(
+            "showProductDetailFragment",
+            ProductDetailsFragment().apply {
                 arguments = Bundle().apply {
                     putLong(
                         "currentProductId",
                         productId
                     )
                 }
-            })
-            commit()
-        }
+            },R.id.main_view_container)
     }
 
     override fun isListEmpty(isEmpty: Boolean) {

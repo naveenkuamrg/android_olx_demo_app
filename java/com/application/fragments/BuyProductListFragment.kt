@@ -2,8 +2,8 @@ package com.application.fragments
 
 import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import com.application.helper.Utility.commitWithSlideAnimation
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
@@ -11,17 +11,17 @@ import com.application.R
 import com.application.callbacks.SearchbarCallback
 import com.application.callbacks.ProductRecyclerFragmentWithFilterCallback
 import com.application.callbacks.ProductViewCallback
-import com.application.databinding.FragmentHomeBinding
+import com.application.databinding.FragmentBuyZoneBinding
 import com.application.model.ProductSortType
 import com.application.model.ProductType
 import com.application.viewmodels.NotificationViewModel
 import com.google.android.material.progressindicator.CircularProgressIndicator
 
 
-class BuyProductListFragment : SortableProductListFragment(R.layout.fragment_home),
+class BuyProductListFragment : SortableProductListFragment(R.layout.fragment_buy_zone),
     ProductRecyclerFragmentWithFilterCallback {
 
-    lateinit var binding: FragmentHomeBinding
+    lateinit var binding: FragmentBuyZoneBinding
 
     override lateinit var progressIndicator: CircularProgressIndicator
 
@@ -47,7 +47,7 @@ class BuyProductListFragment : SortableProductListFragment(R.layout.fragment_hom
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding = FragmentHomeBinding.bind(view)
+        binding = FragmentBuyZoneBinding.bind(view)
         recyclerView = binding.recycleView
         progressIndicator = binding.progressCircular
         super.onViewCreated(view, savedInstanceState)
@@ -58,17 +58,11 @@ class BuyProductListFragment : SortableProductListFragment(R.layout.fragment_hom
     }
 
     override fun onFilterItemClick(productType: ProductType) {
-        parentFragment?.parentFragmentManager?.beginTransaction()?.apply {
-            setCustomAnimations(
-                R.anim.slide_in,
-                R.anim.slide_out,
-                R.anim.slide_in_pop,
-                R.anim.slide_out_pop
-            )
-            replace(R.id.main_view_container, FilterProductListFragment.getInstant(productType))
-            addToBackStack("Filter")
-            commit()
-        }
+        parentFragment?.parentFragmentManager?.commitWithSlideAnimation(
+            "Filter",
+            FilterProductListFragment.getInstant(productType),
+            R.id.main_view_container
+        )
     }
 
     override fun onProductSummaryClick(productId: Long) {
@@ -85,7 +79,7 @@ class BuyProductListFragment : SortableProductListFragment(R.layout.fragment_hom
         toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.sort -> {
-                    if(childFragmentManager.findFragmentByTag("bottomSheet") != null){
+                    if (childFragmentManager.findFragmentByTag("bottomSheet") != null) {
                         return@setOnMenuItemClickListener true
                     }
                     val bottomSheet = BottomSheetDialogSort()

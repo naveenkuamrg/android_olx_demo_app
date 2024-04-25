@@ -6,6 +6,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.application.R
 import com.application.databinding.FragmentFilterProductsBinding
+import com.application.helper.Utility.commitWithSlideAnimation
 import com.application.model.ProductType
 import com.google.android.material.progressindicator.CircularProgressIndicator
 
@@ -59,12 +60,12 @@ class FilterProductListFragment :
         toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.sort -> {
-                    if(childFragmentManager.findFragmentByTag("bottomSheet") != null){
+                    if (childFragmentManager.findFragmentByTag("bottomSheet") != null) {
                         return@setOnMenuItemClickListener true
                     }
                     val bottomSheet = BottomSheetDialogSort()
                     bottomSheet.show(childFragmentManager, "bottomSheet")
-                    return@setOnMenuItemClickListener  true
+                    return@setOnMenuItemClickListener true
                 }
             }
             return@setOnMenuItemClickListener false
@@ -74,24 +75,19 @@ class FilterProductListFragment :
 
 
     override fun onProductSummaryClick(productId: Long) {
-        parentFragmentManager.beginTransaction().apply {
-            addToBackStack("showProductDetailFragment")
-            setCustomAnimations(
-                R.anim.slide_in,
-                R.anim.slide_out,
-                R.anim.slide_in_pop,
-                R.anim.slide_out_pop
-            )
-            replace(R.id.main_view_container, ProductDetailsFragment().apply {
+        parentFragmentManager.commitWithSlideAnimation(
+            "showProductDetailFragment",
+            ProductDetailsFragment().apply {
                 arguments = Bundle().apply {
                     putLong(
                         "currentProductId",
                         productId
                     )
                 }
-            })
-            commit()
-        }
+            },
+            R.id.main_view_container
+        )
+
     }
 
     override fun isListEmpty(isEmpty: Boolean) {

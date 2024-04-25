@@ -28,7 +28,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentProfileBinding.bind(view)
         addObserver()
-
         val sharedPreferences = requireActivity().getSharedPreferences(
             "mySharePref", AppCompatActivity.MODE_PRIVATE
         )

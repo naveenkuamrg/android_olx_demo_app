@@ -25,7 +25,7 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
         addObserver()
         binding.reenterPassword.doAfterTextChanged { text ->
             if (text.toString() != binding.passwordEdittext.text.toString()) {
-                binding.reenterPasswordLayout.error = "password dose not match"
+                binding.reenterPasswordLayout.error = "Passwords do not match"
             } else {
                 binding.reenterPasswordLayout.error = null
             }
@@ -92,9 +92,9 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
         }
         if (password != confirmPassword || confirmPassword == "") {
             isValid = false
-            binding.reenterPasswordLayout.error = "not match"
+            binding.reenterPasswordLayout.error = "Passwords do not match"
             if (password == "") {
-                binding.reenterPasswordLayout.error = "can't be empty"
+                binding.reenterPasswordLayout.error = "Password can't be empty"
             }
 
         } else {
@@ -103,9 +103,9 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
 
         if (!Validator.doesNotContainSpecialChars(name)) {
             if (name == "") {
-                binding.nameEditTextLayout.error = "Name not Should be empty"
+                binding.nameEditTextLayout.error = "Name should not be empty"
             } else {
-                binding.nameEditTextLayout.error = "Name dosen't allowed spical chareters"
+                binding.nameEditTextLayout.error = "Name shouldn't contain special characters"
             }
             isValid = false
         } else {

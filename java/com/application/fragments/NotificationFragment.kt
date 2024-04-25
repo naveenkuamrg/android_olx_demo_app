@@ -11,6 +11,7 @@ import com.application.R
 import com.application.adapter.NotificationAdapter
 import com.application.databinding.FragmentNotificationBinding
 import com.application.helper.Utility
+import com.application.helper.Utility.commitWithSlideAnimation
 import com.application.model.NotificationType
 import com.application.viewmodels.NotificationViewModel
 import kotlinx.coroutines.launch
@@ -35,15 +36,39 @@ class NotificationFragment : Fragment(R.layout.fragment_notification) {
         binding.toolbar.setNavigationOnClickListener {
             parentFragmentManager.popBackStack()
         }
+        binding.toolbar.setOnMenuItemClickListener {
+            when(it.itemId){
+                R.id.mark_everything_as_read->{
+                    notificationViewModel.updateAllNotificationIsRead()
+                    return@setOnMenuItemClickListener true
+                }
+            }
+
+            return@setOnMenuItemClickListener false
+        }
     }
 
     private fun setUpRecyclerView() {
         val notificationRecyclerView = binding.notificationRecyclerView
         notificationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        notificationRecyclerView.adapter = NotificationAdapter { id, type ->
+        val adapter = NotificationAdapter { id, type ->
             notificationViewModel.updateNotificationIsReadStatus(id)
             showDetailFragment(id, type)
         }
+        notificationRecyclerView.adapter = adapter
+
+        adapter.addLoadStateListener {
+            binding.noDataView.imageView2.setImageResource(R.drawable.ic_notifications_off)
+            binding.noDataView.errorText.text = "No Notices right now"
+            if (it.append.endOfPaginationReached) {
+                if (adapter.itemCount < 1) {
+                    binding.noDataView.noDataLayout.visibility = View.VISIBLE
+                } else {
+                    binding.noDataView.noDataLayout.visibility = View.GONE
+                }
+            }
+        }
+
         val dividerItemDecoration =
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         requireContext().getDrawable(
@@ -68,29 +93,16 @@ class NotificationFragment : Fragment(R.layout.fragment_notification) {
     }
 
     private fun showDetailFragment(notificationId: Long, type: NotificationType) {
-        parentFragmentManager.beginTransaction().apply {
-            addToBackStack("showProductDetailFragment")
-            setCustomAnimations(
-                R.anim.slide_in,
-                R.anim.slide_out,
-                R.anim.slide_in_pop,
-                R.anim.slide_out_pop
-            )
-            replace(R.id.main_view_container, ProductDetailsFragment().apply {
+        parentFragmentManager.commitWithSlideAnimation(
+            "showProductDetailFragment",
+            ProductDetailsFragment().apply {
                 arguments = Bundle().apply {
                     putLong(
-                        "notificationId",
-                        notificationId
+                        "notificationId", notificationId
                     )
-                    if (type == NotificationType.PRODUCT
-                    ) {
-                        putBoolean("isCurrentUserProduct", false)
-                    } else {
-                        putBoolean("isCurrentUserProduct", true)
-                    }
                 }
-            })
-            commit()
-        }
+            },
+            R.id.main_view_container
+        )
     }
 }

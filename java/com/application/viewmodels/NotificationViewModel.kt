@@ -39,6 +39,12 @@ class NotificationViewModel(private val notificationRepository: NotificationRepo
 
     }
 
+    fun updateAllNotificationIsRead(){
+        viewModelScope.launch(Dispatchers.Default) {
+            notificationRepository.updateAllNotificationIsReadStatus()
+        }
+    }
+
 
 
     companion object {

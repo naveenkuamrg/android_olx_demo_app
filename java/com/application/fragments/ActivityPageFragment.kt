@@ -3,6 +3,7 @@ package com.application.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.application.helper.Utility.commitWithSlideAnimation
 import com.application.R
 import com.application.databinding.FragmentActivityBinding
 
@@ -40,20 +41,11 @@ class ActivityPageFragment : Fragment(R.layout.fragment_activity) {
     }
 
     private fun replaceFragment(addToBackStack: String, fragment: Fragment) {
-        parentFragmentManager.beginTransaction().apply {
-            setCustomAnimations(
-                R.anim.slide_in,
-                R.anim.slide_out,
-                R.anim.slide_in_pop,
-                R.anim.slide_out_pop
-            )
-            addToBackStack(addToBackStack)
-            replace(
-                R.id.main_view_container,
-                fragment
-            )
-            commit()
-        }
+        parentFragmentManager.commitWithSlideAnimation(
+            addToBackStack,
+            fragment,
+            R.id.main_view_container
+        )
     }
 
 

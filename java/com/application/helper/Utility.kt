@@ -6,6 +6,10 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.commit
+import com.application.R
 import java.text.FieldPosition
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -122,5 +126,26 @@ object Utility {
         return calendar.get(Calendar.DAY_OF_MONTH)
     }
 
+    /*
+    This function commit and animation when the fragment is replace and commit
+     */
+    fun FragmentManager.commitWithSlideAnimation(
+        addToBackStack: String?,
+        fragment: Fragment,
+        containerViewId: Int
+    ) {
+        commit{
+            setCustomAnimations(
+                R.anim.slide_in,
+                R.anim.slide_out,
+                R.anim.slide_in_pop,
+                R.anim.slide_out_pop
+            )
+            replace(containerViewId, fragment)
+            if (addToBackStack != null) {
+                addToBackStack(addToBackStack)
+            }
+        }
+    }
 
 }

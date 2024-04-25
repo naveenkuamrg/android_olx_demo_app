@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
 
         if(!sharedPreferences.getBoolean("dataInjected",false)){
             CoroutineScope(Dispatchers.Default).launch {
-                InjectData(this@MainActivity).addSampleData()
+                DataInjection(this@MainActivity).addSampleData()
             }
         }
 
