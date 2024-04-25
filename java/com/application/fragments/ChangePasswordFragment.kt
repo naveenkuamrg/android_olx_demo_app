@@ -1,6 +1,7 @@
 package com.application.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -44,22 +45,39 @@ class ChangePasswordFragment : Fragment(R.layout.fragment_change_password) {
 
     private fun setOnClickListenerForButton() {
         binding.changePasswordButton.setOnClickListener {
+            var isValid = true
+            val oldPassword = binding.currentPasswordEditText.text.toString()
             val newPassword = binding.newPasswordEditText.text.toString()
             val reNewPassword = binding.reNewPasswordEditText.text.toString()
             val errorMessage = Validator.passwordValidator(newPassword)
             if (errorMessage != null) {
                 binding.newPasswordEditTextlayout.error = errorMessage
-                return@setOnClickListener
+                isValid = false
             } else {
                 binding.newPasswordEditTextlayout.error = null
             }
+            Log.i("TAG naveen ",oldPassword.toString())
+            if(oldPassword.isEmpty()){
+                binding.currentPasswordEditTextlayout.error = "Not Empty"
+                isValid = false
+            }else{
+                binding.currentPasswordEditTextlayout.error = null
+            }
             if (reNewPassword != newPassword) {
                 binding.reNewPasswordEditTextlayout.error = "not match to new password"
-                return@setOnClickListener
+                isValid = false
             } else {
                 binding.reNewPasswordEditTextlayout.error = null
             }
 
+            if(reNewPassword.isEmpty()){
+                binding.reNewPasswordEditTextlayout.error = "Not Empty"
+            }else{
+                binding.reNewPasswordEditTextlayout.error = ""
+            }
+            if(!isValid){
+                return@setOnClickListener
+            }
             requireActivity().getSharedPreferences(
                 "mySharePref",
                 AppCompatActivity.MODE_PRIVATE

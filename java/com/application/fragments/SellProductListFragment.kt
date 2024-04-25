@@ -26,7 +26,7 @@ class SellProductListFragment : BaseProductListFragment(R.layout.fragment_sell_z
         progressIndicator = binding.progressCircular
         super.onViewCreated(view, savedInstanceState)
         callBack = parentFragment as ProductViewCallback
-        binding.noData.errorText.text = "You din't Post any Product"
+        binding.noData.errorText.text = "You didn't post any product"
         setOnClickListenerAddProduct()
         setObserve()
 

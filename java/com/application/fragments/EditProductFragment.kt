@@ -134,7 +134,7 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         if (isDataUpdate()) {
             AlertDialog.Builder(context).apply {
                 setMessage("If you go back, any changes you made will be lost")
-                setPositiveButton("OK") { _, _ ->
+                setPositiveButton("Confirm") { _, _ ->
                     parentFragmentManager.popBackStack()
                 }
                 setNegativeButton("NO", null)
