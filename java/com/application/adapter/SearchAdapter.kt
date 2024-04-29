@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.application.R
+import com.application.model.ProductType
 import com.application.model.SearchProductResultItem
 
 class SearchAdapter(private val onItemClickListener: (Long)->Unit) :
@@ -58,14 +59,13 @@ class SearchAdapter(private val onItemClickListener: (Long)->Unit) :
     }
 
     override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
-        holder.productId = asyncListDiffer.currentList[position].id
+        val data = asyncListDiffer.currentList[position]
+        holder.productId = data.id
         holder.productNameTextView.text =
-            asyncListDiffer.currentList[position].name
-        holder.productCategoryTextView.text =
-            asyncListDiffer.currentList[position].type.toString()
+            data.name
+        holder.productCategoryTextView.text = ProductType.productTypeToString(data.type)
         holder.itemView.setOnClickListener {
-//            onItemClickListener(asyncListDiffer.currentList[position].id)
-            onItemClickListener(holder.productId)
+            onItemClickListener(data.id)
         }
     }
 

@@ -1,22 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:elevation="3dp"
-        app:cardBackgroundColor="@color/md_theme_surface"
-        android:layout_height="match_parent">
-
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/product_image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </androidx.cardview.widget.CardView>
-
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
     <ImageView
         android:id="@+id/delete"
         android:layout_width="wrap_content"
@@ -29,4 +16,19 @@
         android:src="@drawable/ic_delete"
         android:tint="@color/md_theme_error" />
 
-</FrameLayout>
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:elevation="0dp"
+        app:cardBackgroundColor="@color/md_theme_surface"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/product_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.cardview.widget.CardView>
+
+
+
+</LinearLayout>

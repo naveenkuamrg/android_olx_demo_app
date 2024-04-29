@@ -51,7 +51,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
         if (isDataUpdate()) {
             AlertDialog.Builder(context).apply {
                 setMessage("If you go back, any changes you made will be lost")
-                setPositiveButton("OK") { _, _ ->
+                setPositiveButton("Confirm") { _, _ ->
                     editProfileViewModel.isDataUpdate = false
                     parentFragmentManager.popBackStack()
                 }
@@ -184,14 +184,14 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
                     }
 
                     if (!Validator.isPhoneNumberValid(phoneNumber)) {
-                        binding.phoneNumberEdittext.error = "Phone number is not valid"
+                        binding.phoneNumberEdittextLayout.error = "Phone number is not valid"
                         isValid = false
                     } else {
                         binding.phoneNumberEdittext.error = null
                     }
 
                     if (!Validator.doesNotContainSpecialChars(name)) {
-                        binding.nameEditTextLayout.error = "name dosn't have special chater"
+                        binding.nameEditTextLayout.error = "name doesn't have special character"
                         isValid = false
                     } else {
                         binding.nameEditTextLayout.error = null

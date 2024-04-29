@@ -255,6 +255,7 @@ class DataInjection(val context: Context) {
         productList.forEach {
             productRepository.insertProduct(it)
         }
+
         context.getSharedPreferences("mySharePref", AppCompatActivity.MODE_PRIVATE).edit {
             putBoolean("dataInjected", true)
         }
