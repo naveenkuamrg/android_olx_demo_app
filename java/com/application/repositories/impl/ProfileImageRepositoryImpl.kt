@@ -2,6 +2,7 @@ package com.application.repositories.impl
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.Log
 import com.application.dao.ImageDao
 import com.application.dao.ImageDaoImpl
 import com.application.repositories.ProfileImageRepository
