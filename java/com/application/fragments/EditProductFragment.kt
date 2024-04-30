@@ -74,7 +74,7 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
                 if (savedInstanceState == null) {
                     editProductViewModel.setProduct(it)
                 }
-                binding.postBtn.text = "Re-post"
+                binding.toolbar.menu.findItem(R.id.post).setIcon(R.drawable.baseline_check_24)
                 binding.toolbar.title = "Edit product"
             }
         }
@@ -236,97 +236,104 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
     }
 
     private fun setOnClickListenerForPostBtn() {
-        binding.postBtn.setOnClickListener {
-            val title = binding.titleEditText.text.toString().trim()
-            val description = binding.descriptionEditText.text.toString().trim()
-            val price = binding.priceEditText.text.toString()
-            val category = binding.categoriesDropdown.text.toString().trim()
-            val location = binding.locationEditText.text.toString().trim()
-            var isValid = true
+        binding.toolbar.setOnMenuItemClickListener {
+            when(it.itemId){
+                R.id.post ->{
+                    val title = binding.titleEditText.text.toString().trim()
+                    val description = binding.descriptionEditText.text.toString().trim()
+                    val price = binding.priceEditText.text.toString()
+                    val category = binding.categoriesDropdown.text.toString().trim()
+                    val location = binding.locationEditText.text.toString().trim()
+                    var isValid = true
 
 
 
-            Validator.validateField(
-                location
-            ) {
-                if (!it) {
-                    isValid = it
-                    binding.locationEditTextLayout.error = "Location should not be empty"
-                    binding.locationEditTextLayout.requestFocus()
-                } else {
-                    binding.locationEditTextLayout.error = null
+                    Validator.validateField(
+                        location
+                    ) {
+                        if (!it) {
+                            isValid = it
+                            binding.locationEditTextLayout.error = "Location should not be empty"
+                            binding.locationEditTextLayout.requestFocus()
+                        } else {
+                            binding.locationEditTextLayout.error = null
+                        }
+                    }
+
+                    Validator.validatePrice(price) { _isValid, errorMessage ->
+                        if (!_isValid) {
+                            isValid = _isValid
+                            binding.priceEditTextLayout.error = errorMessage
+                            binding.priceEditTextLayout.requestFocus()
+                        } else {
+                            binding.priceEditTextLayout.error = errorMessage
+                        }
+                    }
+
+                    Validator.validateCategory(category) {
+                        if (!it) {
+                            isValid = it
+                            binding.categoriesDropdownLayout.error = "Please select the correct category"
+                            binding.categoriesDropdownLayout.requestFocus()
+                        } else {
+                            binding.categoriesDropdownLayout.error = null
+                        }
+                    }
+
+                    Validator.validateField(
+                        description,
+                    ) {
+                        if (!it) {
+                            isValid = it
+                            binding.descriptionEditTextLayout.error = "Description should not be empty"
+                            binding.descriptionEditTextLayout.requestFocus()
+                        } else {
+                            binding.descriptionEditTextLayout.error = null
+                        }
+                    }
+
+                    Validator.validateField(
+                        title
+                    ) {
+                        if (!it) {
+                            isValid = it
+                            binding.titleEditTextLayout.error = "Title should not be empty"
+                            binding.titleEditTextLayout.requestFocus()
+                        } else {
+                            binding.titleEditTextLayout.error = null
+                        }
+                    }
+
+                    Validator.validateImages(
+                        editProductViewModel.images.value!!.size,
+                        binding.textinputError
+                    ) {
+                        if (!it) {
+                            isValid = it
+                            binding.nestedScrollView2.scrollTo(0, 0)
+                            binding.textinputError.visibility = View.VISIBLE
+                        } else {
+                            binding.textinputError.visibility = View.GONE
+                        }
+                    }
+
+                    if (isValid) {
+                        editProductViewModel.postProduct(
+                            title,
+                            description,
+                            price.toDouble(),
+                            category,
+                            location,
+                            Utility.getLoginUserId(requireContext())
+                        )
+                    }
+                    return@setOnMenuItemClickListener true
+                }
+                else -> {
+                    return@setOnMenuItemClickListener  false
                 }
             }
 
-            Validator.validatePrice(price) { _isValid, errorMessage ->
-                if (!_isValid) {
-                    isValid = _isValid
-                    binding.priceEditTextLayout.error = errorMessage
-                    binding.priceEditTextLayout.requestFocus()
-                } else {
-                    binding.priceEditTextLayout.error = errorMessage
-                }
-            }
-
-            Validator.validateCategory(category) {
-                if (!it) {
-                    isValid = it
-                    binding.categoriesDropdownLayout.error = "Please select the correct category"
-                    binding.categoriesDropdownLayout.requestFocus()
-                } else {
-                    binding.categoriesDropdownLayout.error = null
-                }
-            }
-
-            Validator.validateField(
-                description,
-            ) {
-                if (!it) {
-                    isValid = it
-                    binding.descriptionEditTextLayout.error = "Description should not be empty"
-                    binding.descriptionEditTextLayout.requestFocus()
-                } else {
-                    binding.descriptionEditTextLayout.error = null
-                }
-            }
-
-            Validator.validateField(
-                title
-            ) {
-                if (!it) {
-                    isValid = it
-                    binding.titleEditTextLayout.error = "Title should not be empty"
-                    binding.titleEditTextLayout.requestFocus()
-                } else {
-                    binding.titleEditTextLayout.error = null
-                }
-            }
-
-            Validator.validateImages(
-                editProductViewModel.images.value!!.size,
-                binding.textinputError
-            ) {
-                if (!it) {
-                    isValid = it
-                    binding.nestedScrollView2.scrollTo(0, 0)
-                    binding.textinputError.visibility = View.VISIBLE
-                } else {
-                    binding.textinputError.visibility = View.GONE
-                }
-            }
-
-
-            if (isValid) {
-                editProductViewModel.postProduct(
-                    title,
-                    description,
-                    price.toDouble(),
-                    category,
-                    location,
-                    Utility.getLoginUserId(requireContext())
-                )
-
-            }
         }
     }
 
@@ -339,11 +346,15 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
                     productId!!,
                     Utility.getLoginUserId(requireContext())
                 )
-                //
+                val message = if(productViewModel.product.value == null){
+                    "Post product successfully"
+                }else{
+                    "update product successfully"
+                }
                 parentFragmentManager.popBackStack()
                 Toast.makeText(
                     requireContext(),
-                    "${binding.postBtn.text} product successfully",
+                    message,
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -351,7 +362,7 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
             if (isUploaded == false) {
                 Toast.makeText(
                     requireContext(),
-                    "Unable to ${binding.postBtn.text}",
+                    "Unable to Post",
                     Toast.LENGTH_SHORT
                 ).show()
             }
