@@ -160,13 +160,20 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
         )
     }
 
-    override fun onShowActivityPage() {
+    override fun onShowInterestedPage() {
         parentFragmentManager.commitWithSlideAnimation(
-            "showActivityFragment",
-            ActivityPageFragment(),
+            "ShowInterestedPage",
+            ProductListFragment.getInstances(ProductListFragment.INTERESTED_LIST),
             R.id.main_view_container
         )
+    }
 
+    override fun onShowFavouritePage() {
+        parentFragmentManager.commitWithSlideAnimation(
+            "ShowFavouritePage",
+            ProductListFragment.getInstances(ProductListFragment.FAVOURITE_LIST),
+            R.id.main_view_container
+        )
     }
 
     override fun onShowProductEditDetailPage() {

@@ -144,8 +144,12 @@
                 layout="@layout/navigator" />
 
             <include
-                android:id="@+id/monitor"
-                layout="@layout/navigator" />
+                android:id="@+id/favourite"
+                layout="@layout/navigator"/>
+
+            <include
+                android:id="@+id/interested"
+                layout="@layout/navigator"/>
 
             <include
                 android:id="@+id/logout"

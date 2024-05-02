@@ -79,13 +79,28 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             }
         }
 
-        binding.monitor.apply {
-            textLabel.text = "Your Activity"
-            imageFilterView.setImageResource(R.drawable.ic_monitor)
+        binding.interested.apply {
+            textLabel.text = "Interested"
+            imageFilterView.setImageResource(R.drawable.ic_interested)
             navigator.setOnClickListener {
-                callBack.onShowActivityPage()
+                callBack.onShowInterestedPage()
             }
         }
+
+        binding.favourite.apply {
+            textLabel.text = "Favourite"
+            imageFilterView.setImageResource(R.drawable.ic_favorite_outline)
+            navigator.setOnClickListener {
+                callBack.onShowFavouritePage()
+            }
+        }
+//        binding.monitor.apply {
+//            textLabel.text = "Your Activity"
+//            imageFilterView.setImageResource(R.drawable.ic_monitor)
+//            navigator.setOnClickListener {
+////                callBack.onShowActivityPage()
+//            }
+//        }
     }
 
 

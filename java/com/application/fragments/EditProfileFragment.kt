@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -149,6 +150,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
         editProfileViewModel.tempImage.observe(viewLifecycleOwner) {
 
             if (it != null) {
+                binding.userDp.scaleType = ImageView.ScaleType.CENTER_CROP
                 binding.userDp.setImageBitmap(it)
                 binding.addImageButton.apply {
                     text = "Change image"
@@ -157,11 +159,11 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
                 }
                 binding.removeImageBtn.visibility = View.VISIBLE
             } else {
+                binding.userDp.scaleType = ImageView.ScaleType.CENTER_INSIDE
                 binding.userDp.setImageResource(R.drawable.ic_add_image)
                 binding.addImageButton.apply {
                     text = "Add image"
-                    val drawable: Drawable = resources.getDrawable(R.drawable.ic_add, null)
-                    icon = drawable
+                    icon = null
                 }
                 binding.removeImageBtn.visibility = View.GONE
 
@@ -243,8 +245,6 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
             binding.removeImageBtn.visibility = View.GONE
             binding.addImageButton.apply {
                 text = "Add Image"
-                val drawable: Drawable = resources.getDrawable(R.drawable.ic_add, null)
-                icon = drawable
             }
         }
     }

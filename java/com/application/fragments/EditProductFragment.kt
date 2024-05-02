@@ -81,15 +81,25 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         if (savedInstanceState == null) {
             setObserveForUI()
         }
+        val textError = savedInstanceState?.getString("error", "")
+        if (textError?.isNotEmpty() == true) {
+            binding.textinputError.text = textError
+            binding.textinputError.visibility = View.VISIBLE
+        } else {
+            binding.textinputError.visibility = View.GONE
+        }
         setObserve()
         setUpToolbar()
         setCategoriesButton()
         setOnClickListenerForAddImageButton()
         setOnClickListenerForPostBtn()
-
         setUpOnBackPress()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString("error", binding.textinputError.text.toString())
+        super.onSaveInstanceState(outState)
+    }
 
     private fun isDataUpdate(): Boolean {
         val product = editProductViewModel.product.value
@@ -237,8 +247,8 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
 
     private fun setOnClickListenerForPostBtn() {
         binding.toolbar.setOnMenuItemClickListener {
-            when(it.itemId){
-                R.id.post ->{
+            when (it.itemId) {
+                R.id.post -> {
                     val title = binding.titleEditText.text.toString().trim()
                     val description = binding.descriptionEditText.text.toString().trim()
                     val price = binding.priceEditText.text.toString()
@@ -273,7 +283,8 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
                     Validator.validateCategory(category) {
                         if (!it) {
                             isValid = it
-                            binding.categoriesDropdownLayout.error = "Please select the correct category"
+                            binding.categoriesDropdownLayout.error =
+                                "Please select the correct category"
                             binding.categoriesDropdownLayout.requestFocus()
                         } else {
                             binding.categoriesDropdownLayout.error = null
@@ -285,7 +296,8 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
                     ) {
                         if (!it) {
                             isValid = it
-                            binding.descriptionEditTextLayout.error = "Description should not be empty"
+                            binding.descriptionEditTextLayout.error =
+                                "Description should not be empty"
                             binding.descriptionEditTextLayout.requestFocus()
                         } else {
                             binding.descriptionEditTextLayout.error = null
@@ -329,8 +341,9 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
                     }
                     return@setOnMenuItemClickListener true
                 }
+
                 else -> {
-                    return@setOnMenuItemClickListener  false
+                    return@setOnMenuItemClickListener false
                 }
             }
 
@@ -346,9 +359,9 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
                     productId!!,
                     Utility.getLoginUserId(requireContext())
                 )
-                val message = if(productViewModel.product.value == null){
+                val message = if (productViewModel.product.value == null) {
                     "Post product successfully"
-                }else{
+                } else {
                     "update product successfully"
                 }
                 parentFragmentManager.popBackStack()

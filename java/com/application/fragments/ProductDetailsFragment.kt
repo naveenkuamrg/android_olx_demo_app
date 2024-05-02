@@ -60,7 +60,6 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentProductDetailsBinding.bind(view)
         setObserve()
-
         setOnClickListener()
         setUpAdapter()
     }
@@ -331,7 +330,7 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
 
     private fun setUpIndicatorForViewPager(imageSize: Int) {
 
-        if (imageSize != -1) {
+        if (imageSize != -1 && imageSize != 1) {
             val slideDot = binding.productDetailLayout.indicator
             slideDot.removeAllViews()
             val params = LinearLayout.LayoutParams(

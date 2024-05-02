@@ -140,9 +140,12 @@
             <include
                 android:id="@+id/change_password"
                 layout="@layout/navigator" />
+            <include
+                android:id="@+id/favourite"
+                layout="@layout/navigator"/>
 
             <include
-                android:id="@+id/monitor"
+                android:id="@+id/interested"
                 layout="@layout/navigator"/>
 
             <include

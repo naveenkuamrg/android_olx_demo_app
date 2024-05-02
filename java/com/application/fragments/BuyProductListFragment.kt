@@ -39,7 +39,7 @@ class BuyProductListFragment : SortableProductListFragment(R.layout.fragment_buy
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-            productListViewModel.setCurrentProductType(ProductSortType.POSTED_DATE_DESC)
+            sortTypeViewModel.setCurrentProductType(ProductSortType.POSTED_DATE_DESC)
         }
         searchbarCallback = parentFragment as SearchbarCallback
         productViewCallback = parentFragment as ProductViewCallback

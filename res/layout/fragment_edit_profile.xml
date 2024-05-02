@@ -43,6 +43,7 @@
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_gravity="center"
+                app:cardBackgroundColor="@color/md_theme_primaryContainer"
                 android:layout_marginTop="10dp"
                 android:padding="30dp"
                 app:cardCornerRadius="120dp">
@@ -55,7 +56,7 @@
                     android:layout_height="118dp"
                     android:layout_gravity="center"
                     android:layout_margin="5dp"
-                    android:scaleType="centerCrop"
+                    android:scaleType="centerInside"
                     android:src="@drawable/ic_add_image"
                     app:shapeAppearanceOverlay="@style/Circular" />
             </androidx.cardview.widget.CardView>
@@ -71,7 +72,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Add image"
-                    app:icon="@drawable/ic_add"
                     tools:ignore="MissingConstraints"
                     tools:layout_editor_absoluteX="124dp" />
 

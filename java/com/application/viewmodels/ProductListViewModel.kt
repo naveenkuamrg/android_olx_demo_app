@@ -26,10 +26,6 @@ class ProductListViewModel(
     private val productRepository: ProductRepository
 ) : ViewModel() {
 
-    private val _currentSortType: MutableLiveData<ProductSortType> =
-        MutableLiveData(ProductSortType.POSTED_DATE_DESC)
-    var currentSortType: LiveData<ProductSortType> = _currentSortType
-
     val sellProductList: LiveData<PagingData<ProductListItem>> =
         productRepository.getProductSummaryDetailsForSellZone().asLiveData()
             .cachedIn(viewModelScope)
@@ -57,10 +53,6 @@ class ProductListViewModel(
         productRepository.getProductSummaryDetailsForBuyZonePriceDESC()
     )
 
-
-    fun setCurrentProductType(type: ProductSortType) {
-        _currentSortType.value = type
-    }
 
     private fun setHeader(pagingData: Flow<PagingData<ProductListItem>>):
             LiveData<PagingData<ProductListItem>> {

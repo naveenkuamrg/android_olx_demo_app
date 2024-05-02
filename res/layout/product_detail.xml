@@ -25,8 +25,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp">
+            android:paddingStart="14dp"
+            android:paddingEnd="15dp">
 
             <LinearLayout
                 android:elevation="2dp"
@@ -76,7 +76,7 @@
                 android:layout_marginBottom="5dp"
                 android:alpha="0.8"
                 android:text="@{viewModel.product.title}"
-                android:textSize="8pt"
+                android:textSize="17.5sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -100,14 +100,16 @@
                     android:orientation="horizontal">
 
                     <FrameLayout
-                        android:layout_width="80dp"
+                        android:layout_width="85dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp">
+                        android:layout_marginEnd="8dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="start"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
                             android:text="Description"
                             android:textColor="@color/md_theme_primary" />
                     </FrameLayout>
@@ -115,6 +117,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
                         android:layout_marginBottom="15dp"
                         android:text="@{viewModel.product.description}" />
                 </LinearLayout>
@@ -125,7 +128,7 @@
                     android:layout_marginBottom="15dp">
 
                     <FrameLayout
-                        android:layout_width="80dp"
+                        android:layout_width="85dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10dp">
 
@@ -133,6 +136,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="start"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
                             android:text="Categories"
                             android:textColor="@color/md_theme_primary" />
                     </FrameLayout>
@@ -140,6 +145,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
                         android:text="@{ProductType.productTypeToString(viewModel.product.productType)}" />
                 </LinearLayout>
 
@@ -149,13 +155,15 @@
                     android:layout_marginBottom="15dp">
 
                     <FrameLayout
-                        android:layout_width="80dp"
+                        android:layout_width="85dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
                             android:layout_gravity="start"
                             android:text="Location"
                             android:textColor="@color/md_theme_primary" />
@@ -173,7 +181,7 @@
                     android:layout_height="wrap_content">
 
                     <FrameLayout
-                        android:layout_width="80dp"
+                        android:layout_width="85dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10dp">
 
@@ -181,12 +189,15 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="start"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
                             android:text="Posted Date"
                             android:textColor="@color/md_theme_primary" />
                     </FrameLayout>
 
                     <TextView
                         android:layout_width="match_parent"
+                        android:layout_gravity="center"
                         android:layout_height="wrap_content"
                         android:text="@{Utility.millisecondsToString(viewModel.product.postedDate)}" />
 
@@ -204,9 +215,11 @@
 
                 <TextView
                     android:id="@+id/textView"
+                    android:textSize="11pt"
+                    android:textStyle="bold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Interested Profile"
+                    android:text="Interested Buyers"
                     android:textColor="@color/md_theme_primary"
                     app:layout_constraintTop_toTopOf="parent" />
 

@@ -7,5 +7,11 @@ interface ProfileFragmentCallback {
 
     fun onShowChangePasswordPage()
 
-    fun onShowActivityPage()
+//    fun onShowActivityPage()
+
+    fun onShowInterestedPage()
+
+    fun onShowFavouritePage()
+
+
 }

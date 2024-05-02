@@ -1,10 +1,12 @@
 package com.application.fragments
 
+import androidx.fragment.app.activityViewModels
 import androidx.paging.PagingData
 import com.application.callbacks.ProductRecyclerFragmentCallback
 import com.application.callbacks.SortBottomSheetCallback
 import com.application.model.ProductListItem
 import com.application.model.ProductSortType
+import com.application.viewmodels.ProductSortTypeViewModel
 
 abstract class SortableProductListFragment(layoutId: Int) : BaseProductListFragment(layoutId),
     SortBottomSheetCallback, ProductRecyclerFragmentCallback {
@@ -12,9 +14,11 @@ abstract class SortableProductListFragment(layoutId: Int) : BaseProductListFragm
 
     private var isSortTypeUpdate = false
 
+    protected val sortTypeViewModel: ProductSortTypeViewModel by activityViewModels { ProductSortTypeViewModel.FACTORY }
+
     protected open fun setObserve(){
 
-        productListViewModel.currentSortType.observe(viewLifecycleOwner) {sort->
+        sortTypeViewModel.currentSortType.observe(viewLifecycleOwner) {sort->
             initAdapter()
             when (sort) {
                 ProductSortType.POSTED_DATE_DESC -> {
@@ -44,10 +48,14 @@ abstract class SortableProductListFragment(layoutId: Int) : BaseProductListFragm
         setData(data)
     }
 
+    override fun getCurrentSortType(): ProductSortType {
+        return  sortTypeViewModel.currentSortType.value!!
+    }
+
      override fun onSortTypeSelected(sortType: ProductSortType) {
-         if (productListViewModel.currentSortType.value != sortType) {
+         if (sortTypeViewModel.currentSortType.value != sortType) {
              isSortTypeUpdate = false
-             productListViewModel.setCurrentProductType(sortType)
+             sortTypeViewModel.setCurrentProductType(sortType)
          }
      }
 
