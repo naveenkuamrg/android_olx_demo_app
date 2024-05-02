@@ -110,8 +110,7 @@
                             android:layout_gravity="start"
                             android:textStyle="bold"
                             android:textSize="16sp"
-                            android:text="Description"
-                            android:textColor="@color/md_theme_primary" />
+                            android:text="Description" />
                     </FrameLayout>
 
                     <TextView
@@ -138,8 +137,7 @@
                             android:layout_gravity="start"
                             android:textSize="16sp"
                             android:textStyle="bold"
-                            android:text="Categories"
-                            android:textColor="@color/md_theme_primary" />
+                            android:text="Categories" />
                     </FrameLayout>
 
                     <TextView
@@ -165,8 +163,7 @@
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:layout_gravity="start"
-                            android:text="Location"
-                            android:textColor="@color/md_theme_primary" />
+                            android:text="Location" />
                     </FrameLayout>
 
                     <TextView
@@ -191,8 +188,7 @@
                             android:layout_gravity="start"
                             android:textSize="16sp"
                             android:textStyle="bold"
-                            android:text="Posted Date"
-                            android:textColor="@color/md_theme_primary" />
+                            android:text="Posted Date" />
                     </FrameLayout>
 
                     <TextView
@@ -208,6 +204,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_marginTop="10dp"
+                android:padding="10dp"
                 android:background="@color/md_theme_surfaceContainer"
                 android:id="@+id/profile_recycler_view_container"
                 android:layout_width="match_parent"
@@ -220,7 +217,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Interested Buyers"
-                    android:textColor="@color/md_theme_primary"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <include

@@ -45,7 +45,7 @@ class NotificationAdapter(val onItemClickListener: (Long) -> Unit) :
                 holder.itemView.setBackgroundColor(
                     ContextCompat.getColor(
                         holder.itemView.context,
-                        R.color.md_theme_onSecondaryContainer_highContrast
+                        R.color.md_theme_background
                     )
                 )
             } else {
