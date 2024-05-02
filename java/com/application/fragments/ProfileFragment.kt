@@ -28,7 +28,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentProfileBinding.bind(view)
         addObserver()
-
         val sharedPreferences = requireActivity().getSharedPreferences(
             "mySharePref", AppCompatActivity.MODE_PRIVATE
         )
@@ -81,7 +80,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         }
 
         binding.monitor.apply {
-            textLabel.text = "Your's Activity"
+            textLabel.text = "Your Activity"
             imageFilterView.setImageResource(R.drawable.ic_monitor)
             navigator.setOnClickListener {
                 callBack.onShowActivityPage()

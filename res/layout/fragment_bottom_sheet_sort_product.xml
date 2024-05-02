@@ -18,14 +18,14 @@
         android:id="@+id/posted_date_higher_to_lower"
         android:layout_width="match_parent"
         style="?attr/materialIconButtonStyle"
-        android:text="Posted date high to low"
+        android:text="Posted date new to old"
         android:layout_marginEnd="10dp"
         android:layout_height="wrap_content"/>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/posted_date_lower_to_higher"
         android:layout_width="match_parent"
         style="?attr/materialIconButtonStyle"
-        android:text="Posted date low to high"
+        android:text="Posted date old to new"
         android:layout_height="wrap_content"/>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/price_lower_to_higher"

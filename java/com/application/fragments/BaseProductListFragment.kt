@@ -29,11 +29,16 @@ abstract class BaseProductListFragment(layout: Int): Fragment(layout),
     protected val productListViewModel: ProductListViewModel by viewModels {
         ProductListViewModel.FACTORY
     }
+
     protected abstract var recyclerView: RecyclerView
     protected abstract var progressIndicator: CircularProgressIndicator
 
 
 
+    /*
+     Always call the this @onViewCreated(view: View, savedInstanceState: Bundle?)
+     before call the method init recyclerView and progress Indicator variables
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setUpRecycleView()
     }

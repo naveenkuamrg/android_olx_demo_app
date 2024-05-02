@@ -1,6 +1,7 @@
 package com.application.model
 
 import android.graphics.Bitmap
+import androidx.room.Ignore
 
 
 data class Notification(
@@ -8,5 +9,5 @@ data class Notification(
     val timestamp: Long,
     val isRead : Boolean,
     val content: String,
-    val type: NotificationType
+    val type: NotificationType,
 )

@@ -51,7 +51,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
         if (isDataUpdate()) {
             AlertDialog.Builder(context).apply {
                 setMessage("If you go back, any changes you made will be lost")
-                setPositiveButton("OK") { _, _ ->
+                setPositiveButton("Confirm") { _, _ ->
                     editProfileViewModel.isDataUpdate = false
                     parentFragmentManager.popBackStack()
                 }
@@ -120,13 +120,6 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
             binding.phoneNumberEdittext.text = StringConverter.toEditable(value.phoneNumber)
             if (value.profileImage != null) {
                 editProfileViewModel.tempImage.value = value.profileImage
-                binding.userDp.setImageBitmap(value.profileImage)
-                binding.addImageButton.apply {
-                    text = "Change image"
-                    val drawable: Drawable = resources.getDrawable(R.drawable.ic_edit, null)
-                    icon = drawable
-                }
-                binding.removeImageBtn.visibility = View.VISIBLE
             }
         }
     }
@@ -154,10 +147,24 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
         }
 
         editProfileViewModel.tempImage.observe(viewLifecycleOwner) {
+
             if (it != null) {
                 binding.userDp.setImageBitmap(it)
+                binding.addImageButton.apply {
+                    text = "Change image"
+                    val drawable: Drawable = resources.getDrawable(R.drawable.ic_edit, null)
+                    icon = drawable
+                }
+                binding.removeImageBtn.visibility = View.VISIBLE
             } else {
-                binding.userDp.setImageResource(R.drawable.ic_profile_outline)
+                binding.userDp.setImageResource(R.drawable.ic_add_image)
+                binding.addImageButton.apply {
+                    text = "Add image"
+                    val drawable: Drawable = resources.getDrawable(R.drawable.ic_add, null)
+                    icon = drawable
+                }
+                binding.removeImageBtn.visibility = View.GONE
+
             }
         }
     }
@@ -184,14 +191,14 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
                     }
 
                     if (!Validator.isPhoneNumberValid(phoneNumber)) {
-                        binding.phoneNumberEdittext.error = "Phone number is not valid"
+                        binding.phoneNumberEdittextLayout.error = "Phone number is not valid"
                         isValid = false
                     } else {
                         binding.phoneNumberEdittext.error = null
                     }
 
                     if (!Validator.doesNotContainSpecialChars(name)) {
-                        binding.nameEditTextLayout.error = "name dosn't have special chater"
+                        binding.nameEditTextLayout.error = "name doesn't have special character"
                         isValid = false
                     } else {
                         binding.nameEditTextLayout.error = null
@@ -217,7 +224,10 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
 
 
     private fun setOnClickListenerToAddImageBtn() {
-
+        binding.userDp.setOnClickListener {
+            val f = BottomSheetDialogPhotoPicker()
+            f.show(childFragmentManager, "bottomSheet")
+        }
         binding.addImageButton.setOnClickListener {
             val f = BottomSheetDialogPhotoPicker()
             f.show(childFragmentManager, "bottomSheet")

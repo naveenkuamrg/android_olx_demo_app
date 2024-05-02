@@ -21,8 +21,7 @@ import kotlinx.coroutines.launch
 class NotificationRepositoryImpl(val context: Context) : NotificationRepository {
 
     private val notificationDao = AppDatabase.getInstance(context).notificationDao
-    private val productImageRepository = ProductImageRepositoryImpl(context)
-    private val profileImageRepository = ProfileImageRepositoryImpl(context)
+
 
     override fun getNotification(): LiveData<PagingData<Notification>> {
 

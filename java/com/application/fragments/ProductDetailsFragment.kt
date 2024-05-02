@@ -129,12 +129,25 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
 
         binding.productDetailLayout.imInterestedBtn.setOnClickListener { btn ->
             btn.isEnabled = false
-
-            AlertDialog.Builder(requireContext())
-
-            viewModel.product.value?.let {
-                viewModel.updateProductInterested(it, userId, !it.isInterested)
+            val message = if(viewModel.product.value?.isInterested == false){
+                "Your contact is shared with the product seller."
+            } else {
+                "Your contact is removed from the product seller."
             }
+
+            AlertDialog.Builder(requireContext()).apply {
+                setMessage(message)
+                setPositiveButton("Confirm"){_,_->
+                    viewModel.product.value?.let {
+                        viewModel.updateProductInterested(it, userId, !it.isInterested)
+                    }
+                }
+                setNegativeButton("No"){_,_-> btn.isEnabled = true}
+                setCancelable(false)
+                show()
+            }
+
+
         }
         binding.productDetailLayout.favouriteImg.setOnClickListener {
             viewModel.updateIsInterested(userId)

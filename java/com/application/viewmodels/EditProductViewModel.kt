@@ -46,7 +46,7 @@ class EditProductViewModel(private val productRepository: ProductRepository) : V
                         product.value?.id,
                         title,
                         price,
-                        Date().time,
+                        product.value?.postedDate ?: Date().time,
                         description,
                         AvailabilityStatus.AVAILABLE,
                         location,
