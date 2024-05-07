@@ -57,7 +57,7 @@ abstract class BaseProductListFragment(layout: Int): Fragment(layout),
         initAdapter()
 
     }
-    final fun initAdapter() {
+     fun initAdapter() {
 
         val adapter  = ProductSummaryAdapter {
           onProductSummaryClick(it.id)
@@ -69,7 +69,9 @@ abstract class BaseProductListFragment(layout: Int): Fragment(layout),
             }
         }
 
+
         adapter.addLoadStateListener {
+            Log.i("TAG load",it.toString())
             if(it.refresh == LoadState.Loading){
                 progressIndicator.visibility = View.VISIBLE
             }else{

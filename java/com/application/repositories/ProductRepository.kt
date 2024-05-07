@@ -15,7 +15,7 @@ import com.application.model.ProfileSummary
 import kotlinx.coroutines.flow.Flow
 
 interface ProductRepository {
-    suspend fun insertProduct(product: Product): Boolean
+    suspend fun insertProduct(product: Product): Long
 
     fun getProductSummaryDetailsForSellZone(): Flow<PagingData<ProductListItem>>
 

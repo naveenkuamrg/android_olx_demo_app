@@ -1,42 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_height="wrap_content">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
     <androidx.cardview.widget.CardView
-        android:elevation="0dp"
-        android:defaultFocusHighlightEnabled="false"
         android:layout_width="23dp"
         android:layout_height="4dp"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
+        android:defaultFocusHighlightEnabled="false"
+        android:elevation="0dp"
         app:cardBackgroundColor="@color/md_theme_primary" />
 
-    <com.google.android.material.button.MaterialButton
-        android:layout_marginTop="13dp"
-        android:id="@+id/posted_date_higher_to_lower"
+    <!--    <com.google.android.material.button.MaterialButton-->
+    <!--        android:layout_marginTop="13dp"-->
+    <!--        android:id="@+id/posted_date_higher_to_lower"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        style="?attr/materialIconButtonStyle"-->
+    <!--        android:text="Posted date new to old"-->
+    <!--        android:layout_marginEnd="10dp"-->
+    <!--        android:layout_height="wrap_content"/>-->
+    <!--    <com.google.android.material.button.MaterialButton-->
+    <!--        android:id="@+id/posted_date_lower_to_higher"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        style="?attr/materialIconButtonStyle"-->
+    <!--        android:text="Posted date old to new"-->
+    <!--        android:layout_height="wrap_content"/>-->
+    <!--    <com.google.android.material.button.MaterialButton-->
+    <!--        android:id="@+id/price_lower_to_higher"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        style="?attr/materialIconButtonStyle"-->
+    <!--        android:text="Price low to high"-->
+    <!--        android:layout_height="wrap_content"/>-->
+    <!--    <com.google.android.material.button.MaterialButton-->
+    <!--        android:id="@+id/price_date_lower_to_higher"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        style="?attr/materialIconButtonStyle"-->
+    <!--        android:text="price high to low"-->
+    <!--        android:layout_height="wrap_content"/>-->
+
+    <LinearLayout
         android:layout_width="match_parent"
-        style="?attr/materialIconButtonStyle"
-        android:text="Posted date new to old"
-        android:layout_marginEnd="10dp"
-        android:layout_height="wrap_content"/>
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/posted_date_lower_to_higher"
+        android:layout_height="30dp"
+        android:paddingHorizontal="15dp">
+
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="Sort by"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
-        style="?attr/materialIconButtonStyle"
-        android:text="Posted date old to new"
-        android:layout_height="wrap_content"/>
+        android:layout_height="0.3dp" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/cg_sort_types"
+        style="@style/Widget.Material3.ChipGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        app:selectionRequired="false"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/posted_date_higher_to_lower"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Posted date new to old"
+            tools:checked="false" />
+
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/price_lower_to_higher"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Price low to high "
+            tools:checked="false" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/posted_date_lower_to_higher"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Posted date old to new"
+            tools:checked="false" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/price_date_lower_to_higher"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Price high to low"
+            tools:checked="false" />
+
+
+    </com.google.android.material.chip.ChipGroup>
+
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/price_lower_to_higher"
-        android:layout_width="match_parent"
-        style="?attr/materialIconButtonStyle"
-        android:text="Price low to high"
-        android:layout_height="wrap_content"/>
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/price_date_lower_to_higher"
-        android:layout_width="match_parent"
-        style="?attr/materialIconButtonStyle"
-        android:text="price high to low"
-        android:layout_height="wrap_content"/>
+        android:id="@+id/apply_button"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_margin="10dp"
+        android:text="Apply" />
+
 </LinearLayout>

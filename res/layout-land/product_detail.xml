@@ -15,17 +15,17 @@
     </data>
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_marginEnd="5dp"
-            android:elevation="3dp"
-            android:background="@color/md_theme_surface"
             android:id="@+id/frameLayout"
             android:layout_width="360dp"
             android:layout_height="match_parent"
+            android:layout_marginEnd="5dp"
+            android:background="@color/md_theme_surface"
+            android:elevation="3dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -42,27 +42,28 @@
                 android:src="@{viewModel.product.isWishList() ? @drawable/ic_favorite_fill : @drawable/ic_favorite_outline }" />
 
             <androidx.viewpager2.widget.ViewPager2
-                android:layout_weight="1"
                 android:id="@+id/view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
+                android:layout_weight="1"
                 android:foreground="?attr/selectableItemBackground"
                 android:scaleType="centerCrop" />
 
             <LinearLayout
-                android:layout_marginVertical="3dp"
                 android:id="@+id/indicator"
                 android:layout_width="wrap_content"
                 android:layout_height="8dp"
                 android:layout_gravity="center"
+                android:layout_marginVertical="3dp"
                 android:orientation="horizontal" />
         </LinearLayout>
 
         <androidx.core.widget.NestedScrollView
-            android:layout_weight="1"
+            android:scrollbars="vertical"
             android:id="@+id/nestedScrollView3"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/frameLayout"
@@ -114,8 +115,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="start"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
                                 android:text="Description"
                                 android:textColor="@color/md_theme_primary" />
                         </FrameLayout>
@@ -141,8 +140,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="start"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
                                 android:text="Categories"
                                 android:textColor="@color/md_theme_primary" />
                         </FrameLayout>
@@ -167,8 +164,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="start"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
                                 android:text="Location"
                                 android:textColor="@color/md_theme_primary" />
                         </FrameLayout>
@@ -192,17 +187,15 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
                                 android:layout_gravity="start"
                                 android:text="Posted Date"
                                 android:textColor="@color/md_theme_primary" />
                         </FrameLayout>
 
                         <TextView
-                            android:layout_gravity="center"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center"
                             android:text="@{Utility.millisecondsToString(viewModel.product.postedDate)}" />
 
                     </LinearLayout>
@@ -215,17 +208,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:padding="10dp"
-                    android:background="@color/md_theme_surfaceContainer">
+                    android:background="@color/md_theme_surfaceContainer"
+                    android:padding="10dp">
 
                     <TextView
-                        android:textSize="11pt"
-                        android:textStyle="bold"
                         android:id="@+id/textView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Interested Profile"
-                        android:textColor="@color/md_theme_primary"
+                        android:textSize="11pt"
+                        android:textStyle="bold"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <include
@@ -237,8 +229,10 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/profile_recycler_view"
                         android:layout_width="match_parent"
+                        app:layout_constraintHeight_min="57dp"
                         android:layout_height="wrap_content"
                         android:nestedScrollingEnabled="true"
+                        android:scrollbars="vertical"
                         app:layout_constraintHeight_max="170dp"
                         app:layout_constraintTop_toBottomOf="@+id/textView" />
                 </androidx.constraintlayout.widget.ConstraintLayout>

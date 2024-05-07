@@ -58,12 +58,13 @@ class EditProfileViewModel(private val userRepository: UserRepository) : ViewMod
                 }
             }
 
-            if (tempImage.value != null) {
-                uploadProfileImage(tempImage.value, profile.id)
-            }
             if(isRemoveDp){
                 deleteProfileImage(profile.id)
             }
+            if (tempImage.value != null) {
+                uploadProfileImage(tempImage.value, profile.id)
+            }
+
 
             if (isUploaded) {
                 _isUploaded.postValue(true)

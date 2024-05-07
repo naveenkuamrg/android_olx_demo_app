@@ -41,8 +41,8 @@ import java.lang.Exception
 class ProductRepositoryImpl(val context: Context) : ProductRepository {
 
     private val productPaddingConfig = PagingConfig(
+        15,
         20,
-        50,
         enablePlaceholders = false
     )
 
@@ -54,12 +54,12 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
     private val profileImageRepository: ProfileImageRepository = ProfileImageRepositoryImpl(context)
 
 
-    override suspend fun insertProduct(product: Product): Boolean {
+    override suspend fun insertProduct(product: Product): Long {
         val productDetails = ModelConverter.productModelToProductDetails(product)
         val id = productDao.upsertProductDetails(productDetails)
         productImageRepository.deleteAllImageFormFile(product.id.toString())
         productImageRepository.saveImages(product.id ?: id, product.images)
-        return true
+        return id
     }
 
     override fun getProductSummaryDetailsForSellZone(): Flow<PagingData<ProductListItem>> {

@@ -105,6 +105,9 @@ object ModelConverter {
                 )
             )
         }
+        listProfileSummary.sortBy {
+            it.isContented
+        }
 
         return listProfileSummary
     }

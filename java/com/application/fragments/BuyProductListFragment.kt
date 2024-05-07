@@ -15,6 +15,8 @@ import com.application.databinding.FragmentBuyZoneBinding
 import com.application.model.ProductSortType
 import com.application.model.ProductType
 import com.application.viewmodels.NotificationViewModel
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.progressindicator.CircularProgressIndicator
 
 

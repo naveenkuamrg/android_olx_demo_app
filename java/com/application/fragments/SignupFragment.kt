@@ -3,8 +3,12 @@ package com.application.fragments
 import android.content.res.Configuration
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import com.application.R
@@ -27,7 +31,56 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
             if (text.toString() != binding.passwordEdittext.text.toString()) {
                 binding.reenterPasswordLayout.error = "Passwords do not match"
             } else {
-                binding.reenterPasswordLayout.error = null
+                if (binding.reenterPassword.text.toString() != "") {
+                    binding.reenterPasswordLayout.error = null
+                }
+            }
+        }
+        binding.passwordEdittext.doAfterTextChanged {
+            val passwordError = Validator.passwordValidator(it.toString())
+            if (passwordError != null && binding.passwordEdittext.text.toString() != ""
+                || binding.passwordLayout.error != null
+            ) {
+                binding.passwordLayout.error = passwordError
+            } else {
+                binding.passwordLayout.error = null
+            }
+        }
+
+        binding.phoneNumber.doAfterTextChanged {
+            if(!Validator.isPhoneNumberValid(it.toString())){
+               if(binding.phoneNumber.text.toString() != "" &&
+                   binding.phoneNumberLayout.error != null){
+                   binding.phoneNumberLayout.error = "Phone number is not valid"
+               }
+            }else{
+                binding.phoneNumberLayout.error = null
+            }
+        }
+
+        binding.emailEdittext.doAfterTextChanged {
+            if(!Validator.isEmailValid(it.toString())){
+                if(binding.emailEdittext.text.toString() != "" &&
+                    binding.emailEditTextLayout.error != null){
+                    binding.emailEditTextLayout.error = "Email is not valid"
+                }
+
+            }else{
+                binding.emailEditTextLayout.error = null
+            }
+        }
+
+        binding.name.doAfterTextChanged {
+            if (!Validator.doesNotContainSpecialChars(it.toString())) {
+                //error
+
+                if (binding.name.text.toString() != "") {
+                    binding.nameEditTextLayout.error = "Name does not contain special charters"
+                }
+
+            } else {
+                //non - error
+                binding.nameEditTextLayout.error = null
             }
         }
 
@@ -38,6 +91,7 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
             val phoneNumber = binding.phoneNumber.text.toString().trim()
             val password = binding.passwordEdittext.text.toString()
             val confirmPassword = binding.reenterPassword.text.toString()
+
 
 
 
@@ -71,29 +125,12 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
     ): Boolean {
         var isValid = true
 
-        if (!Validator.isEmailValid(email)) {
-            isValid = false
-            binding.emailEditTextLayout.error = "Email is not valid"
-        } else {
-            binding.emailEditTextLayout.error = null
-        }
-        if (!Validator.isPhoneNumberValid(phoneNumber)) {
-            isValid = false
-            binding.phoneNumberLayout.error = "Phone is not Valid"
-        } else {
-            binding.phoneNumberLayout.error = null
-        }
-        val passwordError = Validator.passwordValidator(password)
-        if (passwordError != null) {
-            isValid = false
-            binding.passwordLayout.error = passwordError
-        } else {
-            binding.passwordLayout.error = null
-        }
+
         if (password != confirmPassword || confirmPassword == "") {
             isValid = false
+            binding.reenterPassword.requestFocus()
             binding.reenterPasswordLayout.error = "Passwords do not match"
-            if (password == "") {
+            if (confirmPassword == "") {
                 binding.reenterPasswordLayout.error = "Password can't be empty"
             }
 
@@ -101,16 +138,50 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
             binding.reenterPasswordLayout.error = null
         }
 
+        val passwordError = Validator.passwordValidator(password)
+        if (passwordError != null) {
+            binding.passwordEdittext.requestFocus()
+            isValid = false
+            binding.passwordLayout.error = passwordError
+        } else {
+            binding.passwordLayout.error = null
+        }
+
+        if (!Validator.isPhoneNumberValid(phoneNumber)) {
+            isValid = false
+            binding.phoneNumberLayout.error = "Phone Number is not Valid"
+            if (phoneNumber == "") {
+                binding.phoneNumberLayout.error = "Phone Number can't be empty"
+            }
+            binding.phoneNumber.requestFocus()
+        } else {
+            binding.phoneNumberLayout.error = null
+        }
+
         if (!Validator.doesNotContainSpecialChars(name)) {
             if (name == "") {
-                binding.nameEditTextLayout.error = "Name should not be empty"
+                binding.nameEditTextLayout.error = "Name can't be empty"
             } else {
                 binding.nameEditTextLayout.error = "Name shouldn't contain special characters"
             }
+            binding.name.requestFocus()
             isValid = false
         } else {
             binding.nameEditTextLayout.error = null
         }
+
+
+        if (!Validator.isEmailValid(email)) {
+            isValid = false
+            binding.emailEditTextLayout.error = "Email is not valid"
+            if (email == "") {
+                binding.emailEditTextLayout.error = "Email can't be empty"
+            }
+            binding.emailEdittext.requestFocus()
+        } else {
+            binding.emailEditTextLayout.error = null
+        }
+
         return isValid
     }
 

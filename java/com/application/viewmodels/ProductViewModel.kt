@@ -160,7 +160,7 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
     fun updateIsContented(userId: Long,productId: Long){
         viewModelScope.launch(Dispatchers.Default) {
             productRepository.updateIsContent(userId, productId)
-            _profileList.postValue(productRepository.getInterestedProfile(productId))
+//            _profileList.postValue(productRepository.getInterestedProfile(productId))
         }
     }
     companion object {

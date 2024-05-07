@@ -7,6 +7,6 @@ import com.application.entity.relations.ProductsWithInterestedProfile
 @Dao
 interface ProfileDao {
 
-    @Query("select * from product_details where product_id Like :productId")
+    @Query("select * from product_details where product_id Like :productId ")
     fun getInterestedProfile(productId: Long): ProductsWithInterestedProfile
 }

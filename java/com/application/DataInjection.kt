@@ -3,6 +3,7 @@ package com.application
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import com.application.model.AvailabilityStatus
@@ -10,38 +11,72 @@ import com.application.model.Product
 import com.application.model.ProductType
 import com.application.repositories.impl.AuthenticationRepositoryImpl
 import com.application.repositories.impl.ProductRepositoryImpl
+import com.application.repositories.impl.ProfileImageRepositoryImpl
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
+import kotlin.random.Random
+
 
 class DataInjection(val context: Context) {
 
 
     val authenticationRepository = AuthenticationRepositoryImpl(context)
     val productRepository = ProductRepositoryImpl(context)
+    val profileRepository = ProfileImageRepositoryImpl(context)
 
     suspend fun addSampleData() {
         authenticationRepository.setUserProfile(
-            "Test",
-            "test120@gmail.com",
+            "viswa",
+            "viswa@gmail.com",
             "9498292807",
             "Test@123"
         )
         authenticationRepository.setUserProfile(
-            "Test1",
-            "test128@gmail.com",
+            "diwan",
+            "diwan@gmail.com",
             "9997292897",
             "Test@123"
         )
         authenticationRepository.setUserProfile(
-            "Test2",
-            "test129@gmail.com",
+            "naresh",
+            "naresh@gmail.com",
             "9597292997",
             "Test@123"
         )
+
+        authenticationRepository.setUserProfile(
+            "Amal",
+            "Amal123@gmail.com",
+            "9493290800",
+            "Test@123"
+        )
+        authenticationRepository.setUserProfile(
+            "shiva",
+            "shiva@gmail.com",
+            "9498290840",
+            "Test@123"
+        )
+        authenticationRepository.setUserProfile(
+            "abijith",
+            "abijith@gmail.com",
+            "9498790800",
+            "Test@123"
+        )
+
         authenticationRepository.setUserProfile(
             "naveen",
             "naveen123@gmail.com",
-            "9498292800",
+            "9798292800",
             "Naveen@123"
         )
+
+        profileRepository.saveProfileImage("2", convertPngResourceToBitmap(R.raw.profile))
+        profileRepository.saveProfileImage("3", convertPngResourceToBitmap(R.raw.profile1))
+        profileRepository.saveProfileImage("4", convertPngResourceToBitmap(R.raw.person2))
 
         val product1 = Product(
             null,
@@ -108,7 +143,6 @@ class DataInjection(val context: Context) {
                 convertPngResourceToBitmap(R.raw.book3)
             )
         }
-
 
 
         val product6 = Product(
@@ -237,6 +271,236 @@ class DataInjection(val context: Context) {
             )
         }
 
+        val product13 = Product(
+            null,
+            "Women's Convertible Hiking pats-lightweight Outdoor Trousers with Zip-off Legs",
+            799.0,
+            System.currentTimeMillis() - 604800000, // 7 days ago,
+            "Stay comfortable and versatile on the trail with these convertible hiking pants. Lightweight and quick-drying fabric with zip-off legs for easy conversion to shorts. Ideal for hiking, backpacking, and camping.",
+            AvailabilityStatus.AVAILABLE,
+            "Sydney",
+            ProductType.FASHION,
+            2
+        ).apply {
+            images = listOf(
+                convertPngResourceToBitmap(R.raw.pant),
+                convertPngResourceToBitmap(R.raw.pant1),
+                convertPngResourceToBitmap(R.raw.pant)
+            )
+        }
+
+        val product14 = Product(
+            null,
+            "Electric Kettle - 1.7L Stainless Strrl Water Boilder with Auto Shut - Off",
+            3999.00,
+            System.currentTimeMillis() - 604800000, // 7 days ago,,
+            "Boil water quickly and safely with this stainless steel electric kettle. Features a large capacity and automatic shut-off for peace of mind. Perfect for making tea, coffee, and instant soups",
+            AvailabilityStatus.AVAILABLE,
+            "chennai",
+            ProductType.APPLIANCES,
+            1
+        ).apply {
+            images = listOf(
+                convertPngResourceToBitmap(R.raw.electric_kettle),
+                convertPngResourceToBitmap(R.raw.electric_kettle1),
+            )
+        }
+
+        val product15 = Product(
+            null,
+            "Digital Kitchen Scale - Stainless Steel Food Scale with LCD Display",
+            2999.00,
+            System.currentTimeMillis() - 704800000,
+            "Accurately measure ingredients for your recipes with this digital kitchen scale. Made from durable stainless steel with a sleek LCD display. Perfect for precise cooking and baking.",
+            AvailabilityStatus.AVAILABLE,
+            "Kanchipuram",
+            ProductType.APPLIANCES,
+            2
+        ).apply {
+            images = listOf(
+                convertPngResourceToBitmap(R.raw.digital_kitchen_scale),
+                convertPngResourceToBitmap(R.raw.digital_kitchen_scale1),
+                convertPngResourceToBitmap(R.raw.digital_kitchen_scale2)
+            )
+        }
+
+        val product16 = Product(
+            null,
+            "Unisex Outdoor Backpack - Durable Hiking Pack with Multiple Compartments",
+            3999.00,
+            System.currentTimeMillis() - 705800000,
+            "Carry all your essentials comfortably on your outdoor adventures with this durable hiking backpack. Features multiple compartments and adjustable straps for a customized fit. Perfect for hiking, camping, and travel.",
+            AvailabilityStatus.AVAILABLE,
+            "Chennai",
+            ProductType.APPLIANCES,
+            3
+        ).apply {
+            images = listOf(
+                convertPngResourceToBitmap(R.raw.bag_1),
+                convertPngResourceToBitmap(R.raw.bag_2),
+                convertPngResourceToBitmap(R.raw.bag_3)
+            )
+        }
+
+        val product17 = Product(
+            null,
+            "Non-Stick Cookware Set - 12 Piece Ceramic Coating Posts and Pans with Glass Lids",
+            59999.00,
+            System.currentTimeMillis() - 709800000,
+            "Upgrade your cooking experience with this versatile cookware set. Features a durable ceramic coating for non-stick cooking and easy cleaning. Includes various sizes of pots and pans with heat-resistant glass lids.",
+            AvailabilityStatus.AVAILABLE,
+            "New York City",
+            ProductType.APPLIANCES,
+            3
+        ).apply {
+            images = listOf(
+                convertPngResourceToBitmap(R.raw.pan),
+                convertPngResourceToBitmap(R.raw.pan1),
+                convertPngResourceToBitmap(R.raw.pan2)
+            )
+        }
+
+        val product18 = Product(
+            null,
+            "Electric Stand Mixer 6 Speed Handheld Kitchen Mixer with Attachments",
+            1599.00,
+            System.currentTimeMillis() - 909800000,
+            "Make baking a breeze with this powerful electric stand mixer. Equipped with multiple speed settings and versatile attachments for mixing dough, batter, and more. A must-have for any aspiring baker.",
+            AvailabilityStatus.AVAILABLE,
+            "Houston",
+            ProductType.APPLIANCES,
+            2
+        ).apply {
+            images = listOf(
+                convertPngResourceToBitmap(R.raw.electric_stand_mixer),
+                convertPngResourceToBitmap(R.raw.electric_stand_mixer1),
+                convertPngResourceToBitmap(R.raw.electric_stand_mixer2),
+                convertPngResourceToBitmap(R.raw.electric_stand_mixer3)
+            )
+        }
+
+        val product19 = Product(
+            null,
+            "Stainless Steel Espresso Machine - Automatic Coffee Maker with Milk Forth",
+            2999.99,
+            System.currentTimeMillis() - 907800000,
+            "Enjoy barista-quality coffee at home with this stainless steel espresso machine. Features automatic brewing and a built-in milk frother for creamy lattes and cappuccinos. Elevate your morning routine.",
+            AvailabilityStatus.AVAILABLE,
+            "San Francisco",
+            ProductType.APPLIANCES,
+            4
+        ).apply {
+            images = listOf(
+                convertPngResourceToBitmap(R.raw.automatic_coffee_make),
+                convertPngResourceToBitmap(R.raw.automatic_coffee_make1)
+            )
+        }
+
+        val product20 = Product(
+            null,
+            title = "Stainless Steel Water Bottle - Vacuum Insulated, Leak Proof",
+            price = 699.99,
+            postedDate = System.currentTimeMillis() - 345600000, // 4 days ago
+            description = "Keep your drinks hot or cold for hours with this stainless steel water bottle. Double-wall vacuum insulation ensures temperature retention. Leak-proof design makes it ideal for outdoor activities.",
+            availabilityStatus = AvailabilityStatus.AVAILABLE,
+            location = "Los Angeles",
+            productType = ProductType.APPLIANCES,
+            sellerId = 4
+        ).apply {
+            images = listOf(
+                convertPngResourceToBitmap(R.raw.bottle),
+                convertPngResourceToBitmap(R.raw.bottle1)
+            )
+        }
+
+        val product21 = Product(
+            null,
+            title = "Vegetable Spiralizer - 5 Blade Spiral Slicer",
+            price = 19.99,
+            postedDate = System.currentTimeMillis() - 518400000, // 6 days ago
+            description = "Create healthy, delicious meals with this vegetable spiralizer. Includes 5 interchangeable blades for different spiral shapes. Perfect for making zucchini noodles, carrot spirals, and more.",
+            availabilityStatus = AvailabilityStatus.AVAILABLE,
+            location = "Seattle",
+            productType = ProductType.APPLIANCES,
+            sellerId = 4
+        ).apply {
+            images = listOf(
+                convertPngResourceToBitmap(R.raw.vegetable_spiralizer),
+                convertPngResourceToBitmap(R.raw.vegetable_spiralizer1),
+                convertPngResourceToBitmap(R.raw.vegetable_spiralizer2)
+            )
+        }
+
+        val product22 = Product(
+            null,
+            title = "Electric Scooter - Foldable Commuter Scooter",
+            price = 33999.99,
+            postedDate = System.currentTimeMillis() - 864000000, // 10 days ago
+            description = "Commute in style with this electric scooter. Foldable design for easy storage and transportation. Lightweight yet durable construction.",
+            availabilityStatus = AvailabilityStatus.AVAILABLE,
+            location = "Los Angeles",
+            productType = ProductType.VEHICLES,
+            sellerId = 4
+        ).apply {
+            images = listOf(
+                convertPngResourceToBitmap(R.raw.scooter),
+                convertPngResourceToBitmap(R.raw.scooter1),
+            )
+        }
+
+        val product23 = Product(
+            null,
+            title = "Mountain Bike - Full Suspension, Shimano Gears",
+            price = 899.99,
+            postedDate = System.currentTimeMillis() - 950400000, // 11 days ago
+            description = "Conquer any trail with this full suspension mountain bike. Equipped with Shimano gears for smooth shifting. Durable frame built to withstand rough terrain.",
+            availabilityStatus = AvailabilityStatus.AVAILABLE,
+            location = "Denver",
+            productType = ProductType.VEHICLES,
+            sellerId = 4
+        ).apply {
+            images = listOf(
+                convertPngResourceToBitmap(R.raw.bike),
+                convertPngResourceToBitmap(R.raw.bike1),
+                convertPngResourceToBitmap(R.raw.bike3),
+            )
+        }
+
+        val product24 = Product(
+            null,
+            title = "Car Roof Rack - Universal Roof Mount Cargo Carrier",
+            price = 149.99,
+            postedDate = System.currentTimeMillis() - 1036800000, // 12 days ago
+            description = "Expand your car's cargo capacity with this roof rack. Universal design fits most vehicles. Easy to install and remove for added convenience.",
+            availabilityStatus = AvailabilityStatus.AVAILABLE,
+            location = "Seattle",
+            productType = ProductType.VEHICLES,
+            sellerId = 4
+        ).apply {
+            images = listOf(
+                convertPngResourceToBitmap(R.raw.car_roof),
+                convertPngResourceToBitmap(R.raw.car_roof1),
+                convertPngResourceToBitmap(R.raw.car_roof3)
+            )
+        }
+
+        val product25 = Product(
+            null,
+            title = "Motorcycle Helmet - Full Face DOT Certified Helmet",
+            price = 129.99,
+            postedDate = System.currentTimeMillis() - 1123200000, // 13 days ago
+            description = "Stay safe on the road with this full face motorcycle helmet. DOT certified for reliable protection. Ventilation system keeps you cool during long rides.",
+            availabilityStatus = AvailabilityStatus.AVAILABLE,
+            location = "Miami",
+            productType = ProductType.VEHICLES,
+            sellerId = 4
+        ).apply {
+            images = listOf(
+                convertPngResourceToBitmap(R.raw.helmet)
+            )
+        }
+
+
         val productList =
             listOf(
                 product1,
@@ -249,8 +513,22 @@ class DataInjection(val context: Context) {
                 product9,
                 product10,
                 product11,
-                product12
-            )
+                product12,
+                product13,
+                product14,
+                product15,
+                product16,
+                product17,
+                product18,
+                product19,
+                product20,
+                product21,
+                product22,
+                product23,
+                product24,
+                product25,
+
+                )
 
         productList.forEach {
             productRepository.insertProduct(it)
@@ -268,6 +546,95 @@ class DataInjection(val context: Context) {
             resourceId
         )
 
+    }
+
+
+    suspend fun makeGetApiRequest(url: URL, type: ProductType) {
+        var httpURLConnection: HttpURLConnection? = null
+
+        httpURLConnection = url.openConnection() as HttpURLConnection
+        httpURLConnection.setRequestProperty(
+            "X-Master-Key",
+            "\$2b\$10\$tJwbePxDZPklOJ4xffLoxeWQ.JkRAYdaObwskSbyzKzRTYoSa8qHK"
+        )
+        httpURLConnection.setRequestProperty(
+            "X-Access-Key",
+            "\$2a\$10\$.0k0NxettHv6FGtvts/mAOY7QguwOU/9AleIlTM4KOMSA/Q1/7XqO"
+        )
+
+        Log.i("TAG", "${httpURLConnection.responseCode.toString()}  url ${url.toString()}")
+
+        val bufferReader = BufferedReader(
+            InputStreamReader(httpURLConnection.inputStream)
+        )
+        val jsonStringHolder = StringBuilder()
+        while (true) {
+            val readLine = bufferReader.readLine()
+            if (readLine == null) {
+                break
+            } else {
+                jsonStringHolder.append(readLine)
+            }
+        }
+
+        Log.i("Networking", jsonStringHolder.toString())
+        val json = JSONObject(jsonStringHolder.toString())
+        val products = JSONArray(json.getString("products").toString())
+        Log.i("JSON", products.length().toString())
+        for (i in 0..<products.length()) {
+            val productJson = (products[i] as JSONObject)
+            val userId = Random.nextLong(1, 8)
+            val product = Product(
+                null,
+                productJson.getString("title"),
+                productJson.getDouble("price"),
+                Random.nextLong(
+                    (System.currentTimeMillis() - 1123200000),
+                    System.currentTimeMillis()
+                ),
+                productJson.getString("description"),
+                AvailabilityStatus.AVAILABLE,
+                "chennai",
+                type,
+                userId
+            )
+
+            val imagesUrls = productJson.get("images") as JSONArray
+            val images = mutableListOf<Bitmap>()
+            for (index in 0..<imagesUrls.length()) {
+                val imageUrl = URL(imagesUrls[index] as String)
+                val inputStream = imageUrl.openStream()
+                val bitmap = BitmapFactory.decodeStream(inputStream)
+                images.add(
+                    bitmap
+                )
+            }
+            productRepository.insertProduct(product.apply {
+                this.images = images
+            }).apply {
+                val _product = Product(
+                    this,
+                    product.title,
+                    product.price,
+                    product.postedDate,
+                    product.description,
+                    product.availabilityStatus,
+                    product.location,
+                    product.productType,
+                    product.sellerId
+                )
+                for (j in 1..Random.nextLong(1, 8)) {
+                    if (j != userId) {
+                        productRepository.updateProductIsInterested(j, _product, true)
+                    }
+                }
+                for (j in 1..Random.nextLong(1, 8)) {
+                    if (j != userId) {
+                        productRepository.updateIsFavorite(_product, true, j)
+                    }
+                }
+            }
+        }
     }
 
 }

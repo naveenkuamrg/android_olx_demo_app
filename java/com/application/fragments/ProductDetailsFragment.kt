@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +21,7 @@ import com.application.databinding.FragmentProductDetailsBinding
 import com.application.helper.Utility
 import com.application.model.AvailabilityStatus
 import com.application.viewmodels.ProductViewModel
+
 
 class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
     val viewModel: ProductViewModel by activityViewModels { ProductViewModel.FACTORY }
@@ -64,7 +67,7 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
         setUpAdapter()
     }
 
-    private fun setUpAdapter(){
+    private fun setUpAdapter() {
         val recyclerView = binding.productDetailLayout.profileRecyclerView
         recyclerView.layoutManager =
             LinearLayoutManager(requireContext())
@@ -128,7 +131,7 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
 
         binding.productDetailLayout.imInterestedBtn.setOnClickListener { btn ->
             btn.isEnabled = false
-            val message = if(viewModel.product.value?.isInterested == false){
+            val message = if (viewModel.product.value?.isInterested == false) {
                 "Your contact is shared with the product seller."
             } else {
                 "Your contact is removed from the product seller."
@@ -136,12 +139,12 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
 
             AlertDialog.Builder(requireContext()).apply {
                 setMessage(message)
-                setPositiveButton("Confirm"){_,_->
+                setPositiveButton("Confirm") { _, _ ->
                     viewModel.product.value?.let {
                         viewModel.updateProductInterested(it, userId, !it.isInterested)
                     }
                 }
-                setNegativeButton("No"){_,_-> btn.isEnabled = true}
+                setNegativeButton("No") { _, _ -> btn.isEnabled = true }
                 setCancelable(false)
                 show()
             }
@@ -223,10 +226,12 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
         }
 
         viewModel.profileList.observe(viewLifecycleOwner) {
-
+            binding.productDetailLayout.noData.imageView2.visibility = View.GONE
             if (it.isEmpty()) {
                 binding.productDetailLayout.noData.noDataLayout.visibility = View.VISIBLE
-                binding.productDetailLayout.noData.errorText.text = "No one interested"
+                binding.productDetailLayout.noData.errorText.textSize = 16F
+                binding.productDetailLayout.noData.errorText.text =
+                    "Oops! It seems like your products are still waiting to steal some hearts"
             } else {
                 binding.productDetailLayout.noData.noDataLayout.visibility = View.GONE
             }

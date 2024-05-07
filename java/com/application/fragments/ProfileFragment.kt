@@ -1,5 +1,6 @@
 package com.application.fragments
 
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
@@ -89,7 +90,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         binding.favourite.apply {
             textLabel.text = "Favourite"
-            imageFilterView.setImageResource(R.drawable.ic_favorite_outline)
+            imageFilterView.setImageResource(R.drawable.fav)
             navigator.setOnClickListener {
                 callBack.onShowFavouritePage()
             }

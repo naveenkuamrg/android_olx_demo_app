@@ -1,6 +1,7 @@
 package com.application.fragments
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -13,6 +14,8 @@ import com.application.R
 import com.application.callbacks.PhotoPickerBottomSheet
 import com.application.databinding.FragmentBottomSheetDialogPhotoPickerBinding
 import com.application.helper.ImageConverter
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class BottomSheetDialogPhotoPicker :
@@ -30,6 +33,12 @@ class BottomSheetDialogPhotoPicker :
         super.onCreate(savedInstanceState)
         callback = parentFragment as PhotoPickerBottomSheet
         setRegisterForActivityResult(callback.getBitmapCount())
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = BottomSheetDialog(requireContext(), theme)
+        dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        return dialog
     }
 
     private fun setRegisterForActivityResult(count: Int) {

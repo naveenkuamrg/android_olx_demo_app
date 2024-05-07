@@ -108,12 +108,12 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="start"
-                            android:textStyle="bold"
-                            android:textSize="16sp"
+                            android:textColor="@color/md_theme_primary"
                             android:text="Description" />
                     </FrameLayout>
 
                     <TextView
+                        android:textIsSelectable="true"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -133,11 +133,10 @@
 
                         <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:layout_gravity="start"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:text="Categories" />
+                            android:text="Categories"
+                            android:textColor="@color/md_theme_primary" />
                     </FrameLayout>
 
                     <TextView
@@ -160,8 +159,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textColor="@color/md_theme_primary"
                             android:layout_gravity="start"
                             android:text="Location" />
                     </FrameLayout>
@@ -186,8 +184,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="start"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textColor="@color/md_theme_primary"
                             android:text="Posted Date" />
                     </FrameLayout>
 
@@ -230,12 +227,12 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.recyclerview.widget.RecyclerView
+                    android:scrollbars="vertical"
                     android:id="@+id/profile_recycler_view"
+                    app:layout_constraintHeight_min="57dp"
                     app:layout_constraintHeight_max="170dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="57dp"
-                    android:maxHeight="17dp"
                     app:layout_constrainedHeight="true"
                     android:nestedScrollingEnabled="true"
                     app:layout_constraintBottom_toBottomOf="parent"

@@ -6,11 +6,14 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
+import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.TextWatcher
 import android.util.Log
 import android.view.Gravity
 import android.view.View
+import android.widget.Adapter
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageView
@@ -66,7 +69,6 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentEditProductBinding.bind(view)
-
         if (productViewModel.product.value == null) {
             binding.toolbar.title = "Add product"
         } else {
@@ -88,6 +90,12 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         } else {
             binding.textinputError.visibility = View.GONE
         }
+        binding.categoriesDropdown.setOnItemClickListener { parent, view, position, id ->
+            Log.i("TAG",id.toString())
+
+//            Log.i("TAG new ",binding.categoriesDropdown.onTextContextMenuItem(id.toInt()).toString())
+        }
+//        Log.i("TAG new ",binding.categoriesDropdown.onTextContextMenuItem(1).toString())
         setObserve()
         setUpToolbar()
         setCategoriesButton()
@@ -96,10 +104,18 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         setUpOnBackPress()
     }
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        binding.categoriesDropdown.text = SpannableStringBuilder("")
+        binding.categoriesDropdown.setText(savedInstanceState?.getString("Categories",""),false)
+    }
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString("error", binding.textinputError.text.toString())
+        outState.putString("Categories",binding.categoriesDropdown.text.toString())
         super.onSaveInstanceState(outState)
     }
+
+
 
     private fun isDataUpdate(): Boolean {
         val product = editProductViewModel.product.value
@@ -234,6 +250,13 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
                 ProductType.entries.map { ProductType.productTypeToString(it) }
             )
         )
+
+        binding.categoriesDropdown.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+
+            Log.i("TAG categoriesDropdown", "")
+            binding.editDetailsContainer.requestFocus(R.id.location_edit_text)
+
+        }
     }
 
     private fun setOnClickListenerForAddImageButton() {
@@ -269,6 +292,16 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
                             binding.locationEditTextLayout.error = null
                         }
                     }
+                    Validator.validateCategory(category) {
+                        if (!it) {
+                            isValid = it
+                            binding.categoriesDropdownLayout.error =
+                                "Please select the correct category"
+//                            binding.categoriesDropdown.showDropDown()
+                        } else {
+                            binding.categoriesDropdownLayout.error = null
+                        }
+                    }
 
                     Validator.validatePrice(price) { _isValid, errorMessage ->
                         if (!_isValid) {
@@ -280,16 +313,7 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
                         }
                     }
 
-                    Validator.validateCategory(category) {
-                        if (!it) {
-                            isValid = it
-                            binding.categoriesDropdownLayout.error =
-                                "Please select the correct category"
-                            binding.categoriesDropdownLayout.requestFocus()
-                        } else {
-                            binding.categoriesDropdownLayout.error = null
-                        }
-                    }
+
 
                     Validator.validateField(
                         description,

@@ -55,7 +55,7 @@ class EditProductViewModel(private val productRepository: ProductRepository) : V
                     ).apply {
                         images = this@EditProductViewModel.images.value!!
                     }
-                )
+                ) != 0L
             )
         }
         return true
