@@ -5,6 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.ContextCompat
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -12,6 +14,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.application.R
 import com.application.adapter.diffUtil.NotificationDiffUtil
+import com.application.compose.NotificationItemView
 import com.application.helper.Utility
 import com.application.model.Notification
 import com.application.model.NotificationType
@@ -34,9 +37,37 @@ class NotificationAdapter(val onItemClickListener: (Long) -> Unit) :
         return NotificationViewHolder(itemView)
     }
 
+//    override fun onCreateViewHolder(
+//        parent: ViewGroup,
+//        viewType: Int,
+//    ): MyComposeViewHolder {
+//        return MyComposeViewHolder(ComposeView(parent.context))
+//    }
+    class MyComposeViewHolder(
+        private val composeView: ComposeView
+    ) : RecyclerView.ViewHolder(composeView) {
+
+
+        fun bind(notification: Notification,onItemClickListener: (Long) -> Unit) {
+            composeView.setContent {
+                NotificationItemView(notification,onItemClickListener)
+            }
+        }
+    }
+
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val value = getItem(position)
+
+
+//        if(holder is MyComposeViewHolder){
+//            holder.bind(value!!){
+//                onItemClickListener(
+//                    value.id
+//                )
+//            }
+//        }
+
         if (holder is NotificationViewHolder) {
             holder.contentTextView.text = value!!.content
             holder.timeStamp.text =

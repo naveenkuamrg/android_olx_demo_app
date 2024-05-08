@@ -32,7 +32,7 @@ class ProfileSummaryAdapter(
     inner class ProfileViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val userDp = itemView.findViewById<ImageView>(R.id.user_dp)
         val userName = itemView.findViewById<TextView>(R.id.user_name)
-        val phoneBtn = itemView.findViewById<ImageView>(R.id.phoneBtn)
+        val phoneBtn = itemView.findViewById<Button>(R.id.phoneBtn)
         val profileBackGround =
             itemView.findViewById<FrameLayout>(R.id.profile_back_ground)
     }

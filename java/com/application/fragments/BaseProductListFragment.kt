@@ -52,7 +52,7 @@ abstract class BaseProductListFragment(layout: Int): Fragment(layout),
                 it
             )
         }
-        recyclerView.addItemDecoration(dividerItemDecoration)
+//        recyclerView.addItemDecoration(dividerItemDecoration)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         initAdapter()
 

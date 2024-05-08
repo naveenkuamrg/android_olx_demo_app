@@ -10,7 +10,6 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.application.exceptions.ProductDataException
 import com.application.model.AvailabilityStatus
 import com.application.model.Product
-import com.application.model.Profile
 import com.application.model.ProfileSummary
 import com.application.repositories.ProductRepository
 import com.application.repositories.impl.ProductRepositoryImpl
@@ -43,8 +42,7 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
     val exception: MutableLiveData<Exception?> = _exception
 
 
-
-    fun fetchProductDetailsUsingProductId(productId: Long, userId: Long) {
+    fun fetchProductDetailsUsingProductId(productId: Long) {
         if (productId != -1L) {
             _isLoading.value = true
             viewModelScope.launch(Dispatchers.Default) {
@@ -90,21 +88,29 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
     }
 
 
-    fun setProductInterestedValue(isInterested: Boolean){
+    fun setProductInterestedValue(isInterested: Boolean) {
         _product.value?.isInterested = isInterested
         product.value?.isInterested = isInterested
     }
-    fun updateProductInterested(product: Product, userId: Long, isInterested: Boolean) {
+
+    fun updateProductIsWishList(
+        product: Product,
+        userId: Long,
+        userName: String,
+        isInterested: Boolean
+    ) {
         _isInterestedChangeIsUpdate.value = null
         viewModelScope.launch(Dispatchers.Default) {
-            val  res =  productRepository.updateProductIsInterested(
+            val res = productRepository.updateProductIsWishList(
                 userId,
+                userName,
                 product,
-                isInterested)
+                isInterested
+            )
             withContext(Dispatchers.Main) {
                 _isInterestedChangeIsUpdate.value = res
             }
-            _isInterestedChangeIsUpdate.postValue( null)
+            _isInterestedChangeIsUpdate.postValue(null)
         }
     }
 
@@ -157,12 +163,13 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
 
     }
 
-    fun updateIsContented(userId: Long,productId: Long){
+    fun updateIsContented(userId: Long, productId: Long) {
         viewModelScope.launch(Dispatchers.Default) {
             productRepository.updateIsContent(userId, productId)
 //            _profileList.postValue(productRepository.getInterestedProfile(productId))
         }
     }
+
     companion object {
 
         @Suppress("UNCHECKED_CAST")

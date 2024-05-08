@@ -29,20 +29,21 @@ class DataInjection(val context: Context) {
     val profileRepository = ProfileImageRepositoryImpl(context)
 
     suspend fun addSampleData() {
+
         authenticationRepository.setUserProfile(
-            "viswa",
+            "Viswa",
             "viswa@gmail.com",
             "9498292807",
             "Test@123"
         )
         authenticationRepository.setUserProfile(
-            "diwan",
+            "Diwan",
             "diwan@gmail.com",
             "9997292897",
             "Test@123"
         )
         authenticationRepository.setUserProfile(
-            "naresh",
+            "Naresh",
             "naresh@gmail.com",
             "9597292997",
             "Test@123"
@@ -55,20 +56,20 @@ class DataInjection(val context: Context) {
             "Test@123"
         )
         authenticationRepository.setUserProfile(
-            "shiva",
+            "Shiva",
             "shiva@gmail.com",
             "9498290840",
             "Test@123"
         )
         authenticationRepository.setUserProfile(
-            "abijith",
+            "Abijith",
             "abijith@gmail.com",
             "9498790800",
             "Test@123"
         )
 
         authenticationRepository.setUserProfile(
-            "naveen",
+            "Naveen",
             "naveen123@gmail.com",
             "9798292800",
             "Naveen@123"
@@ -562,8 +563,6 @@ class DataInjection(val context: Context) {
             "\$2a\$10\$.0k0NxettHv6FGtvts/mAOY7QguwOU/9AleIlTM4KOMSA/Q1/7XqO"
         )
 
-        Log.i("TAG", "${httpURLConnection.responseCode.toString()}  url ${url.toString()}")
-
         val bufferReader = BufferedReader(
             InputStreamReader(httpURLConnection.inputStream)
         )
@@ -598,6 +597,15 @@ class DataInjection(val context: Context) {
                 type,
                 userId
             )
+            val map: Map<Long, String> = mapOf(
+                1L to "Viswa",
+                2L to "Diwan",
+                3L to "Naresh",
+                4L to "Amal",
+                5L to "Shiva",
+                6L to "Abijith",
+                7L to "Naveen"
+            )
 
             val imagesUrls = productJson.get("images") as JSONArray
             val images = mutableListOf<Bitmap>()
@@ -625,7 +633,7 @@ class DataInjection(val context: Context) {
                 )
                 for (j in 1..Random.nextLong(1, 8)) {
                     if (j != userId) {
-                        productRepository.updateProductIsInterested(j, _product, true)
+                        productRepository.updateProductIsWishList(j, map[j]!!, _product, true)
                     }
                 }
                 for (j in 1..Random.nextLong(1, 8)) {

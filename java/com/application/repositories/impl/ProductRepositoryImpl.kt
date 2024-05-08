@@ -1,21 +1,15 @@
 package com.application.repositories.impl
 
 import android.content.Context
-import android.util.Log
-import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.PagingSource
-import androidx.paging.TerminalSeparatorType
-import androidx.paging.insertHeaderItem
 import androidx.paging.insertSeparators
 import androidx.paging.map
 import com.application.AppDatabase
 import com.application.dao.NotificationDao
 import com.application.dao.ProductDao
 import com.application.dao.ProfileDao
-import com.application.entity.ProductDetails
 import com.application.exceptions.ProductDataException
 import com.application.helper.ModelConverter
 import com.application.helper.NotificationContentBuilder
@@ -31,11 +25,8 @@ import com.application.model.SearchProductResultItem
 import com.application.repositories.ProductImageRepository
 import com.application.repositories.ProductRepository
 import com.application.repositories.ProfileImageRepository
-import com.bumptech.glide.disklrucache.DiskLruCache.Value
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class ProductRepositoryImpl(val context: Context) : ProductRepository {
@@ -236,8 +227,9 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         }
     }
 
-    override suspend fun updateProductIsInterested(
+    override suspend fun updateProductIsWishList(
         userId: Long,
+        userName: String,
         product: Product,
         isInterested: Boolean
     ): Boolean {
@@ -247,7 +239,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
                 product.id!!, NotificationType.PROFILE,
                 NotificationContentBuilder.build(
                     NotificationType.PROFILE,
-                    Utility.getLoginUserName(context),
+                    userName,
                     product.title,
                     isInterested
                 ), Utility.getLoginUserId(context)

@@ -15,6 +15,7 @@
     </data>
 
     <LinearLayout
+        android:background="@color/md_theme_surface"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
@@ -80,6 +81,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/md_theme_onSurface_highContrast"
                     android:layout_marginBottom="5dp"
                     android:alpha="0.8"
                     android:text="@{viewModel.product.title}"
@@ -90,6 +92,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
+                    android:textColor="@color/md_theme_onSurface_highContrast"
+
                     android:text="@{Utility.convertToINR(viewModel.product.price)}"
                     android:textSize="16pt"
                     android:textStyle="bold" />
@@ -122,6 +126,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:textColor="@color/md_theme_onSurface_highContrast"
                             android:layout_marginBottom="15dp"
                             android:text="@{viewModel.product.description}" />
                     </LinearLayout>
@@ -147,6 +152,8 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:textColor="@color/md_theme_onSurface_highContrast"
+
                             android:text="@{viewModel.product.productType.toString()}" />
                     </LinearLayout>
 
@@ -172,6 +179,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:textColor="@color/md_theme_onSurface_highContrast"
+
                             android:text="@{viewModel.product.location}" />
                     </LinearLayout>
 
@@ -196,6 +205,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:textColor="@color/md_theme_onSurface_highContrast"
                             android:text="@{Utility.millisecondsToString(viewModel.product.postedDate)}" />
 
                     </LinearLayout>
@@ -216,20 +226,22 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Interested Profile"
+                        android:textColor="@color/md_theme_onSurface_highContrast"
                         android:textSize="11pt"
                         android:textStyle="bold"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <include
                         android:id="@+id/no_data"
-                        layout="@layout/no_data"
+                        layout="@layout/no_profile_list"
                         android:layout_width="match_parent"
-                        android:layout_height="150dp" />
+                        android:layout_height="match_parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView"
+                        tools:layout_editor_absoluteX="10dp" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/profile_recycler_view"
                         android:layout_width="match_parent"
-                        app:layout_constraintHeight_min="57dp"
                         android:layout_height="wrap_content"
                         android:nestedScrollingEnabled="true"
                         android:scrollbars="vertical"

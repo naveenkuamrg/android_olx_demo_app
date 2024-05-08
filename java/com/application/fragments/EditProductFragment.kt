@@ -3,6 +3,7 @@ package com.application.fragments
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
@@ -24,6 +25,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.application.R
 import com.application.adapter.ImageViewAdapter
@@ -36,6 +38,10 @@ import com.application.helper.Validator
 import com.application.model.ProductType
 import com.application.viewmodels.EditProductViewModel
 import com.application.viewmodels.ProductViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.File
+import java.util.Date
 
 class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapterListener,
     PhotoPickerBottomSheet {
@@ -69,20 +75,7 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentEditProductBinding.bind(view)
-        if (productViewModel.product.value == null) {
-            binding.toolbar.title = "Add product"
-        } else {
-            productViewModel.product.value?.let {
-                if (savedInstanceState == null) {
-                    editProductViewModel.setProduct(it)
-                }
-                binding.toolbar.menu.findItem(R.id.post).setIcon(R.drawable.baseline_check_24)
-                binding.toolbar.title = "Edit product"
-            }
-        }
-        if (savedInstanceState == null) {
-            setObserveForUI()
-        }
+
         val textError = savedInstanceState?.getString("error", "")
         if (textError?.isNotEmpty() == true) {
             binding.textinputError.text = textError
@@ -90,12 +83,23 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         } else {
             binding.textinputError.visibility = View.GONE
         }
-        binding.categoriesDropdown.setOnItemClickListener { parent, view, position, id ->
-            Log.i("TAG",id.toString())
 
-//            Log.i("TAG new ",binding.categoriesDropdown.onTextContextMenuItem(id.toInt()).toString())
+        val productId = savedInstanceState?.getLong("productId")
+        if (productId != null) {
+            if (productId != -1L) {
+                Log.i("naveen", productViewModel.product.value.toString())
+                Log.i("naveen Id ", productId.toString())
+                productViewModel.fetchProductDetailsUsingProductId(
+                    productId,
+                )
+            } else {
+                productViewModel.clearProduct()
+            }
+            Log.i("naveen", productViewModel.product.value.toString())
         }
-//        Log.i("TAG new ",binding.categoriesDropdown.onTextContextMenuItem(1).toString())
+        if (savedInstanceState == null) {
+            setObserveForUI()
+        }
         setObserve()
         setUpToolbar()
         setCategoriesButton()
@@ -106,19 +110,35 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
+        Log.i("saveRestore", "restore")
+
         binding.categoriesDropdown.text = SpannableStringBuilder("")
-        binding.categoriesDropdown.setText(savedInstanceState?.getString("Categories",""),false)
-    }
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString("error", binding.textinputError.text.toString())
-        outState.putString("Categories",binding.categoriesDropdown.text.toString())
-        super.onSaveInstanceState(outState)
+        binding.categoriesDropdown.setText(
+            savedInstanceState?.getString(
+                "Categories", ""
+            ), false
+        )
+//        val imageSize = savedInstanceState?.getInt("tempImageSize")
+//        if (imageSize != null) {
+//            editProductViewModel.setTempImages(restoreBitmapFromFile(imageSize))
+//        }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("error", binding.textinputError.text.toString())
+        outState.putString("Categories", binding.categoriesDropdown.text.toString())
+        outState.putLong("productId", productViewModel.product.value?.id ?: -1L)
+//        val tempsImages = editProductViewModel.images.value
+//        if (tempsImages != null) {
+//            saveBitmapToFile(tempsImages)
+//            outState.putInt("tempImageSize", tempsImages.size)
+//        }
+    }
 
 
     private fun isDataUpdate(): Boolean {
-        val product = editProductViewModel.product.value
+        val product = productViewModel.product.value
         return isChanged(product?.title, binding.titleEditText.text.toString()) ||
                 isChanged(product?.description, binding.descriptionEditText.text.toString()) ||
                 isChanged(product?.price, binding.priceEditText.text.toString().toDoubleOrNull()) ||
@@ -155,8 +175,6 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
     }
 
     private fun onBackPress() {
-
-        Log.i("EditProductFragment", "onBackPress ${editProductViewModel.isDataUpdate}")
         if (isDataUpdate()) {
             AlertDialog.Builder(context).apply {
                 setMessage("If you go back, any changes you made will be lost")
@@ -175,12 +193,16 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
     private fun setObserveForUI() {
         productViewModel.product.observe(viewLifecycleOwner) {
             if (it != null) {
+
+                editProductViewModel.setTempImages(it.images)
                 binding.titleEditText.text = StringConverter.toEditable(it.title)
                 binding.descriptionEditText.text = StringConverter.toEditable(it.description)
                 binding.priceEditText.text =
                     StringConverter.toEditable(Utility.convertToString(it.price))
-                binding.categoriesDropdown.text =
-                    StringConverter.toEditable(ProductType.productTypeToString(it.productType))
+                binding.categoriesDropdown.setText(
+                    StringConverter.toEditable(ProductType.productTypeToString(it.productType)),
+                    false
+                )
                 binding.locationEditText.text = StringConverter.toEditable(it.location)
             }
         }
@@ -191,6 +213,18 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         toolbar.setNavigationIcon(R.drawable.ic_back)
         toolbar.setNavigationOnClickListener {
             onBackPress()
+        }
+
+        productViewModel.product.observe(viewLifecycleOwner) {
+            if (it == null) {
+                binding.toolbar.title = "Add product"
+            } else {
+//                editProductViewModel.setProduct(it)
+                productViewModel.product.value?.let {
+                    binding.toolbar.menu.findItem(R.id.post).setIcon(R.drawable.baseline_check_24)
+                    binding.toolbar.title = "Edit product"
+                }
+            }
         }
     }
 
@@ -251,12 +285,13 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
             )
         )
 
-        binding.categoriesDropdown.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+        binding.categoriesDropdown.onItemClickListener =
+            AdapterView.OnItemClickListener { parent, view, position, id ->
 
-            Log.i("TAG categoriesDropdown", "")
-            binding.editDetailsContainer.requestFocus(R.id.location_edit_text)
+                Log.i("TAG categoriesDropdown", "")
+                binding.editDetailsContainer.requestFocus(R.id.location_edit_text)
 
-        }
+            }
     }
 
     private fun setOnClickListenerForAddImageButton() {
@@ -355,8 +390,10 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
 
                     if (isValid) {
                         editProductViewModel.postProduct(
+                            productViewModel.product.value?.id,
                             title,
                             description,
+                            productViewModel.product.value?.postedDate ?: Date().time,
                             price.toDouble(),
                             category,
                             location,
@@ -380,8 +417,7 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
             if (isUploaded == true) {
                 //Temp Change Join Product Details ViewModel and Product EditViewModel
                 productViewModel.fetchProductDetailsUsingProductId(
-                    productId!!,
-                    Utility.getLoginUserId(requireContext())
+                    productId!!
                 )
                 val message = if (productViewModel.product.value == null) {
                     "Post product successfully"
@@ -444,6 +480,33 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
 
     override fun addBitmap(bitmap: Bitmap) {
         editProductViewModel.updateImage(bitmap)
+    }
+
+    private fun saveBitmapToFile(bitmaps: List<Bitmap>) {
+        bitmaps.forEachIndexed { index, bitmap ->
+            val file = File("${requireContext().cacheDir}", "product${index}.png")
+            lifecycleScope.launch(Dispatchers.IO) {
+                file.outputStream().use { outputStream ->
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                }
+            }
+        }
+    }
+
+    // Restoring Bitmap from file
+    private fun restoreBitmapFromFile(size: Int): List<Bitmap> {
+        val images = mutableListOf<Bitmap>()
+        for (i in 0..<size) {
+            lifecycleScope.launch {
+                val filePath = requireContext().cacheDir.toString() + "/product${i}.png"
+                val file = File(filePath)
+                if (file.exists()) {
+                    images.add(BitmapFactory.decodeFile(filePath))
+                }
+            }
+        }
+
+        return images
     }
 
 

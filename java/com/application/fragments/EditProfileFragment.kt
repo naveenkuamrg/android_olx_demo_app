@@ -2,6 +2,7 @@ package com.application.fragments
 
 import android.app.AlertDialog
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
@@ -18,10 +19,13 @@ import com.application.callbacks.PhotoPickerBottomSheet
 import com.application.databinding.FragmentEditProfileBinding
 import com.application.exceptions.InvalidUserDataException
 import com.application.helper.StringConverter
+import com.application.helper.Utility
 import com.application.helper.Validator
-import com.application.model.ProductType
 import com.application.viewmodels.EditProfileViewModel
 import com.application.viewmodels.ProfilePageViewModel
+import java.io.ByteArrayOutputStream
+import java.io.File
+
 
 class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
     PhotoPickerBottomSheet {
@@ -125,6 +129,11 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
         }
     }
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        profilePageViewModel.showProfile(Utility.getLoginUserId(requireContext()))
+    }
+
     private fun setObserve() {
         editProfileViewModel.isUploaded.observe(viewLifecycleOwner) { value ->
             if (value) {
@@ -148,7 +157,6 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
         }
 
         editProfileViewModel.tempImage.observe(viewLifecycleOwner) {
-
             if (it != null) {
                 binding.userDp.scaleType = ImageView.ScaleType.CENTER_CROP
                 binding.userDp.setImageBitmap(it)
@@ -247,6 +255,23 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
                 text = "Add Image"
             }
         }
+    }
+
+    private fun saveBitmapToFile(bitmap: Bitmap): File {
+        val file = File(context?.cacheDir, "profile_temp.png")
+        file.outputStream().use { outputStream ->
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        }
+        return file
+    }
+
+    // Restoring Bitmap from file
+    private fun restoreBitmapFromFile(filePath: String): Bitmap? {
+        val file = File(filePath)
+        if (file.exists()) {
+            return BitmapFactory.decodeFile(filePath)
+        }
+        return null
     }
 
     override fun getBitmapCount(): Int {

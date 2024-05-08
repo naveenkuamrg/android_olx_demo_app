@@ -13,6 +13,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="0dp"
+        android:textColor="@color/md_theme_onSurface_highContrast"
         android:id="@+id/text_label"
         android:layout_height="50dp"
         android:gravity="center_vertical"

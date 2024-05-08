@@ -52,40 +52,22 @@ class BottomSheetDialogSort :
 
     private fun setOnClickListener() {
         binding.postedDateLowerToHigher.setOnClickListener {
-//            onClickListener(ProductSortType.POSTED_DATE_ASC)
-            (it as Chip).isChecked = true
+            onClickListener(ProductSortType.POSTED_DATE_ASC)
+//            (it as Chip).isChecked = true
         }
         binding.postedDateHigherToLower.setOnClickListener {
-//            onClickListener(ProductSortType.POSTED_DATE_DESC)
-            (it as Chip).isChecked = true
+            onClickListener(ProductSortType.POSTED_DATE_DESC)
+//            (it as Chip).isChecked = true
         }
         binding.priceLowerToHigher.setOnClickListener {
-//            onClickListener(ProductSortType.PRICE_ASC)
-            (it as Chip).isChecked = true
+            onClickListener(ProductSortType.PRICE_ASC)
+//            (it as Chip).isChecked = true
         }
         binding.priceDateLowerToHigher.setOnClickListener {
-//            onClickListener(ProductSortType.PRICE_DESC)
-            (it as Chip).isChecked = true
+            onClickListener(ProductSortType.PRICE_DESC)
+//            (it as Chip).isChecked = true
         }
-        binding.applyButton.setOnClickListener {
-            when (binding.cgSortTypes.checkedChipId) {
-                binding.postedDateLowerToHigher.id -> {
-                    onClickListener(ProductSortType.POSTED_DATE_ASC)
-                }
 
-                binding.postedDateHigherToLower.id -> {
-                    onClickListener(ProductSortType.POSTED_DATE_DESC)
-                }
-
-                binding.priceLowerToHigher.id -> {
-                    onClickListener(ProductSortType.PRICE_ASC)
-                }
-
-                binding.priceDateLowerToHigher.id -> {
-                    onClickListener(ProductSortType.PRICE_DESC)
-                }
-            }
-        }
 
 
 

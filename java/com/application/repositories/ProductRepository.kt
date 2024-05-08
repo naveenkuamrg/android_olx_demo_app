@@ -1,15 +1,10 @@
 package com.application.repositories
 
-import androidx.lifecycle.LiveData
 import androidx.paging.PagingData
 import com.application.model.AvailabilityStatus
-import com.application.model.Notification
 import com.application.model.Product
 import com.application.model.ProductListItem
-import com.application.model.ProductListItem.ProductItem
-import com.application.model.Profile
 import com.application.model.SearchProductResultItem
-import com.application.model.ProductSortType
 import com.application.model.ProductType
 import com.application.model.ProfileSummary
 import kotlinx.coroutines.flow.Flow
@@ -49,8 +44,9 @@ interface ProductRepository {
         productInterestedProfile: List<ProfileSummary>
     )
 
-    suspend fun updateProductIsInterested(
+    suspend fun updateProductIsWishList(
         userId: Long,
+        userName: String,
         product: Product,
         isInterested: Boolean
     ): Boolean

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
-
     <androidx.cardview.widget.CardView
         android:layout_width="23dp"
         android:layout_height="4dp"
@@ -15,105 +15,119 @@
         android:elevation="0dp"
         app:cardBackgroundColor="@color/md_theme_primary" />
 
-    <!--    <com.google.android.material.button.MaterialButton-->
-    <!--        android:layout_marginTop="13dp"-->
-    <!--        android:id="@+id/posted_date_higher_to_lower"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        style="?attr/materialIconButtonStyle"-->
-    <!--        android:text="Posted date new to old"-->
-    <!--        android:layout_marginEnd="10dp"-->
-    <!--        android:layout_height="wrap_content"/>-->
-    <!--    <com.google.android.material.button.MaterialButton-->
-    <!--        android:id="@+id/posted_date_lower_to_higher"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        style="?attr/materialIconButtonStyle"-->
-    <!--        android:text="Posted date old to new"-->
-    <!--        android:layout_height="wrap_content"/>-->
-    <!--    <com.google.android.material.button.MaterialButton-->
-    <!--        android:id="@+id/price_lower_to_higher"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        style="?attr/materialIconButtonStyle"-->
-    <!--        android:text="Price low to high"-->
-    <!--        android:layout_height="wrap_content"/>-->
-    <!--    <com.google.android.material.button.MaterialButton-->
-    <!--        android:id="@+id/price_date_lower_to_higher"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        style="?attr/materialIconButtonStyle"-->
-    <!--        android:text="price high to low"-->
-    <!--        android:layout_height="wrap_content"/>-->
-
-    <LinearLayout
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:paddingHorizontal="15dp">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textSize="8pt"
+        android:padding="10dp"
+        android:textFontWeight="400"
+        android:layout_weight="1"
+        android:text="SORT BY"
+        android:textColor="@color/md_theme_onSurface_highContrast"
+        android:textStyle="bold" />
 
-
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:text="Sort by"
-            android:textStyle="bold" />
-
-    </LinearLayout>
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
         android:layout_height="0.3dp" />
 
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/cg_sort_types"
-        style="@style/Widget.Material3.ChipGroup"
-        android:layout_width="wrap_content"
+
+<RadioGroup
+    android:layout_width="match_parent"
+    android:padding="10dp"
+    android:layout_height="wrap_content">
+    <androidx.appcompat.widget.AppCompatRadioButton
+        android:id="@+id/posted_date_higher_to_lower"
+        android:layout_width="match_parent"
+        android:textAlignment="textStart"
+        android:textStyle="normal"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        app:selectionRequired="false"
-        app:singleSelection="true">
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/posted_date_higher_to_lower"
-            style="@style/Widget.Material3.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Posted date new to old"
-            tools:checked="false" />
+        android:textColor="@color/md_theme_onSurface_highContrast"
+        app:buttonTint="@color/md_theme_primary"
+        android:text="Posted date new to old" />
 
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/price_lower_to_higher"
-            style="@style/Widget.Material3.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Price low to high "
-            tools:checked="false" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/posted_date_lower_to_higher"
-            style="@style/Widget.Material3.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Posted date old to new"
-            tools:checked="false" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/price_date_lower_to_higher"
-            style="@style/Widget.Material3.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Price high to low"
-            tools:checked="false" />
-
-
-    </com.google.android.material.chip.ChipGroup>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/apply_button"
-        style="@style/Widget.Material3.Button"
-        android:layout_width="wrap_content"
+    <androidx.appcompat.widget.AppCompatRadioButton
+        android:id="@+id/posted_date_lower_to_higher"
+        android:layout_width="match_parent"
+        android:textAlignment="textStart"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_margin="10dp"
-        android:text="Apply" />
+        android:textColor="@color/md_theme_onSurface_highContrast"
+        app:buttonTint="@color/md_theme_primary"
+        android:text="Posted date old to new" />
+
+    <RadioButton
+        android:id="@+id/price_lower_to_higher"
+        android:textColor="@color/md_theme_onSurface_highContrast"
+        android:textAlignment="textStart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:buttonTint="@color/md_theme_primary"
+        android:text="Price low to high" />
+
+    <RadioButton
+        android:id="@+id/price_date_lower_to_higher"
+        app:buttonTint="@color/md_theme_primary"
+        android:textColor="@color/md_theme_onSurface_highContrast"
+        android:layout_width="match_parent"
+        android:textAlignment="textStart"
+        android:layout_height="wrap_content"
+        android:text="price high to low" />
+</RadioGroup>
+
+    <!--    <LinearLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="30dp"-->
+    <!--        android:paddingHorizontal="15dp">-->
+
+
+    <!--    <com.google.android.material.chip.ChipGroup-->
+    <!--        android:id="@+id/cg_sort_types"-->
+    <!--        android:padding="13dp"-->
+    <!--        style="@style/Widget.Material3.ChipGroup"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_gravity="center"-->
+    <!--        app:chipSpacingHorizontal="10dp"-->
+    <!--        app:selectionRequired="false"-->
+    <!--        app:singleSelection="true">-->
+
+    <!--        <com.google.android.material.chip.Chip-->
+    <!--            android:id="@+id/posted_date_higher_to_lower"-->
+    <!--            style="@style/Widget.Material3.Chip.Filter"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:text="Newest to oldest"-->
+    <!--            tools:checked="false" />-->
+
+
+    <!--        <com.google.android.material.chip.Chip-->
+    <!--            android:id="@+id/price_lower_to_higher"-->
+    <!--            style="@style/Widget.Material3.Chip.Filter"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:text="Lowest to highest price"-->
+    <!--            tools:checked="false" />-->
+
+    <!--        <com.google.android.material.chip.Chip-->
+    <!--            android:id="@+id/posted_date_lower_to_higher"-->
+    <!--            style="@style/Widget.Material3.Chip.Filter"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:text="Oldest to newest"-->
+    <!--            tools:checked="true" />-->
+
+    <!--        <com.google.android.material.chip.Chip-->
+    <!--            android:id="@+id/price_date_lower_to_higher"-->
+    <!--            style="@style/Widget.Material3.Chip.Filter"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:text="Highest to lowest price"-->
+    <!--            tools:checked="false" />-->
+
+
+    <!--    </com.google.android.material.chip.ChipGroup>-->
+
 
 </LinearLayout>

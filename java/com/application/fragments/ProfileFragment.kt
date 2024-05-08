@@ -95,13 +95,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 callBack.onShowFavouritePage()
             }
         }
-//        binding.monitor.apply {
-//            textLabel.text = "Your Activity"
-//            imageFilterView.setImageResource(R.drawable.ic_monitor)
-//            navigator.setOnClickListener {
-////                callBack.onShowActivityPage()
-//            }
-//        }
     }
 
 

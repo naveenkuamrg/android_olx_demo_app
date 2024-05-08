@@ -25,6 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
+            android:background="@color/md_theme_surface"
             android:paddingStart="14dp"
             android:paddingEnd="15dp">
 
@@ -70,16 +71,18 @@
                     android:orientation="horizontal" />
             </LinearLayout>
             <TextView
+                android:textColor="@color/md_theme_onSurface_highContrast"
                 android:layout_marginTop="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
-                android:alpha="0.8"
+                android:alpha="0.9"
                 android:text="@{viewModel.product.title}"
                 android:textSize="17.5sp"
                 android:textStyle="bold" />
 
             <TextView
+                android:textColor="@color/md_theme_onSurface_highContrast"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
@@ -114,6 +117,8 @@
 
                     <TextView
                         android:textIsSelectable="true"
+                        android:textColor="@color/md_theme_onSurface_highContrast"
+
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -142,6 +147,8 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/md_theme_onSurface_highContrast"
+
                         android:layout_gravity="center"
                         android:text="@{ProductType.productTypeToString(viewModel.product.productType)}" />
                 </LinearLayout>
@@ -168,6 +175,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:textColor="@color/md_theme_onSurface_highContrast"
+
                         android:text="@{viewModel.product.location}" />
                 </LinearLayout>
 
@@ -192,6 +201,8 @@
                         android:layout_width="match_parent"
                         android:layout_gravity="center"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/md_theme_onSurface_highContrast"
+
                         android:text="@{Utility.millisecondsToString(viewModel.product.postedDate)}" />
 
                 </LinearLayout>
@@ -208,6 +219,8 @@
                 android:layout_height="wrap_content">
 
                 <TextView
+                    android:textColor="@color/md_theme_onSurface_highContrast"
+
                     android:id="@+id/textView"
                     android:textSize="11pt"
                     android:textStyle="bold"
@@ -217,8 +230,9 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <include
+                    android:layout_marginTop="25dp"
                     android:id="@+id/no_data"
-                    layout="@layout/no_data"
+                    layout="@layout/no_profile_list"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:layout_constraintBottom_toBottomOf="parent"

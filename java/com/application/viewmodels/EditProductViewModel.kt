@@ -32,8 +32,10 @@ class EditProductViewModel(private val productRepository: ProductRepository) : V
 
 
     fun postProduct(
+        id: Long?,
         title: String,
         description: String,
+        data: Long,
         price: Double,
         category: String,
         location: String,
@@ -43,10 +45,10 @@ class EditProductViewModel(private val productRepository: ProductRepository) : V
             _isUpload.postValue(
                 productRepository.insertProduct(
                     Product(
-                        product.value?.id,
+                        id,
                         title,
                         price,
-                        product.value?.postedDate ?: Date().time,
+                        data,
                         description,
                         AvailabilityStatus.AVAILABLE,
                         location,
@@ -75,8 +77,12 @@ class EditProductViewModel(private val productRepository: ProductRepository) : V
     }
 
     fun setProduct(product: Product){
+        Log.i("TAG naveen",product.toString())
         _product.value = product
-        _images.value = product.images.toMutableList()
+    }
+
+    fun setTempImages(images: List<Bitmap>){
+        _images.value = images.toMutableList()
     }
 
 

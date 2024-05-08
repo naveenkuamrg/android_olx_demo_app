@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -50,11 +49,23 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
             val currentProductId = arguments?.getLong("currentProductId")
             val notificationId = arguments?.getLong("notificationId")
             if (currentProductId != null && currentProductId != 0L) {
-                viewModel.fetchProductDetailsUsingProductId(currentProductId, userId)
+                viewModel.fetchProductDetailsUsingProductId(currentProductId)
             }
             if (notificationId != null && notificationId != 0L) {
-                viewModel.fetchProductDetailsUsingNotificationId(notificationId, userId)
+                viewModel.fetchProductDetailsUsingNotificationId(notificationId,userId)
             }
+        }
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        val currentProductId = arguments?.getLong("currentProductId")
+        val notificationId = arguments?.getLong("notificationId")
+        if (currentProductId != null && currentProductId != 0L) {
+            viewModel.fetchProductDetailsUsingProductId(currentProductId)
+        }
+        if (notificationId != null && notificationId != 0L) {
+            viewModel.fetchProductDetailsUsingNotificationId(notificationId, userId)
         }
     }
 
@@ -130,7 +141,7 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
         }
 
         binding.productDetailLayout.imInterestedBtn.setOnClickListener { btn ->
-            btn.isEnabled = false
+            btn.isClickable = false
             val message = if (viewModel.product.value?.isInterested == false) {
                 "Your contact is shared with the product seller."
             } else {
@@ -140,11 +151,17 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
             AlertDialog.Builder(requireContext()).apply {
                 setMessage(message)
                 setPositiveButton("Confirm") { _, _ ->
+                    btn.isClickable = true
                     viewModel.product.value?.let {
-                        viewModel.updateProductInterested(it, userId, !it.isInterested)
+                        viewModel.updateProductIsWishList(
+                            it,
+                            userId,
+                            Utility.getLoginUserName(context),
+                            !it.isInterested
+                        )
                     }
                 }
-                setNegativeButton("No") { _, _ -> btn.isEnabled = true }
+                setNegativeButton("No") { _, _ -> btn.isClickable = true }
                 setCancelable(false)
                 show()
             }
@@ -226,12 +243,12 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
         }
 
         viewModel.profileList.observe(viewLifecycleOwner) {
-            binding.productDetailLayout.noData.imageView2.visibility = View.GONE
             if (it.isEmpty()) {
                 binding.productDetailLayout.noData.noDataLayout.visibility = View.VISIBLE
                 binding.productDetailLayout.noData.errorText.textSize = 16F
                 binding.productDetailLayout.noData.errorText.text =
-                    "Oops! It seems like your products are still waiting to steal some hearts"
+                    "No one Interested"
+                binding.noData.imageView2.layoutParams = ViewGroup.LayoutParams(30, 30)
             } else {
                 binding.productDetailLayout.noData.noDataLayout.visibility = View.GONE
             }
@@ -334,8 +351,8 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
     }
 
     private fun setUpIndicatorForViewPager(imageSize: Int) {
-
         if (imageSize != -1 && imageSize != 1) {
+            binding.productDetailLayout.indicator.visibility = View.VISIBLE
             val slideDot = binding.productDetailLayout.indicator
             slideDot.removeAllViews()
             val params = LinearLayout.LayoutParams(
@@ -371,6 +388,8 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
                 pageChangeListener
             )
 
+        }else{
+            binding.productDetailLayout.indicator.visibility = View.GONE
         }
     }
 
