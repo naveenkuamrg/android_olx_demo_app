@@ -11,9 +11,9 @@ object NotificationContentBuilder {
        return when(type){
             NotificationType.PROFILE->{
                 if(isInterested == true) {
-                    "$senderName is interested in your product $productName."
+                    "$senderName is interested in your product $productName"
                 }else{
-                    "$senderName is removed from interested your product $productName."
+                    "$senderName is removed from interested your product $productName"
                 }
             }
             NotificationType.PRODUCT->{

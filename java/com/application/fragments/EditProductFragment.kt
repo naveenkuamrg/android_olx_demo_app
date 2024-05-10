@@ -5,23 +5,17 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.text.Editable
-import android.text.InputFilter
 import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.TextWatcher
 import android.util.Log
 import android.view.Gravity
 import android.view.View
-import android.widget.Adapter
+import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -87,19 +81,21 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         val productId = savedInstanceState?.getLong("productId")
         if (productId != null) {
             if (productId != -1L) {
-                Log.i("naveen", productViewModel.product.value.toString())
-                Log.i("naveen Id ", productId.toString())
+
                 productViewModel.fetchProductDetailsUsingProductId(
                     productId,
                 )
             } else {
                 productViewModel.clearProduct()
             }
-            Log.i("naveen", productViewModel.product.value.toString())
         }
         if (savedInstanceState == null) {
             setObserveForUI()
         }
+        Utility.removeErrorAfterTextChanged(binding.titleEditText, binding.titleEditTextLayout)
+        Utility.removeErrorAfterTextChanged(binding.descriptionEditText, binding.descriptionEditTextLayout)
+        Utility.removeErrorAfterTextChanged(binding.priceEditText, binding.priceEditTextLayout)
+        Utility.removeErrorAfterTextChanged(binding.locationEditText, binding.locationEditTextLayout)
         setObserve()
         setUpToolbar()
         setCategoriesButton()
@@ -230,7 +226,8 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
 
     private fun setUpIndicatorForViewPager(imageSize: Int) {
 
-        if (imageSize != -1) {
+        if (imageSize != -1 && imageSize != 1) {
+            binding.indicator.visibility = View.VISIBLE
             val slideDot = binding.indicator
             slideDot.removeAllViews()
             val params = LinearLayout.LayoutParams(
@@ -272,6 +269,8 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
             binding.viewPager.registerOnPageChangeCallback(
                 pageChangeListener
             )
+        } else {
+            binding.indicator.visibility = View.GONE
         }
     }
 
@@ -285,13 +284,27 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
             )
         )
 
+        val inputMethodManager =
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        binding.priceEditText.setOnEditorActionListener { _, _, _ ->
+            binding.categoriesDropdown.requestFocus()
+            binding.categoriesDropdown.showDropDown()
+            inputMethodManager.hideSoftInputFromWindow(binding.priceEditText.windowToken, 0)
+            return@setOnEditorActionListener true
+        }
+
         binding.categoriesDropdown.onItemClickListener =
             AdapterView.OnItemClickListener { parent, view, position, id ->
-
-                Log.i("TAG categoriesDropdown", "")
+                binding.categoriesDropdownLayout.error = ""
                 binding.editDetailsContainer.requestFocus(R.id.location_edit_text)
-
+                inputMethodManager.showSoftInput(
+                    binding.locationEditText,
+                    InputMethodManager.SHOW_IMPLICIT
+                )
             }
+
+
     }
 
     private fun setOnClickListenerForAddImageButton() {
@@ -446,14 +459,10 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         editProductViewModel.images.observe(viewLifecycleOwner) { images ->
 
             if (productViewModel.product.value?.images?.size != images?.size) {
-
-                if (productViewModel.product.value?.images?.size == null && images?.size == 0
-                    && !editProductViewModel.isDataUpdate
-                ) {
-                    editProductViewModel.isDataUpdate = false
-                } else {
-                    editProductViewModel.isDataUpdate = true
-                }
+                binding.textinputError.visibility = View.GONE
+                editProductViewModel.isDataUpdate =
+                    !(productViewModel.product.value?.images?.size == null && images?.size == 0
+                            && !editProductViewModel.isDataUpdate)
             }
             val _images = mutableListOf<Bitmap>()
             images?.forEach {
@@ -492,6 +501,8 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
             }
         }
     }
+
+
 
     // Restoring Bitmap from file
     private fun restoreBitmapFromFile(size: Int): List<Bitmap> {

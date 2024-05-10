@@ -1,16 +1,15 @@
 package com.application.helper
 
 import android.content.Context
-import android.content.DialogInterface
-import android.util.Log
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import com.application.R
-import java.text.FieldPosition
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -145,6 +144,12 @@ object Utility {
             if (addToBackStack != null) {
                 addToBackStack(addToBackStack)
             }
+        }
+    }
+
+    fun removeErrorAfterTextChanged(textView: TextInputEditText, textLayout: TextInputLayout) {
+        textView.doAfterTextChanged {
+            textLayout.error = ""
         }
     }
 

@@ -1,5 +1,6 @@
 package com.application.adapter
 
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,10 +18,16 @@ import com.application.helper.Utility
 import com.application.model.ProductListItem
 import com.application.model.ProductListItem.ProductItem
 import com.application.model.ProductType
+import com.application.repositories.impl.ProductImageRepositoryImpl
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class ProductSummaryAdapter(private val onItemClickListener: (ProductItem) -> Unit) :
+class ProductSummaryAdapter( context: Context,private val onItemClickListener: (ProductItem) -> Unit) :
     PagingDataAdapter<ProductListItem,
             ViewHolder>(ProductSummaryDiffUtil()) {
+
     class ProductSummaryViewHolder(itemView: View) : ViewHolder(itemView) {
         val imageView = itemView.findViewById<ImageView>(R.id.product_main_image_view)
         val title = itemView.findViewById<TextView>(R.id.product_title_textview)
@@ -42,6 +49,7 @@ class ProductSummaryAdapter(private val onItemClickListener: (ProductItem) -> Un
     }
 
     lateinit var onFilterClickListener: (ProductType) -> Unit
+    val productImageRepository = ProductImageRepositoryImpl(context)
     override fun getItemViewType(position: Int): Int {
 
         return when (getItem(position)) {
@@ -96,7 +104,17 @@ class ProductSummaryAdapter(private val onItemClickListener: (ProductItem) -> Un
                 val item = getItem(position) as ProductItem
                 holder.title.text = item.title
                 holder.price.text = Utility.convertToINR(item.price.toDouble())
-                holder.imageView.setImageBitmap(item.image)
+                if(item.image == null) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val tempImage = productImageRepository.getMainImage(item.id.toString())
+                        item.image = tempImage
+                        withContext(Dispatchers.Main) {
+                            holder.imageView.setImageBitmap(tempImage)
+                        }
+                    }
+                }else{
+                    holder.imageView.setImageBitmap(item.image)
+                }
                 holder.itemView.setOnClickListener {
                     onItemClickListener(item)
                 }

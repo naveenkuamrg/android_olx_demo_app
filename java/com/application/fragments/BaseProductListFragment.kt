@@ -21,10 +21,15 @@ import com.application.callbacks.ProductRecyclerFragmentWithFilterCallback
 import com.application.model.ProductListItem
 import com.application.viewmodels.ProductListViewModel
 import com.google.android.material.progressindicator.CircularProgressIndicator
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import java.util.concurrent.TimeUnit
 
-abstract class BaseProductListFragment(layout: Int): Fragment(layout),
+abstract class BaseProductListFragment(layout: Int) : Fragment(layout),
     ProductRecyclerFragmentCallback {
     protected val productListViewModel: ProductListViewModel by viewModels {
         ProductListViewModel.FACTORY
@@ -34,7 +39,6 @@ abstract class BaseProductListFragment(layout: Int): Fragment(layout),
     protected abstract var progressIndicator: CircularProgressIndicator
 
 
-
     /*
      Always call the this @onViewCreated(view: View, savedInstanceState: Bundle?)
      before call the method init recyclerView and progress Indicator variables
@@ -42,6 +46,7 @@ abstract class BaseProductListFragment(layout: Int): Fragment(layout),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setUpRecycleView()
     }
+
     private fun setUpRecycleView() {
         val dividerItemDecoration =
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
@@ -56,14 +61,17 @@ abstract class BaseProductListFragment(layout: Int): Fragment(layout),
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         initAdapter()
 
-    }
-     fun initAdapter() {
 
-        val adapter  = ProductSummaryAdapter {
-          onProductSummaryClick(it.id)
+    }
+
+    fun initAdapter() {
+
+        val adapter = ProductSummaryAdapter(requireContext()) {
+            onProductSummaryClick(it.id)
         }
 
-        if(this is ProductRecyclerFragmentWithFilterCallback){
+
+        if (this is ProductRecyclerFragmentWithFilterCallback) {
             adapter.onFilterClickListener = {
                 onFilterItemClick(it)
             }
@@ -71,10 +79,10 @@ abstract class BaseProductListFragment(layout: Int): Fragment(layout),
 
 
         adapter.addLoadStateListener {
-            Log.i("TAG load",it.toString())
-            if(it.refresh == LoadState.Loading){
+            Log.i("TAG load", it.toString())
+            if (it.refresh == LoadState.Loading) {
                 progressIndicator.visibility = View.VISIBLE
-            }else{
+            } else {
                 progressIndicator.visibility = View.GONE
 
             }
@@ -87,7 +95,7 @@ abstract class BaseProductListFragment(layout: Int): Fragment(layout),
             }
         }
         adapter.addLoadStateListener {
-            Log.i("BaseProductListFragment",it.toString())
+            Log.i("BaseProductListFragment", it.toString())
 
         }
         recyclerView.adapter = adapter

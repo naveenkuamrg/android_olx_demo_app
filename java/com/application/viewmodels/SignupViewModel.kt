@@ -16,6 +16,8 @@ class SignupViewModel(private val repository: AuthenticationRepository) : ViewMo
     private var _userId = MutableLiveData<Long>()
     val userId : LiveData<Long> = _userId
 
+    var secondAttempt : Boolean = false
+
     private  var _exception  = MutableLiveData<InvalidUserDataException>()
     val exception : LiveData<InvalidUserDataException> = _exception
     fun signup(name : String ,

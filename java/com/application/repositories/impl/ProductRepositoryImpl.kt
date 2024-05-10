@@ -25,15 +25,19 @@ import com.application.model.SearchProductResultItem
 import com.application.repositories.ProductImageRepository
 import com.application.repositories.ProductRepository
 import com.application.repositories.ProfileImageRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class ProductRepositoryImpl(val context: Context) : ProductRepository {
 
     private val productPaddingConfig = PagingConfig(
-        15,
-        20,
+        10,
+        10,
         enablePlaceholders = false
     )
 
@@ -311,7 +315,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
     private fun <Key : Any> Pager<Key, ProductItem>.getFlowPagingData(): Flow<PagingData<ProductListItem>> {
         return this.flow.map { pagingData ->
             pagingData.map {
-                setImg(it)
+//                    setImg(it)
                 it
             }
         }

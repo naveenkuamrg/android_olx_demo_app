@@ -12,11 +12,7 @@ import androidx.paging.PagingData
 import androidx.paging.liveData
 import androidx.paging.map
 import com.application.model.Notification
-import com.application.model.NotificationType
 import com.application.repositories.NotificationRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class NotificationRepositoryImpl(val context: Context) : NotificationRepository {
 

@@ -50,9 +50,16 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
         setOnClickListenerToRemoveBtn()
         setUpOnBackPress()
 
+        Utility.removeErrorAfterTextChanged(binding.nameEdittext, binding.nameEditTextLayout)
+        Utility.removeErrorAfterTextChanged(binding.emailEdittext, binding.emailEditTextLayout)
+        Utility.removeErrorAfterTextChanged(
+            binding.phoneNumberEdittext,
+            binding.phoneNumberEdittextLayout
+        )
+
     }
 
-    private fun onBackPress(){
+    private fun onBackPress() {
         if (isDataUpdate()) {
             AlertDialog.Builder(context).apply {
                 setMessage("If you go back, any changes you made will be lost")
@@ -73,11 +80,11 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
         return isChanged(profile?.name, binding.nameEdittext.text.toString()) ||
                 isChanged(profile?.email, binding.emailEdittext.text.toString()) ||
                 isChanged(profile?.phoneNumber, binding.phoneNumberEdittext.text.toString()) ||
-                isChanged(profile?.profileImage,editProfileViewModel.tempImage.value)
+                isChanged(profile?.profileImage, editProfileViewModel.tempImage.value)
     }
 
     private fun <T> isChanged(productVal: T, enteredVal: T): Boolean {
-        Log.i("EditProductFragment","${productVal} val ${enteredVal}")
+        Log.i("EditProductFragment", "${productVal} val ${enteredVal}")
         if (productVal == null && enteredVal.toString().isEmpty() || enteredVal == 0) {
             return false
         }
@@ -185,7 +192,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
         toolbar.setNavigationOnClickListener {
             onBackPress()
         }
-       toolbar.setOnMenuItemClickListener {
+        toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.save -> {
 
@@ -196,12 +203,18 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
                     if (!Validator.isEmailValid(email)) {
                         binding.emailEditTextLayout.error = "Email is not valid"
                         isValid = false
+                        if(binding.emailEdittext.text.toString() == ""){
+                            binding.emailEditTextLayout.error = "Email can't be empty"
+                        }
                     } else {
                         binding.emailEditTextLayout.error = null
                     }
 
                     if (!Validator.isPhoneNumberValid(phoneNumber)) {
                         binding.phoneNumberEdittextLayout.error = "Phone number is not valid"
+                        if(binding.phoneNumberEdittext.text.toString() == ""){
+                            binding.phoneNumberEdittextLayout.error = "Phone can't be empty"
+                        }
                         isValid = false
                     } else {
                         binding.phoneNumberEdittext.error = null
@@ -209,6 +222,9 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
 
                     if (!Validator.doesNotContainSpecialChars(name)) {
                         binding.nameEditTextLayout.error = "name doesn't have special character"
+                        if(binding.nameEdittext.text.toString() == ""){
+                            binding.nameEditTextLayout.error = "Name can't be empty"
+                        }
                         isValid = false
                     } else {
                         binding.nameEditTextLayout.error = null

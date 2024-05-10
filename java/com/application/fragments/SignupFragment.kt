@@ -28,7 +28,9 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
         binding = FragmentSignupBinding.bind(view)
         addObserver()
         binding.reenterPassword.doAfterTextChanged { text ->
-            if (text.toString() != binding.passwordEdittext.text.toString()) {
+            if (text.toString() != binding.passwordEdittext.text.toString() &&
+                viewModel.secondAttempt
+            ) {
                 binding.reenterPasswordLayout.error = "Passwords do not match"
             } else {
                 if (binding.reenterPassword.text.toString() != "") {
@@ -38,8 +40,8 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
         }
         binding.passwordEdittext.doAfterTextChanged {
             val passwordError = Validator.passwordValidator(it.toString())
-            if (passwordError != null && binding.passwordEdittext.text.toString() != ""
-                || binding.passwordLayout.error != null
+            if (viewModel.secondAttempt &&
+                passwordError != null && binding.passwordEdittext.text.toString() != ""
             ) {
                 binding.passwordLayout.error = passwordError
             } else {
@@ -48,24 +50,26 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
         }
 
         binding.phoneNumber.doAfterTextChanged {
-            if(!Validator.isPhoneNumberValid(it.toString())){
-               if(binding.phoneNumber.text.toString() != "" &&
-                   binding.phoneNumberLayout.error != null){
-                   binding.phoneNumberLayout.error = "Phone number is not valid"
-               }
-            }else{
+            if (!Validator.isPhoneNumberValid(it.toString())) {
+                if (binding.phoneNumber.text.toString() != "" &&
+                    viewModel.secondAttempt
+                ) {
+                    binding.phoneNumberLayout.error = "Phone number is not valid"
+                }
+            } else {
                 binding.phoneNumberLayout.error = null
             }
         }
 
         binding.emailEdittext.doAfterTextChanged {
-            if(!Validator.isEmailValid(it.toString())){
-                if(binding.emailEdittext.text.toString() != "" &&
-                    binding.emailEditTextLayout.error != null){
+            if (!Validator.isEmailValid(it.toString())) {
+                if (binding.emailEdittext.text.toString() != "" &&
+                    viewModel.secondAttempt
+                ) {
                     binding.emailEditTextLayout.error = "Email is not valid"
                 }
 
-            }else{
+            } else {
                 binding.emailEditTextLayout.error = null
             }
         }
@@ -73,11 +77,9 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
         binding.name.doAfterTextChanged {
             if (!Validator.doesNotContainSpecialChars(it.toString())) {
                 //error
-
                 if (binding.name.text.toString() != "") {
                     binding.nameEditTextLayout.error = "Name does not contain special charters"
                 }
-
             } else {
                 //non - error
                 binding.nameEditTextLayout.error = null
@@ -96,10 +98,12 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
 
 
             if (!isValid(userName, email, phoneNumber, password, confirmPassword)) {
+                viewModel.secondAttempt = true
                 return@setOnClickListener
             }
 
             viewModel.signup(userName, email, phoneNumber, password)
+            viewModel.secondAttempt = false
 
         }
 
@@ -203,8 +207,6 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
                 }
             }
         }
-
-
         viewModel.userId.observe(viewLifecycleOwner) { value ->
             parentFragmentManager.popBackStack()
             val sharedPreferences = requireContext().getSharedPreferences(

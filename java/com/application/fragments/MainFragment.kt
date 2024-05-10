@@ -17,6 +17,7 @@ import com.application.callbacks.ProfileFragmentCallback
 import com.application.databinding.FragmentMainBinding
 import com.application.helper.Utility
 import com.application.helper.Utility.commitWithSlideAnimation
+import com.application.viewmodels.PrefetchingDataViewModel
 import com.application.viewmodels.SearchProductViewModel
 import com.google.android.material.search.SearchBar
 import java.util.Locale
@@ -28,6 +29,7 @@ class MainFragment : Fragment(R.layout.fragment_main), ProfileFragmentCallback,
     private val searchProductViewModel: SearchProductViewModel by viewModels {
         SearchProductViewModel.FACTORY
     }
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

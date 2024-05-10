@@ -1,5 +1,6 @@
 package com.application.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,14 @@ import com.application.helper.Utility
 import com.application.model.Notification
 import com.application.model.NotificationType
 import com.application.model.ProductListItem
+import com.application.repositories.ProductImageRepository
+import com.application.repositories.impl.ProductImageRepositoryImpl
+import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.material.shape.CornerFamily
+import com.google.android.material.shape.ShapeAppearanceModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class NotificationAdapter(val onItemClickListener: (Long) -> Unit) :
     PagingDataAdapter<Notification, RecyclerView.ViewHolder>(NotificationDiffUtil()) {
@@ -26,6 +35,7 @@ class NotificationAdapter(val onItemClickListener: (Long) -> Unit) :
     class NotificationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val contentTextView = itemView.findViewById<TextView>(R.id.content_text_view)
         val timeStamp = itemView.findViewById<TextView>(R.id.time_stamp_text_view)
+//        val image = itemView.findViewById<ShapeableImageView>(R.id.image)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationViewHolder {
@@ -37,7 +47,7 @@ class NotificationAdapter(val onItemClickListener: (Long) -> Unit) :
         return NotificationViewHolder(itemView)
     }
 
-//    override fun onCreateViewHolder(
+    //    override fun onCreateViewHolder(
 //        parent: ViewGroup,
 //        viewType: Int,
 //    ): MyComposeViewHolder {
@@ -48,9 +58,9 @@ class NotificationAdapter(val onItemClickListener: (Long) -> Unit) :
     ) : RecyclerView.ViewHolder(composeView) {
 
 
-        fun bind(notification: Notification,onItemClickListener: (Long) -> Unit) {
+        fun bind(notification: Notification, onItemClickListener: (Long) -> Unit) {
             composeView.setContent {
-                NotificationItemView(notification,onItemClickListener)
+                NotificationItemView(notification, onItemClickListener)
             }
         }
     }
@@ -69,6 +79,23 @@ class NotificationAdapter(val onItemClickListener: (Long) -> Unit) :
 //        }
 
         if (holder is NotificationViewHolder) {
+//            val _image = value!!.image
+//            if (_image != null) {
+//                holder.image.setImageBitmap(_image)
+//            } else {
+//                if (value.type == NotificationType.PRODUCT) {
+//                    holder.image.setImageResource(R.drawable.ic_delete_forevere)
+//                } else {
+//                    holder.image.setImageResource(R.drawable.ic_person)
+//                }
+//            }
+//            if (value.type == NotificationType.PRODUCT) {
+//                holder.image.shapeAppearanceModel = ShapeAppearanceModel.builder()
+//                    .setAllCorners(CornerFamily.ROUNDED,50F )
+//                    .build()
+//            } else {
+//                holder.image.setImageResource(R.drawable.ic_person)
+//            }
             holder.contentTextView.text = value!!.content
             holder.timeStamp.text =
                 Utility.setCreatedTime(value.timestamp)

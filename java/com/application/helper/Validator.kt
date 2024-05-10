@@ -67,7 +67,7 @@ object Validator {
         }
     }
 
-    fun validatePrice(price: String,errorHandler: (Boolean,errorMessage: String?) -> Unit) {
+    fun  validatePrice(price: String,errorHandler: (Boolean,errorMessage: String?) -> Unit) {
         val _price = price.toDoubleOrNull()
         if(_price == null){
             errorHandler(false,"Price should not be empty")

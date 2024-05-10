@@ -4,24 +4,33 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.application.fragments.LoginFragment
 import com.application.fragments.MainFragment
+import com.application.fragments.PrefetchingData
 import com.application.model.ProductType
+import com.application.viewmodels.PrefetchingDataViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.URL
 
 class MainActivity : AppCompatActivity() {
+
+    private val prefetchingDataViewModel: PrefetchingDataViewModel by viewModels {
+        PrefetchingDataViewModel.FACTORY
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val sharedPreferences = getSharedPreferences("mySharePref", MODE_PRIVATE)
 
         if (!sharedPreferences.getBoolean("dataInjected", false)) {
+            prefetchingDataViewModel.loading.postValue(true)
             lifecycleScope.launch(Dispatchers.IO) {
                 DataInjection(this@MainActivity).addSampleData()
                 DataInjection(this@MainActivity).makeGetApiRequest(
@@ -64,8 +73,10 @@ class MainActivity : AppCompatActivity() {
                     URL("https://api.jsonbin.io/v3/b/6634b707acd3cb34a84252bf?meta=false"),
                     ProductType.FURNITURE
                 )
-
+                prefetchingDataViewModel.loading.postValue(false)
             }
+        }else{
+            prefetchingDataViewModel.loading.postValue(false)
         }
 //        lifecycleScope.launch(Dispatchers.IO) {
 //            DataInjection(this@MainActivity).makeGetApiRequest(
@@ -75,25 +86,34 @@ class MainActivity : AppCompatActivity() {
 //        }
 
         if (savedInstanceState == null) {
-            if (sharedPreferences.getString("userId", "") == "") {
-                val fragmentTransaction = supportFragmentManager.beginTransaction()
-                fragmentTransaction.add(R.id.main_view_container, LoginFragment())
-                fragmentTransaction.commit()
-            } else {
-                val fragmentTransaction = supportFragmentManager.beginTransaction()
-                fragmentTransaction.add(R.id.main_view_container, MainFragment())
-                fragmentTransaction.commit()
+            prefetchingDataViewModel.loading.observe(this){
+                if(it){
+                    val fragmentTransaction = supportFragmentManager.beginTransaction()
+                    fragmentTransaction.replace(R.id.main_view_container,PrefetchingData())
+                    fragmentTransaction.commit()
+                }else{
+                    if (sharedPreferences.getString("userId", "") == "") {
+                        val fragmentTransaction = supportFragmentManager.beginTransaction()
+                        fragmentTransaction.replace(R.id.main_view_container, LoginFragment())
+                        fragmentTransaction.commit()
+                    } else {
+                        val fragmentTransaction = supportFragmentManager.beginTransaction()
+                        fragmentTransaction.replace(R.id.main_view_container, MainFragment())
+                        fragmentTransaction.commit()
+                    }
+                    if (ContextCompat.checkSelfPermission(
+                            this,
+                            Manifest.permission.CALL_PHONE
+                        ) != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        ActivityCompat.requestPermissions(
+                            this, arrayOf(Manifest.permission.CALL_PHONE),
+                            0
+                        )
+                    }
+                }
             }
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.CALL_PHONE
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this, arrayOf(Manifest.permission.CALL_PHONE),
-                    0
-                )
-            }
+
         }
     }
 }

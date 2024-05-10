@@ -30,14 +30,11 @@ class FilterProductListFragment :
         }
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
             getFilterType?.let { productListViewModel.getProductSummary(it) }
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentFilterProductsBinding.bind(view)
         recyclerView = binding.recycleView
         progressIndicator = binding.progressCircular

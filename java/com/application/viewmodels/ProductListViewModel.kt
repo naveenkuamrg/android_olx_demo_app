@@ -27,14 +27,17 @@ class ProductListViewModel(
 ) : ViewModel() {
 
     val sellProductList: LiveData<PagingData<ProductListItem>> =
-        productRepository.getProductSummaryDetailsForSellZone().asLiveData()
+        productRepository.getProductSummaryDetailsForSellZone()
+            .asLiveData()
             .cachedIn(viewModelScope)
     val favoriteProductList: LiveData<PagingData<ProductListItem>> =
-        productRepository.getFavouriteProductList().asLiveData()
+        productRepository.getFavouriteProductList()
+            .asLiveData()
             .cachedIn(viewModelScope)
 
     val interestedProductList: LiveData<PagingData<ProductListItem>> =
-        productRepository.getInterestedProductList().asLiveData()
+        productRepository.getInterestedProductList()
+            .asLiveData()
             .cachedIn(viewModelScope)
 
     var productListPostedDateASC: LiveData<PagingData<ProductListItem>> = setHeader(

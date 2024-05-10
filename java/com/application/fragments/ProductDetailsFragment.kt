@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.application.R
@@ -20,6 +21,8 @@ import com.application.databinding.FragmentProductDetailsBinding
 import com.application.helper.Utility
 import com.application.model.AvailabilityStatus
 import com.application.viewmodels.ProductViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
@@ -248,14 +251,11 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
                 binding.productDetailLayout.noData.errorText.textSize = 16F
                 binding.productDetailLayout.noData.errorText.text =
                     "No one Interested"
-                binding.noData.imageView2.layoutParams = ViewGroup.LayoutParams(30, 30)
             } else {
                 binding.productDetailLayout.noData.noDataLayout.visibility = View.GONE
             }
             (binding.productDetailLayout.profileRecyclerView.adapter as ProfileSummaryAdapter)
-                .setData(
-                    it
-                )
+                .setData(it)
 
         }
 
