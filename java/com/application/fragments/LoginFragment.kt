@@ -39,11 +39,11 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         binding.logoImageView.setImageBitmap(bitmap)
         setOnClickListener()
 
-        Utility.removeErrorAfterTextChanged(binding.emailEdittext, binding.emailEdittextLayout)
-        Utility.removeErrorAfterTextChanged(
-            binding.passwordEdittext,
-            binding.passwordEdittextLayout
-        )
+//        Utility.removeErrorAfterTextChanged(binding.emailEdittext, binding.emailEdittextLayout)
+//        Utility.removeErrorAfterTextChanged(
+//            binding.passwordEdittext,
+//            binding.passwordEdittextLayout
+//        )
 
 
     }

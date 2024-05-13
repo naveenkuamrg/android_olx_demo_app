@@ -92,10 +92,10 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         if (savedInstanceState == null) {
             setObserveForUI()
         }
-        Utility.removeErrorAfterTextChanged(binding.titleEditText, binding.titleEditTextLayout)
-        Utility.removeErrorAfterTextChanged(binding.descriptionEditText, binding.descriptionEditTextLayout)
-        Utility.removeErrorAfterTextChanged(binding.priceEditText, binding.priceEditTextLayout)
-        Utility.removeErrorAfterTextChanged(binding.locationEditText, binding.locationEditTextLayout)
+//        Utility.removeErrorAfterTextChanged(binding.titleEditText, binding.titleEditTextLayout)
+//        Utility.removeErrorAfterTextChanged(binding.descriptionEditText, binding.descriptionEditTextLayout)
+//        Utility.removeErrorAfterTextChanged(binding.priceEditText, binding.priceEditTextLayout)
+//        Utility.removeErrorAfterTextChanged(binding.locationEditText, binding.locationEditTextLayout)
         setObserve()
         setUpToolbar()
         setCategoriesButton()
@@ -296,7 +296,7 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
 
         binding.categoriesDropdown.onItemClickListener =
             AdapterView.OnItemClickListener { parent, view, position, id ->
-                binding.categoriesDropdownLayout.error = ""
+//                binding.categoriesDropdownLayout.error = ""
                 binding.editDetailsContainer.requestFocus(R.id.location_edit_text)
                 inputMethodManager.showSoftInput(
                     binding.locationEditText,
@@ -459,7 +459,7 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         editProductViewModel.images.observe(viewLifecycleOwner) { images ->
 
             if (productViewModel.product.value?.images?.size != images?.size) {
-                binding.textinputError.visibility = View.GONE
+//                binding.textinputError.visibility = View.GONE
                 editProductViewModel.isDataUpdate =
                     !(productViewModel.product.value?.images?.size == null && images?.size == 0
                             && !editProductViewModel.isDataUpdate)

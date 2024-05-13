@@ -32,6 +32,11 @@ class ProductSummaryAdapter( context: Context,private val onItemClickListener: (
         val imageView = itemView.findViewById<ImageView>(R.id.product_main_image_view)
         val title = itemView.findViewById<TextView>(R.id.product_title_textview)
         val price = itemView.findViewById<TextView>(R.id.product_price_textview)
+        fun  reuse(){
+            title.text = ""
+            price.text = ""
+            imageView.setImageBitmap(null)
+        }
     }
 
     class DividerViewHolder(itemView: View) : ViewHolder(itemView) {
@@ -101,18 +106,21 @@ class ProductSummaryAdapter( context: Context,private val onItemClickListener: (
             }
 
             is ProductSummaryViewHolder -> {
+//                holder.reuse()
                 val item = getItem(position) as ProductItem
                 holder.title.text = item.title
-                holder.price.text = Utility.convertToINR(item.price.toDouble())
+                holder.price.text = Utility.convertToINR(item.price)
                 if(item.image == null) {
                     CoroutineScope(Dispatchers.IO).launch {
                         val tempImage = productImageRepository.getMainImage(item.id.toString())
                         item.image = tempImage
+                        tempImage?.prepareToDraw()
                         withContext(Dispatchers.Main) {
                             holder.imageView.setImageBitmap(tempImage)
                         }
                     }
                 }else{
+                    item.image?.prepareToDraw()
                     holder.imageView.setImageBitmap(item.image)
                 }
                 holder.itemView.setOnClickListener {

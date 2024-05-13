@@ -1,33 +1,18 @@
 package com.application.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.ContextCompat
 import androidx.paging.PagingDataAdapter
-import androidx.recyclerview.widget.AsyncListDiffer
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.application.R
 import com.application.adapter.diffUtil.NotificationDiffUtil
 import com.application.compose.NotificationItemView
 import com.application.helper.Utility
 import com.application.model.Notification
-import com.application.model.NotificationType
-import com.application.model.ProductListItem
-import com.application.repositories.ProductImageRepository
-import com.application.repositories.impl.ProductImageRepositoryImpl
-import com.google.android.material.imageview.ShapeableImageView
-import com.google.android.material.shape.CornerFamily
-import com.google.android.material.shape.ShapeAppearanceModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class NotificationAdapter(val onItemClickListener: (Long) -> Unit) :
     PagingDataAdapter<Notification, RecyclerView.ViewHolder>(NotificationDiffUtil()) {

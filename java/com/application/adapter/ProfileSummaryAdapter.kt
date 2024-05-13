@@ -22,6 +22,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.application.R
 import com.application.model.Profile
 import com.application.model.ProfileSummary
+import com.application.repositories.impl.ProfileImageRepositoryImpl
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ProfileSummaryAdapter(
     val context: Context,
@@ -37,6 +41,7 @@ class ProfileSummaryAdapter(
             itemView.findViewById<FrameLayout>(R.id.profile_back_ground)
     }
 
+    private val profileImageRepository = ProfileImageRepositoryImpl(context)
     fun setData(data: List<ProfileSummary>) {
         asyncDiffUtil.submitList(data)
     }
@@ -76,8 +81,18 @@ class ProfileSummaryAdapter(
 
     override fun onBindViewHolder(holder: ProfileViewHolder, position: Int) {
         val data = asyncDiffUtil.currentList[position]
+
         if (data.profileImage != null) {
+            data.profileImage?.prepareToDraw()
             holder.userDp.setImageBitmap(data.profileImage)
+        }else{
+            CoroutineScope(Dispatchers.IO).launch {
+                data.profileImage = profileImageRepository.getProfileImage(data.id.toString())
+                if(data.profileImage != null){
+                    data.profileImage?.prepareToDraw()
+                    holder.userDp.setImageBitmap(data.profileImage)
+                }
+            }
         }
         holder.userName.text = data.name
         if (data.isContented) {

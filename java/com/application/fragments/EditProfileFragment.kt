@@ -50,12 +50,12 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile),
         setOnClickListenerToRemoveBtn()
         setUpOnBackPress()
 
-        Utility.removeErrorAfterTextChanged(binding.nameEdittext, binding.nameEditTextLayout)
-        Utility.removeErrorAfterTextChanged(binding.emailEdittext, binding.emailEditTextLayout)
-        Utility.removeErrorAfterTextChanged(
-            binding.phoneNumberEdittext,
-            binding.phoneNumberEdittextLayout
-        )
+//        Utility.removeErrorAfterTextChanged(binding.nameEdittext, binding.nameEditTextLayout)
+//        Utility.removeErrorAfterTextChanged(binding.emailEdittext, binding.emailEditTextLayout)
+//        Utility.removeErrorAfterTextChanged(
+//            binding.phoneNumberEdittext,
+//            binding.phoneNumberEdittextLayout
+//        )
 
     }
 

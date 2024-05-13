@@ -1,6 +1,7 @@
 package com.application
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -24,7 +25,10 @@ class MainActivity : AppCompatActivity() {
     private val prefetchingDataViewModel: PrefetchingDataViewModel by viewModels {
         PrefetchingDataViewModel.FACTORY
     }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
+       
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val sharedPreferences = getSharedPreferences("mySharePref", MODE_PRIVATE)

@@ -1,5 +1,6 @@
 package com.application.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,6 +22,7 @@ import com.application.repositories.impl.ProductRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 class ProductListViewModel(
     private val productRepository: ProductRepository
@@ -60,6 +62,7 @@ class ProductListViewModel(
     private fun setHeader(pagingData: Flow<PagingData<ProductListItem>>):
             LiveData<PagingData<ProductListItem>> {
         return pagingData.map {
+            Log.i("Map",Thread.currentThread().toString())
             it.insertHeaderItem(TerminalSeparatorType.FULLY_COMPLETE, ProductListItem.Header())
         }.asLiveData().cachedIn(viewModelScope)
     }

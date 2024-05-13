@@ -1,6 +1,7 @@
 package com.application.helper
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
@@ -149,7 +150,9 @@ object Utility {
 
     fun removeErrorAfterTextChanged(textView: TextInputEditText, textLayout: TextInputLayout) {
         textView.doAfterTextChanged {
-            textLayout.error = ""
+            if(it.toString() != "") {
+//                textLayout.error = ""
+            }
         }
     }
 

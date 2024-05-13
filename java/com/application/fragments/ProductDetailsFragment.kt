@@ -254,8 +254,10 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
             } else {
                 binding.productDetailLayout.noData.noDataLayout.visibility = View.GONE
             }
-            (binding.productDetailLayout.profileRecyclerView.adapter as ProfileSummaryAdapter)
-                .setData(it)
+            lifecycleScope.launch(Dispatchers.IO) {
+                (binding.productDetailLayout.profileRecyclerView.adapter as ProfileSummaryAdapter)
+                    .setData(it)
+            }
 
         }
 

@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -50,7 +51,7 @@ abstract class BaseProductListFragment(layout: Int) : Fragment(layout),
     private fun setUpRecycleView() {
         val dividerItemDecoration =
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-        requireContext().getDrawable(
+        AppCompatResources.getDrawable(requireContext(),
             R.drawable.recycleview_divider
         )?.let {
             dividerItemDecoration.setDrawable(
@@ -65,19 +66,14 @@ abstract class BaseProductListFragment(layout: Int) : Fragment(layout),
     }
 
     fun initAdapter() {
-
         val adapter = ProductSummaryAdapter(requireContext()) {
             onProductSummaryClick(it.id)
         }
-
-
         if (this is ProductRecyclerFragmentWithFilterCallback) {
             adapter.onFilterClickListener = {
                 onFilterItemClick(it)
             }
         }
-
-
         adapter.addLoadStateListener {
             Log.i("TAG load", it.toString())
             if (it.refresh == LoadState.Loading) {
@@ -103,7 +99,7 @@ abstract class BaseProductListFragment(layout: Int) : Fragment(layout),
 
 
     protected fun setData(it: PagingData<ProductListItem>) {
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             (recyclerView.adapter as ProductSummaryAdapter).submitData(it)
         }
     }

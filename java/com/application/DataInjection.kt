@@ -78,6 +78,9 @@ class DataInjection(val context: Context) {
         profileRepository.saveProfileImage("2", convertPngResourceToBitmap(R.raw.profile))
         profileRepository.saveProfileImage("3", convertPngResourceToBitmap(R.raw.profile1))
         profileRepository.saveProfileImage("4", convertPngResourceToBitmap(R.raw.person2))
+        profileRepository.saveProfileImage("1", convertPngResourceToBitmap(R.raw.profile))
+        profileRepository.saveProfileImage("5", convertPngResourceToBitmap(R.raw.profile1))
+        profileRepository.saveProfileImage("6", convertPngResourceToBitmap(R.raw.person2))
 
         val product1 = Product(
             null,
