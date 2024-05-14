@@ -31,15 +31,19 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
 import java.lang.Exception
 
 class ProductRepositoryImpl(val context: Context) : ProductRepository {
 
     private val productPaddingConfig = PagingConfig(
-        100,
-        100,
+        20,
+        20,
         enablePlaceholders = false
     )
 
@@ -264,7 +268,11 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
     override suspend fun getInterestedProfile(productId: Long): List<ProfileSummary> {
         return ModelConverter.productsWithInterestedProfileSummary(
             profileDao.getInterestedProfile(productId)
-        )
+        ).map {
+            Log.i("getInterestedProfile",Thread.currentThread().toString())
+            it.profileImage = profileImageRepository.getProfileImage(it.id.toString())
+            it
+        }
     }
 
     override suspend fun getSearchProduct(
@@ -312,11 +320,12 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
     }
 
     private fun <Key : Any> Pager<Key, ProductItem>.getFlowPagingData(): Flow<PagingData<ProductListItem>> {
-        return this.flow.map { pagingData ->
-            pagingData.map {
-                it
-            }
-        }
+        return this.flow
+            .map { pagingData -> pagingData.map {
+                setImg(it)
+                it as ProductListItem} }
+
+
     }
 
 

@@ -209,6 +209,7 @@
             </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:visibility="gone"
                 android:layout_marginTop="10dp"
                 android:padding="10dp"
                 android:background="@color/md_theme_surfaceContainer"

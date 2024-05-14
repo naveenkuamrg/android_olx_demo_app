@@ -135,7 +135,7 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
     }
 
     fun updateMarkAsSold() {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.IO) {
             product.value?.let {
                 productRepository.updateProductAvailabilityAndNotify(
                     it,

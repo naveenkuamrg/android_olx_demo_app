@@ -24,7 +24,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ProductSummaryAdapter( context: Context,private val onItemClickListener: (ProductItem) -> Unit) :
+class ProductSummaryAdapter(
+    context: Context,
+    private val onItemClickListener: (ProductItem) -> Unit
+) :
     PagingDataAdapter<ProductListItem,
             ViewHolder>(ProductSummaryDiffUtil()) {
 
@@ -32,7 +35,7 @@ class ProductSummaryAdapter( context: Context,private val onItemClickListener: (
         val imageView = itemView.findViewById<ImageView>(R.id.product_main_image_view)
         val title = itemView.findViewById<TextView>(R.id.product_title_textview)
         val price = itemView.findViewById<TextView>(R.id.product_price_textview)
-        fun  reuse(){
+        fun reuse() {
             title.text = ""
             price.text = ""
             imageView.setImageBitmap(null)
@@ -79,7 +82,7 @@ class ProductSummaryAdapter( context: Context,private val onItemClickListener: (
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
+        Log.i("ADAPTER", Thread.currentThread().toString())
         when (holder) {
             is FilterViewHolder -> {
                 holder.vehicles.setOnClickListener {
@@ -106,23 +109,13 @@ class ProductSummaryAdapter( context: Context,private val onItemClickListener: (
             }
 
             is ProductSummaryViewHolder -> {
-//                holder.reuse()
+                holder.reuse()
                 val item = getItem(position) as ProductItem
                 holder.title.text = item.title
                 holder.price.text = Utility.convertToINR(item.price)
-                if(item.image == null) {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val tempImage = productImageRepository.getMainImage(item.id.toString())
-                        item.image = tempImage
-                        tempImage?.prepareToDraw()
-                        withContext(Dispatchers.Main) {
-                            holder.imageView.setImageBitmap(tempImage)
-                        }
-                    }
-                }else{
-                    item.image?.prepareToDraw()
-                    holder.imageView.setImageBitmap(item.image)
-                }
+
+                item.image?.prepareToDraw()
+                holder.imageView.setImageBitmap(item.image)
                 holder.itemView.setOnClickListener {
                     onItemClickListener(item)
                 }
@@ -144,11 +137,13 @@ class ProductSummaryAdapter( context: Context,private val onItemClickListener: (
                     .inflate(R.layout.product_item_header, parent, false)
                 FilterViewHolder(itemView)
             }
+
             PRODUCT_ITEM -> {
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.product_summary_view, parent, false)
                 ProductSummaryViewHolder(view)
             }
+
             DIVIDER -> {
                 val view =
                     LayoutInflater.from(parent.context).inflate(

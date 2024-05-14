@@ -1,13 +1,16 @@
 package com.application
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.application.fragments.LoginFragment
@@ -27,58 +30,69 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
        
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val sharedPreferences = getSharedPreferences("mySharePref", MODE_PRIVATE)
+        sharedPreferences.edit {
+            commit()
+        }
 
         if (!sharedPreferences.getBoolean("dataInjected", false)) {
             prefetchingDataViewModel.loading.postValue(true)
             lifecycleScope.launch(Dispatchers.IO) {
-                DataInjection(this@MainActivity).addSampleData()
-                DataInjection(this@MainActivity).makeGetApiRequest(
-                    URL("https://dummyjson.com/products/category/smartphones"),
-                    ProductType.MOBILES
-                )
-                DataInjection(this@MainActivity).makeGetApiRequest(
-                    URL("https://dummyjson.com/products/category/home-decoration"),
-                    ProductType.FURNITURE
-                )
-                DataInjection(this@MainActivity).makeGetApiRequest(
-                    URL("https://dummyjson.com/products/category/fragrances"),
-                    ProductType.OTHERS
-                )
-                DataInjection(this@MainActivity).makeGetApiRequest(
-                    URL("https://dummyjson.com/products/category/laptops"),
-                    ProductType.OTHERS
-                )
-                DataInjection(this@MainActivity).makeGetApiRequest(
-                    URL("https://api.jsonbin.io/v3/b/663471bfad19ca34f863c34e?meta=false"),
-                    ProductType.FASHION
-                )
-                DataInjection(this@MainActivity).makeGetApiRequest(
-                    URL("https://api.jsonbin.io/v3/b/66347d0ce41b4d34e4ee132a?meta=false"),
-                    ProductType.OTHERS
-                )
-                DataInjection(this@MainActivity).makeGetApiRequest(
-                    URL("https://api.jsonbin.io/v3/b/66348338e41b4d34e4ee1518?meta=false"),
-                    ProductType.MOBILES
-                )
-                DataInjection(this@MainActivity).makeGetApiRequest(
-                    URL("https://api.jsonbin.io/v3/b/66348b40e41b4d34e4ee17c1?meta=false"),
-                    ProductType.BOOKS
-                )
-                DataInjection(this@MainActivity).makeGetApiRequest(
-                    URL("https://api.jsonbin.io/v3/b/6634a9ace41b4d34e4ee2266?meta=false"),
-                    ProductType.SPORTS
-                )
-                DataInjection(this@MainActivity).makeGetApiRequest(
-                    URL("https://api.jsonbin.io/v3/b/6634b707acd3cb34a84252bf?meta=false"),
-                    ProductType.FURNITURE
-                )
-                prefetchingDataViewModel.loading.postValue(false)
-            }
+                try {
+
+
+                    DataInjection(this@MainActivity).addSampleData()
+                    DataInjection(this@MainActivity).makeGetApiRequest(
+                        URL("https://dummyjson.com/products/category/smartphones"),
+                        ProductType.MOBILES
+                    )
+                    DataInjection(this@MainActivity).makeGetApiRequest(
+                        URL("https://dummyjson.com/products/category/home-decoration"),
+                        ProductType.FURNITURE
+                    )
+                    DataInjection(this@MainActivity).makeGetApiRequest(
+                        URL("https://dummyjson.com/products/category/fragrances"),
+                        ProductType.OTHERS
+                    )
+                    DataInjection(this@MainActivity).makeGetApiRequest(
+                        URL("https://dummyjson.com/products/category/laptops"),
+                        ProductType.OTHERS
+                    )
+                    DataInjection(this@MainActivity).makeGetApiRequest(
+                        URL("https://api.jsonbin.io/v3/b/663471bfad19ca34f863c34e?meta=false"),
+                        ProductType.FASHION
+                    )
+                    DataInjection(this@MainActivity).makeGetApiRequest(
+                        URL("https://api.jsonbin.io/v3/b/66347d0ce41b4d34e4ee132a?meta=false"),
+                        ProductType.OTHERS
+                    )
+                    DataInjection(this@MainActivity).makeGetApiRequest(
+                        URL("https://api.jsonbin.io/v3/b/66348338e41b4d34e4ee1518?meta=false"),
+                        ProductType.MOBILES
+                    )
+                    DataInjection(this@MainActivity).makeGetApiRequest(
+                        URL("https://api.jsonbin.io/v3/b/66348b40e41b4d34e4ee17c1?meta=false"),
+                        ProductType.BOOKS
+                    )
+                    DataInjection(this@MainActivity).makeGetApiRequest(
+                        URL("https://api.jsonbin.io/v3/b/6634a9ace41b4d34e4ee2266?meta=false"),
+                        ProductType.SPORTS
+                    )
+                    DataInjection(this@MainActivity).makeGetApiRequest(
+                        URL("https://api.jsonbin.io/v3/b/6634b707acd3cb34a84252bf?meta=false"),
+                        ProductType.FURNITURE
+                    )
+                    prefetchingDataViewModel.loading.postValue(false)
+                }catch (e: Exception){
+                    prefetchingDataViewModel.loading.postValue(false)
+                }
+
+                }
         }else{
             prefetchingDataViewModel.loading.postValue(false)
         }

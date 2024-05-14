@@ -51,7 +51,7 @@ class DataInjection(val context: Context) {
 
         authenticationRepository.setUserProfile(
             "Amal",
-            "Amal123@gmail.com",
+            "amal@gmail.com",
             "9493290800",
             "Test@123"
         )
@@ -78,9 +78,6 @@ class DataInjection(val context: Context) {
         profileRepository.saveProfileImage("2", convertPngResourceToBitmap(R.raw.profile))
         profileRepository.saveProfileImage("3", convertPngResourceToBitmap(R.raw.profile1))
         profileRepository.saveProfileImage("4", convertPngResourceToBitmap(R.raw.person2))
-        profileRepository.saveProfileImage("1", convertPngResourceToBitmap(R.raw.profile))
-        profileRepository.saveProfileImage("5", convertPngResourceToBitmap(R.raw.profile1))
-        profileRepository.saveProfileImage("6", convertPngResourceToBitmap(R.raw.person2))
 
         val product1 = Product(
             null,
@@ -634,7 +631,7 @@ class DataInjection(val context: Context) {
                     product.productType,
                     product.sellerId
                 )
-                for (j in 1..Random.nextLong(1, 8)) {
+                for (j in 1..Random.nextLong(1, 4)) {
                     if (j != userId) {
                         productRepository.updateProductIsWishList(j, map[j]!!, _product, true)
                     }

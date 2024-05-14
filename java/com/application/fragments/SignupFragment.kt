@@ -46,6 +46,9 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
                 binding.passwordLayout.error = passwordError
             } else {
                 binding.passwordLayout.error = null
+               if(binding.passwordEdittext.text.toString() == "" && viewModel.secondAttempt){
+                   binding.passwordLayout.error = passwordError
+               }
             }
         }
 

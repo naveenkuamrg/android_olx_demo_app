@@ -1,6 +1,7 @@
 package com.application.adapter
 
 import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -26,6 +27,7 @@ import com.application.repositories.impl.ProfileImageRepositoryImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ProfileSummaryAdapter(
     val context: Context,
@@ -41,12 +43,11 @@ class ProfileSummaryAdapter(
             itemView.findViewById<FrameLayout>(R.id.profile_back_ground)
     }
 
-    private val profileImageRepository = ProfileImageRepositoryImpl(context)
     fun setData(data: List<ProfileSummary>) {
         asyncDiffUtil.submitList(data)
     }
 
-    val diffUtil =
+    private val diffUtil =
         object : DiffUtil.ItemCallback<ProfileSummary>() {
             override fun areItemsTheSame(
                 oldItem: ProfileSummary,
@@ -63,7 +64,7 @@ class ProfileSummaryAdapter(
             }
 
         }
-    private val asyncDiffUtil = AsyncListDiffer(this,diffUtil)
+    private val asyncDiffUtil = AsyncListDiffer(this, diffUtil)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProfileViewHolder {
 
@@ -80,23 +81,20 @@ class ProfileSummaryAdapter(
     }
 
     override fun onBindViewHolder(holder: ProfileViewHolder, position: Int) {
-        val data = asyncDiffUtil.currentList[position]
 
+        val data = asyncDiffUtil.currentList[position]
         if (data.profileImage != null) {
             data.profileImage?.prepareToDraw()
             holder.userDp.setImageBitmap(data.profileImage)
-        }else{
-            CoroutineScope(Dispatchers.IO).launch {
-                data.profileImage = profileImageRepository.getProfileImage(data.id.toString())
-                if(data.profileImage != null){
-                    data.profileImage?.prepareToDraw()
-                    holder.userDp.setImageBitmap(data.profileImage)
-                }
-            }
         }
         holder.userName.text = data.name
         if (data.isContented) {
-            holder.profileBackGround.setBackgroundColor(R.color.md_theme_surfaceContainer)
+            holder.profileBackGround.setBackgroundColor(
+                ContextCompat.getColor(
+                    context,
+                    R.color.md_theme_surfaceContainer
+                )
+            )
         }
         holder.phoneBtn.setOnClickListener {
             if (ContextCompat.checkSelfPermission(
@@ -108,7 +106,12 @@ class ProfileSummaryAdapter(
                 val intent = Intent(Intent.ACTION_CALL)
                 intent.data = Uri.parse("tel:" + data.phoneNumber)
                 context.startActivities(arrayOf(intent))
-                holder.profileBackGround.setBackgroundColor(R.color.md_theme_surfaceContainer)
+                holder.profileBackGround.setBackgroundColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.md_theme_surfaceContainer
+                    )
+                )
             } else {
                 AlertDialog.Builder(context).apply {
                     setMessage(

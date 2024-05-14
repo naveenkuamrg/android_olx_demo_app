@@ -36,6 +36,7 @@ class BottomSheetDialogPhotoPicker :
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+
         val dialog = BottomSheetDialog(requireContext(), theme)
         dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
         return dialog

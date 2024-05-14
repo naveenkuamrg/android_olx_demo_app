@@ -51,7 +51,6 @@ class ProductListFragment : BaseProductListFragment(R.layout.fragment_product_li
             INTERESTED_LIST ->
                 productListViewModel.interestedProductList.observe(viewLifecycleOwner) {
                     setData(it)
-
                 }
         }
 

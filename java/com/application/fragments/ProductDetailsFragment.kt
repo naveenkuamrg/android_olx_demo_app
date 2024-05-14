@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
@@ -37,6 +38,13 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
     private var userId: Long = -1
 
     private lateinit var pageChangeListener: ViewPager2.OnPageChangeCallback
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+    }
+
+    override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
+        return super.onCreateAnimation(transit, enter, nextAnim)
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -47,6 +55,7 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
+            Log.i("TAG", "v clear")
             viewModel.clearLiveData()
             viewModel.clearProduct()
             val currentProductId = arguments?.getLong("currentProductId")
@@ -55,7 +64,7 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
                 viewModel.fetchProductDetailsUsingProductId(currentProductId)
             }
             if (notificationId != null && notificationId != 0L) {
-                viewModel.fetchProductDetailsUsingNotificationId(notificationId,userId)
+                viewModel.fetchProductDetailsUsingNotificationId(notificationId, userId)
             }
         }
     }
@@ -189,7 +198,7 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
                 binding.appBarLayout4.visibility = View.VISIBLE
                 binding.productDetailLayout.productDetailLayout.visibility = View.VISIBLE
                 binding.progressCircular.visibility = View.GONE
-                setView()
+//                setView()
                 setUpToolbar()
             }
         }
@@ -245,7 +254,11 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
             }
         }
 
+
+
+        Log.i("TAG", "observe")
         viewModel.profileList.observe(viewLifecycleOwner) {
+            Log.i("TAG", " in side observe")
             if (it.isEmpty()) {
                 binding.productDetailLayout.noData.noDataLayout.visibility = View.VISIBLE
                 binding.productDetailLayout.noData.errorText.textSize = 16F
@@ -254,10 +267,9 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
             } else {
                 binding.productDetailLayout.noData.noDataLayout.visibility = View.GONE
             }
-            lifecycleScope.launch(Dispatchers.IO) {
-                (binding.productDetailLayout.profileRecyclerView.adapter as ProfileSummaryAdapter)
-                    .setData(it)
-            }
+            (binding.productDetailLayout.profileRecyclerView.adapter as ProfileSummaryAdapter)
+                .setData(it)
+
 
         }
 
@@ -390,7 +402,7 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
                 pageChangeListener
             )
 
-        }else{
+        } else {
             binding.productDetailLayout.indicator.visibility = View.GONE
         }
     }
