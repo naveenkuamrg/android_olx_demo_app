@@ -1,16 +1,12 @@
 package com.application.adapter
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.paging.PagingDataAdapter
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.application.R
 import com.application.adapter.diffUtil.ProductSummaryDiffUtil
@@ -19,10 +15,6 @@ import com.application.model.ProductListItem
 import com.application.model.ProductListItem.ProductItem
 import com.application.model.ProductType
 import com.application.repositories.impl.ProductImageRepositoryImpl
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ProductSummaryAdapter(
     context: Context,
@@ -54,6 +46,7 @@ class ProductSummaryAdapter(
         val fashion = itemView.findViewById<View>(R.id.fashion)
         val books = itemView.findViewById<View>(R.id.books)
         val sport = itemView.findViewById<View>(R.id.sport)
+
     }
 
     lateinit var onFilterClickListener: (ProductType) -> Unit
@@ -82,7 +75,6 @@ class ProductSummaryAdapter(
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        Log.i("ADAPTER", Thread.currentThread().toString())
         when (holder) {
             is FilterViewHolder -> {
                 holder.vehicles.setOnClickListener {

@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.SpannableStringBuilder
+import android.text.TextWatcher
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -16,6 +17,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -287,11 +289,15 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
         val inputMethodManager =
             requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
+
         binding.priceEditText.setOnEditorActionListener { _, _, _ ->
             binding.categoriesDropdown.requestFocus()
             binding.categoriesDropdown.showDropDown()
             inputMethodManager.hideSoftInputFromWindow(binding.priceEditText.windowToken, 0)
             return@setOnEditorActionListener true
+        }
+        binding.categoriesDropdown.setOnFocusChangeListener { view, b ->
+            inputMethodManager.hideSoftInputFromWindow(binding.priceEditText.windowToken, 0)
         }
 
         binding.categoriesDropdown.onItemClickListener =

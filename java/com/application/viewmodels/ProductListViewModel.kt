@@ -3,6 +3,7 @@ package com.application.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
@@ -16,8 +17,12 @@ import com.application.repositories.ProductRepository
 import com.application.repositories.impl.ProductRepositoryImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 class ProductListViewModel(
     private val productRepository: ProductRepository
@@ -37,12 +42,12 @@ class ProductListViewModel(
             .asLiveData()
             .cachedIn(CoroutineScope(Dispatchers.IO))
 
-     var productListPostedDateASC: LiveData<PagingData<ProductListItem>> = setHeader(
-         productRepository.getProductSummaryDetailsForBuyZonePostedDateASC()
-     )
-     var productListPostedDateDESC: LiveData<PagingData<ProductListItem>> =  setHeader(
-         productRepository.getProductSummaryDetailsForBuyZonePostedDateDESC()
-     )
+    var productListPostedDateASC: LiveData<PagingData<ProductListItem>> = setHeader(
+        productRepository.getProductSummaryDetailsForBuyZonePostedDateASC()
+    )
+    var productListPostedDateDESC: LiveData<PagingData<ProductListItem>> = setHeader(
+        productRepository.getProductSummaryDetailsForBuyZonePostedDateDESC()
+    )
 
     var productListPricesASC: LiveData<PagingData<ProductListItem>> = setHeader(
         productRepository.getProductSummaryDetailsForBuyZonePriceASC()
@@ -53,31 +58,34 @@ class ProductListViewModel(
     )
 
 
-
     private fun setHeader(pagingData: Flow<PagingData<ProductListItem>>):
             LiveData<PagingData<ProductListItem>> {
-        return pagingData.map {
-            it.insertHeaderItem(TerminalSeparatorType.FULLY_COMPLETE, ProductListItem.Header())
-        }.asLiveData().cachedIn(CoroutineScope(Dispatchers.IO))
+        return pagingData
+            .flowOn(Dispatchers.IO)
+            .map {
+                it.insertHeaderItem(TerminalSeparatorType.FULLY_COMPLETE, ProductListItem.Header())
+            }
+            .asLiveData()
+            .cachedIn(viewModelScope)
     }
 
     fun getProductSummary(type: ProductType) {
         productListPostedDateASC =
             productRepository.getProductSummaryDetailsForBuyZonePostedDateASC(type)
                 .asLiveData()
-                .cachedIn(CoroutineScope(Dispatchers.IO))
+                .cachedIn(viewModelScope)
         productListPostedDateDESC =
             productRepository.getProductSummaryDetailsForBuyZonePostedDateDESC(type)
                 .asLiveData()
-                .cachedIn(CoroutineScope(Dispatchers.IO))
+                .cachedIn(viewModelScope)
         productListPricesASC =
             productRepository.getProductSummaryDetailsForBuyZonePriceASC(type)
                 .asLiveData()
-                .cachedIn(CoroutineScope(Dispatchers.IO))
+                .cachedIn(viewModelScope)
         productListPricesDESC =
             productRepository.getProductSummaryDetailsForBuyZonePriceDESC(type)
                 .asLiveData()
-                .cachedIn(CoroutineScope(Dispatchers.IO))
+                .cachedIn(viewModelScope)
     }
 
 
@@ -87,7 +95,8 @@ class ProductListViewModel(
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val application = extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]
                 return ProductListViewModel(
-                    ProductRepositoryImpl(application!!.applicationContext)) as T
+                    ProductRepositoryImpl(application!!.applicationContext)
+                ) as T
             }
         }
     }

@@ -81,7 +81,6 @@ class ProfileSummaryAdapter(
     }
 
     override fun onBindViewHolder(holder: ProfileViewHolder, position: Int) {
-
         val data = asyncDiffUtil.currentList[position]
         if (data.profileImage != null) {
             data.profileImage?.prepareToDraw()

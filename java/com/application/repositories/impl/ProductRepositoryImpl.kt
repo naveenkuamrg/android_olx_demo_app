@@ -132,7 +132,6 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
 
     override fun getProductSummaryDetailsForBuyZonePostedDateDESC():
             Flow<PagingData<ProductListItem>> {
-        Log.i("Naveen thread",Thread.currentThread().toString())
             return Pager(
                 productPaddingConfig
             ) {
@@ -321,7 +320,8 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
 
     private fun <Key : Any> Pager<Key, ProductItem>.getFlowPagingData(): Flow<PagingData<ProductListItem>> {
         return this.flow
-            .map { pagingData -> pagingData.map {
+            .map { pagingData ->
+                pagingData.map {
                 setImg(it)
                 it as ProductListItem} }
 

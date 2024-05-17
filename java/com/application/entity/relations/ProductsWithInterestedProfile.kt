@@ -20,4 +20,5 @@ data class ProductsWithInterestedProfile(
         entityColumn = "product_id",
     )
     val isContented: List<InterestedList>
+
 )

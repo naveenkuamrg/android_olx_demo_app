@@ -46,6 +46,7 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
         if (productId != -1L) {
             _isLoading.value = true
             viewModelScope.launch(Dispatchers.Default) {
+
                 _product.postValue(
                     productRepository.getProductDetailsUsingProductId(
                         productId,

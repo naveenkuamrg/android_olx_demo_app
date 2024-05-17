@@ -3,10 +3,6 @@ package com.application.dao
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.view.ViewGroup
-import android.widget.Button
-import android.widget.LinearLayout
-import androidx.core.view.setPadding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -49,7 +45,10 @@ class ImageDaoImpl(
         }
         if (imageFiles != null) {
             for (file in imageFiles) {
-                val inputStream = FileInputStream(file)
+                val inputStream =
+                    withContext(Dispatchers.IO) {
+                        FileInputStream(file)
+                    }
                 val bitmap = BitmapFactory.decodeStream(inputStream)
                 withContext(Dispatchers.IO) {
                     inputStream.close()
@@ -73,7 +72,9 @@ class ImageDaoImpl(
         if (!file.exists()) {
             file.mkdirs()
         }
-        val outputStream = FileOutputStream(File(file, "${name}.jpeg"))
+        val outputStream = withContext(Dispatchers.IO) {
+            FileOutputStream(File(file, "${name}.jpeg"))
+        }
         bitmap?.compress(Bitmap.CompressFormat.JPEG, 99, outputStream)
         withContext(Dispatchers.IO) {
             outputStream.flush()
@@ -86,7 +87,9 @@ class ImageDaoImpl(
 
     override suspend fun getImage(folderPath: String): Bitmap? {
         return try {
-            val inputStream = FileInputStream(File(context.filesDir, folderPath))
+            val inputStream = withContext(Dispatchers.IO) {
+                FileInputStream(File(context.filesDir, folderPath))
+            }
             val bitmap = BitmapFactory.decodeStream(inputStream)
             withContext(Dispatchers.IO) {
                 inputStream.close()

@@ -631,7 +631,7 @@ class DataInjection(val context: Context) {
                     product.productType,
                     product.sellerId
                 )
-                for (j in 1..Random.nextLong(1, 4)) {
+                for (j in 1..Random.nextLong(3, 8)) {
                     if (j != userId) {
                         productRepository.updateProductIsWishList(j, map[j]!!, _product, true)
                     }

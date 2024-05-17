@@ -129,6 +129,7 @@
                         android:imeOptions="actionNext"
                         android:inputType="textMultiLine"
                         android:maxLines="5"
+                        android:isScrollContainer="false"
                         android:nestedScrollingEnabled="true"
                         android:scrollbars="vertical" />
                 </com.google.android.material.textfield.TextInputLayout>
