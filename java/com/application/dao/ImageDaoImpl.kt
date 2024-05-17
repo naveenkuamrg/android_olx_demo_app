@@ -72,9 +72,7 @@ class ImageDaoImpl(
         if (!file.exists()) {
             file.mkdirs()
         }
-        val outputStream = withContext(Dispatchers.IO) {
-            FileOutputStream(File(file, "${name}.jpeg"))
-        }
+        val outputStream = FileOutputStream(File(file, "${name}.jpeg"))
         bitmap?.compress(Bitmap.CompressFormat.JPEG, 99, outputStream)
         withContext(Dispatchers.IO) {
             outputStream.flush()

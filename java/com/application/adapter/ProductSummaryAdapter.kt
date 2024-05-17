@@ -1,12 +1,16 @@
 package com.application.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.application.R
 import com.application.adapter.diffUtil.ProductSummaryDiffUtil
@@ -15,6 +19,10 @@ import com.application.model.ProductListItem
 import com.application.model.ProductListItem.ProductItem
 import com.application.model.ProductType
 import com.application.repositories.impl.ProductImageRepositoryImpl
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ProductSummaryAdapter(
     context: Context,
@@ -106,7 +114,7 @@ class ProductSummaryAdapter(
                 holder.title.text = item.title
                 holder.price.text = Utility.convertToINR(item.price)
 
-                item.image?.prepareToDraw()
+                item.image.prepareToDraw()
                 holder.imageView.setImageBitmap(item.image)
                 holder.itemView.setOnClickListener {
                     onItemClickListener(item)

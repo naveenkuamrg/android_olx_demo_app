@@ -17,7 +17,7 @@ sealed class ProductListItem {
         val availabilityStatus: AvailabilityStatus
         ) : ProductListItem() {
         @Ignore
-        var image: Bitmap? = null
+        lateinit var image: Bitmap
     }
 
      class Header: ProductListItem(){

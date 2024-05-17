@@ -76,11 +76,11 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         }.getFlowPagingData().map {
 
             it.insertSeparators { productListItem: ProductListItem?, productListItem2: ProductListItem? ->
-                if(productListItem != null && productListItem2 != null) {
+                if (productListItem != null && productListItem2 != null) {
                     if ((productListItem as ProductItem).availabilityStatus
                         != (productListItem2 as ProductItem).availabilityStatus
                     ) {
-                       return@insertSeparators ProductListItem.Divider("Sold Products")
+                        return@insertSeparators ProductListItem.Divider("Sold Products")
                     }
                 }
                 null
@@ -132,15 +132,15 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
 
     override fun getProductSummaryDetailsForBuyZonePostedDateDESC():
             Flow<PagingData<ProductListItem>> {
-            return Pager(
-                productPaddingConfig
-            ) {
-                productDao.getBuyProductSummaryOrderByPostedDateDESC(
-                    Utility.getLoginUserId(
-                        context
-                    )
+        return Pager(
+            productPaddingConfig
+        ) {
+            productDao.getBuyProductSummaryOrderByPostedDateDESC(
+                Utility.getLoginUserId(
+                    context
                 )
-            }.getFlowPagingData()
+            )
+        }.getFlowPagingData()
 
     }
 
@@ -268,7 +268,7 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
         return ModelConverter.productsWithInterestedProfileSummary(
             profileDao.getInterestedProfile(productId)
         ).map {
-            Log.i("getInterestedProfile",Thread.currentThread().toString())
+            Log.i("getInterestedProfile", Thread.currentThread().toString())
             it.profileImage = profileImageRepository.getProfileImage(it.id.toString())
             it
         }
@@ -315,15 +315,17 @@ class ProductRepositoryImpl(val context: Context) : ProductRepository {
     private suspend fun setImg(product: ProductItem) {
         product.image = productImageRepository.getMainImage(
             product.id.toString()
-        )
+        )!!
     }
 
     private fun <Key : Any> Pager<Key, ProductItem>.getFlowPagingData(): Flow<PagingData<ProductListItem>> {
         return this.flow
             .map { pagingData ->
                 pagingData.map {
-                setImg(it)
-                it as ProductListItem} }
+                    setImg(it)
+                    it as ProductListItem
+                }
+            }
 
 
     }

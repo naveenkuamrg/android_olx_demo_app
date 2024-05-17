@@ -137,6 +137,7 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
 
     private fun isDataUpdate(): Boolean {
         val product = productViewModel.product.value
+        Log.i("images","${product?.images.toString()}  ${editProductViewModel.images.value}")
         return isChanged(product?.title, binding.titleEditText.text.toString()) ||
                 isChanged(product?.description, binding.descriptionEditText.text.toString()) ||
                 isChanged(product?.price, binding.priceEditText.text.toString().toDoubleOrNull()) ||
@@ -145,7 +146,7 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
                     binding.categoriesDropdown.text.toString()
                 ) ||
                 isChanged(product?.location, binding.locationEditText.text.toString()) ||
-                isChanged(product?.images?.size, editProductViewModel.images.value?.size)
+                isChanged(product?.images?: emptyList(), editProductViewModel.images.value)
     }
 
     private fun <T> isChanged(productVal: T, enteredVal: T): Boolean {
@@ -288,7 +289,6 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product), ImageAdapt
 
         val inputMethodManager =
             requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-
 
         binding.priceEditText.setOnEditorActionListener { _, _, _ ->
             binding.categoriesDropdown.requestFocus()
